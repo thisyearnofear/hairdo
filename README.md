@@ -1,6 +1,6 @@
 # [ChangeHairstyleAI.com](https://changehairstyleai.com)
 
-[![Change Hairstyle AI](./public/img/screenshot.jpg)](https://changehairstyelai.com)
+[![Change Hairstyle AI](./public/img/screenshot.jpg)](https://changehairstyleai.com)
 
 ## How it works
 
