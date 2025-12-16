@@ -1,19 +1,20 @@
-export default defineEventHandler(async (event) => {
-  const { image, hairstyle, shade, color } = await readBody(event)
+import { NextRequest, NextResponse } from 'next/server'
 
-  // Using deployments
-  // const endpoint = 'https://api.replicate.com/v1/deployments/replicate/changehairstyleai-com/predictions'
+export const runtime = 'edge'
 
-  // Using public model
-  const endpoint = 'https://api.replicate.com/v1/predictions'
-
-  // Create prediction
+export async function POST(request: NextRequest) {
   try {
+    const { image, hairstyle, shade, color } = await request.json()
+
+    // Using public model
+    const endpoint = 'https://api.replicate.com/v1/predictions'
+
+    // Create prediction
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Token ' + useRuntimeConfig().replicateApiToken
+        Authorization: 'Token ' + process.env.REPLICATE_API_TOKEN
       },
       body: JSON.stringify({
         version:
@@ -26,6 +27,7 @@ export default defineEventHandler(async (event) => {
         }
       })
     })
+
     const json = await response.json()
 
     // Parse prediction
@@ -33,8 +35,9 @@ export default defineEventHandler(async (event) => {
     const status = json.status
     const output = json.output
 
-    return { id, status, output }
+    return NextResponse.json({ id, status, output })
   } catch (e) {
-    console.log('ERROR', e)
+    console.error('ERROR', e)
+    return NextResponse.json({ error: 'Failed to create prediction' }, { status: 500 })
   }
-})
+}

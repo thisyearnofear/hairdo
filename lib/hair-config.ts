@@ -1,4 +1,4 @@
-export const hairstyle_items = [
+export const hairstyleItems = [
   { title: 'Afro', value: 'afro hairstyle' },
   { title: 'Bob cut', value: 'bob cut hairstyle' },
   { title: 'Bowl cut', value: 'bowl cut hairstyle' },
@@ -45,13 +45,13 @@ export const hairstyle_items = [
   { title: 'Updo', value: 'updo hairstyle' }
 ]
 
-export const shade_items = [
+export const shadeItems = [
   { title: 'Dark', value: 'dark' },
   { title: 'Regular', value: 'regular' },
   { title: 'Light', value: 'light' }
 ]
 
-export const color_items = [
+export const colorItems = [
   { title: 'Black', value: 'black' },
   { title: 'Blonde', value: 'blonde' },
   { title: 'Blue', value: 'blue' },

@@ -1,41 +1,53 @@
-# [ChangeHairstyleAI.com](https://changehairstyleai.com)
+# HAIRDO
 
-[![Change Hairstyle AI](./public/img/screenshot.jpg)](https://changehairstyleai.com)
+AI-powered hairstyle generator live on LISK.
 
 ## How it works
 
-This app is powered by:
+🚀 [Replicate](https://replicate.com) - ML model hosting platform
 
-🚀 [Replicate](https://replicate.com/?utm_source=github&utm_campaign=changehairstyleai), a platform for running machine learning models in the cloud.
+✂️ [HairCLIP](https://replicate.com/wty-ustc/hairclip) - AI hairstyle generation model
 
-✂ [HairCLIP](https://replicate.com/wty-ustc/hairclip?utm_source=github&utm_campaign=changehairstyleai), an open-source machine learning model that generates images of hairstyles by text and a reference image.
+⛓️ [LISK](https://lisk.com) - Layer 2 blockchain
 
-▲ [Vercel](https://vercel.com/), a platform for running web apps.
+## Development
 
-⚡️ Nuxt.js [server-side API handlers](server/api), for talking to the Replicate API.
+### Prerequisites
 
-📦 [Vuetify](https://vuetifyjs.com/en/), a Vue.js component framework for the browser UI.
+1. Get a [Replicate API token](https://replicate.com/account)
+2. Get a [WalletConnect project ID](https://cloud.walletconnect.com)
 
-## Run it yourself
-
-You need a [Replicate API token](https://replicate.com/account?utm_source=github&utm_campaign=changehairstyleai). Copy the contents of [.example.env](.example.env) into a new file in the root of your directory called `.env` and insert the API key there, like this:
+Add both to `.env.local`:
 
 ```bash
-# Get your Replicate API token at https://www.replicate.com/account
-NUXT_REPLICATE_API_TOKEN=<put your token here>
+REPLICATE_API_TOKEN=your_token_here
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id_here
 ```
 
-Then, install the dependencies and run the local development server:
+### Run locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open http://localhost:3000 in your web browser. Done!
+Open [http://localhost:3000](http://localhost:3000)
 
-## One-click deploy
+### Deploy
 
-Deploy this project using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=changehairstyleai):
+Deploy to Vercel:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Pwntus/change-hairstyle-ai&env=NUXT_REPLICATE_API_TOKEN&project-name=change-hairstyle-ai&repo-name=change-hairstyle-ai)
+```bash
+vercel
+```
+
+Set `REPLICATE_API_TOKEN` in your deployment environment variables.
+
+## Tech Stack
+
+- Next.js 14 (App Router)
+- React + TypeScript
+- Tailwind CSS + shadcn/ui
+- Vercel Edge Runtime
+- Wagmi + ConnectKit (Web3)
+- Lisk L2 (Chain ID: 1135)
