@@ -10,14 +10,25 @@ AI-powered hairstyle generator live on LISK.
 
 ⛓️ [LISK](https://lisk.com) - Layer 2 blockchain
 
+💰 Pay-per-use with LISK blockchain integration
+
+## Features
+
+- Upload a photo and generate AI-modified versions with different hairstyles
+- Choose from various hairstyles, shades, and colors
+- Powered by the HairCLIP model on Replicate
+- Built with Next.js, Tailwind CSS, and Lisk blockchain
+- Pay-per-use system with Lisk blockchain integration
+
 ## Development
 
 ### Prerequisites
 
 1. Get a [Replicate API token](https://replicate.com/account)
 2. Get a [WalletConnect project ID](https://cloud.walletconnect.com)
+3. Deploy the smart contract (see `contracts/README.md`)
 
-Add both to `.env.local`:
+Add to `.env.local`:
 
 ```bash
 REPLICATE_API_TOKEN=your_token_here
@@ -41,7 +52,22 @@ Deploy to Vercel:
 vercel
 ```
 
-Set `REPLICATE_API_TOKEN` in your deployment environment variables.
+Set `REPLICATE_API_TOKEN` and `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` in your deployment environment variables.
+
+Also remember to:
+1. Deploy the smart contract (see `contracts/README.md`)
+2. Update the contract address in `lib/contract-config.ts`
+
+## Blockchain Integration
+
+HAIRDO now integrates with the Lisk blockchain for a pay-per-use model:
+
+1. Users must connect their wallet and pay a small fee (0.001 ETH) on Lisk
+2. Payment is processed through our smart contract
+3. After payment confirmation, users can generate a hairstyle
+4. Each payment token can only be used once for security
+
+See `contracts/README.md` for deployment instructions.
 
 ## Tech Stack
 

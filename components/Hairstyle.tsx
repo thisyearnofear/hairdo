@@ -9,9 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Upload, ShoppingBag } from "lucide-react"
+import { Upload, ShoppingBag, Lock } from "lucide-react"
 import { Output } from "./Output"
 import { hairstyleItems, shadeItems, colorItems } from "@/lib/hair-config"
+import { useAccount } from "wagmi"
+import { PaymentHandler } from "./PaymentHandler"
 
 interface Prediction {
   id: string
@@ -23,6 +25,7 @@ interface Prediction {
 }
 
 export function Hairstyle() {
+  const { isConnected } = useAccount();
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [image, setImage] = useState<string | null>(null)
   const [hairstyle, setHairstyle] = useState('fade hairstyle')
@@ -31,6 +34,8 @@ export function Hairstyle() {
   const [loadingFile, setLoadingFile] = useState(false)
   const [loadingSubmit, setLoadingSubmit] = useState(false)
   const [list, setList] = useState<Prediction[]>([])
+  const [showPayment, setShowPayment] = useState(false)
+  const [paymentToken, setPaymentToken] = useState<string | null>(null)
 
   // Compute processing predictions
   const processing = useMemo(
@@ -126,7 +131,22 @@ export function Hairstyle() {
     }
   }
 
+  const handlePaymentSuccess = (tokenId: string) => {
+    setPaymentToken(tokenId)
+    setShowPayment(false)
+    // Automatically trigger the hairstyle creation after payment
+    setTimeout(() => {
+      createPrediction()
+    }, 500)
+  }
+
   const createPrediction = async () => {
+    // Check if user has paid
+    if (!paymentToken) {
+      setShowPayment(true)
+      return
+    }
+
     setLoadingSubmit(true)
     try {
       const data: Prediction = await fetch('/api/create', {
@@ -138,7 +158,8 @@ export function Hairstyle() {
           image,
           hairstyle,
           shade,
-          color
+          color,
+          paymentToken // Include payment token in the request
         })
       }).then(res => res.json())
 
@@ -149,6 +170,9 @@ export function Hairstyle() {
         shade,
         color
       }, ...prev])
+      
+      // Reset payment token after successful use
+      setPaymentToken(null)
     } catch (e) {
       console.error(e)
     } finally {
@@ -185,6 +209,27 @@ export function Hairstyle() {
         onChange={onFileSelected}
         className="hidden"
       />
+
+      {/* Payment Modal */}
+      {showPayment && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Payment Required</h2>
+              <button 
+                onClick={() => setShowPayment(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+            <PaymentHandler 
+              onPaymentSuccess={handlePaymentSuccess} 
+              amount="0.001" 
+            />
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Upload area */}
@@ -257,6 +302,21 @@ export function Hairstyle() {
           >
             {loadingSubmit ? 'Creating...' : 'Create hairstyle'}
           </Button>
+          
+          {/* Payment indicator */}
+          {!paymentToken && isConnected && (
+            <div className="flex items-center justify-center text-sm text-muted-foreground">
+              <Lock className="w-4 h-4 mr-1" />
+              Payment required to generate hairstyle
+            </div>
+          )}
+          
+          {paymentToken && (
+            <div className="flex items-center justify-center text-sm text-green-600">
+              <Lock className="w-4 h-4 mr-1" />
+              Payment verified - ready to generate
+            </div>
+          )}
         </div>
       </div>
 
