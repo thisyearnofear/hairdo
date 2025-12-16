@@ -6,9 +6,9 @@ import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"] })
 
-const title = "Change Hairstyle AI for FREE"
+const title = "HAIRDO"
 const description = "Get a new hairstyle in seconds, for free."
-const image = "https://changehairstyleai.com/cover.jpg"
+const image = "https://hairdo.vercel.app/cover.jpg"
 
 export const metadata: Metadata = {
   title,
