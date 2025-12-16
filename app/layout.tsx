@@ -41,9 +41,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <Web3Provider>
           <div 
-            className="min-h-screen"
+            className="min-h-screen bg-[#070707]"
             style={{
-              background: 'radial-gradient(80% 130% at 50% -30%, rgba(0, 0, 0, .15) 0, rgba(0, 0, 0, 0) 100%)'
+              background: 'radial-gradient(circle at 50% 0%, rgba(0, 112, 227, 0.15) 0%, #070707 50%)'
             }}
           >
             {children}
