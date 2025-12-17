@@ -25,10 +25,11 @@ AI-powered hairstyle generator live on LISK.
 ## Quick Start
 
 1. Visit [hairdo.vercel.app](https://hairdo.vercel.app)
-2. Choose to upload a photo or take a selfie
-3. Select your desired hairstyle, shade, and color
-4. Connect your wallet and pay the small fee (0.001 ETH)
-5. View your transformed hairstyle!
+2. Connect your wallet using the button in the top right corner
+3. Choose to upload a photo or take a selfie
+4. Select your desired hairstyle, shade, and color
+5. Click "Transform Hairstyle" and pay the small fee (0.001 ETH)
+6. View your transformed hairstyle!
 
 For detailed instructions, see our [Usage Guide](docs/USAGE_GUIDE.md).
 
@@ -88,15 +89,13 @@ HAIRDO now integrates with the Lisk blockchain for a pay-per-use model:
 
 See `contracts/README.md` for deployment instructions and contract details.
 
-## Troubleshooting Wallet Issues
+## Troubleshooting
 
-If you're experiencing wallet connection issues:
+If you're experiencing issues:
 
-1. Make sure your `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` is set in `.env.local`
-2. Clear your browser cache and localStorage
-3. Try using a different browser or incognito mode
-4. Check browser console for specific error messages
-5. Ensure you're using a Lisk-compatible wallet
+1. **Wallet Connection Problems**: Make sure your `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` is set in `.env.local`
+2. **Payment Flow Not Triggering**: Check that you've connected your wallet and selected an image
+3. **General Issues**: See our [Troubleshooting Guide](docs/TROUBLESHOOTING.md)
 
 ## Privacy Policy
 

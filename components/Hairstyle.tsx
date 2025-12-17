@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Upload, Camera, ShoppingBag, Lock, Info } from "lucide-react"
+import { Upload, Camera, ShoppingBag, Lock, Info, AlertCircle } from "lucide-react"
 import { Output } from "./Output"
 import { hairstyleItems, shadeItems, colorItems } from "@/lib/hair-config"
 import { useAccount } from "wagmi"
@@ -25,7 +25,7 @@ interface Prediction {
 }
 
 export function Hairstyle() {
-  const { isConnected } = useAccount();
+  const { isConnected, address, isConnecting } = useAccount();
   const fileInputRef = useRef<HTMLInputElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [image, setImage] = useState<string | null>(null)
@@ -39,6 +39,7 @@ export function Hairstyle() {
   const [paymentToken, setPaymentToken] = useState<string | null>(null)
   const [showCamera, setShowCamera] = useState(false)
   const [stream, setStream] = useState<MediaStream | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   // Compute processing predictions
   const processing = useMemo(
@@ -109,6 +110,7 @@ export function Hairstyle() {
       }
     } catch (err) {
       console.error('Error accessing camera:', err)
+      setError('Could not access camera. Please check permissions and try uploading a photo instead.')
       // Fallback to file upload if camera is not available
       onClickUpload()
     }
@@ -151,6 +153,7 @@ export function Hairstyle() {
             stream.getTracks().forEach(track => track.stop())
             setStream(null)
           }
+          setError(null)
         }
         reader.readAsDataURL(resizedBlob)
       }, 'image/jpeg', 0.8)
@@ -167,6 +170,7 @@ export function Hairstyle() {
 
   const onFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setImage(null)
+    setError(null)
     setLoadingFile(true)
     
     try {
@@ -197,12 +201,14 @@ export function Hairstyle() {
       reader.readAsDataURL(blob)
     } catch (e) {
       console.error(e)
+      setError('Failed to process image. Please try another photo.')
     } finally {
       setLoadingFile(false)
     }
   }
 
   const handlePaymentSuccess = (tokenId: string) => {
+    console.log("Payment successful with token:", tokenId);
     setPaymentToken(tokenId)
     setShowPayment(false)
     // Automatically trigger the hairstyle creation after payment
@@ -212,15 +218,47 @@ export function Hairstyle() {
   }
 
   const createPrediction = async () => {
+    console.log("Create prediction called with:", { 
+      image: !!image, 
+      isConnected, 
+      isConnecting,
+      paymentToken: !!paymentToken,
+      address
+    });
+    
+    // Reset any previous errors
+    setError(null)
+    
+    // Check if image is selected
+    if (!image) {
+      setError("Please select an image first")
+      return
+    }
+    
+    // Check if wallet is connected
+    if (!isConnected && !isConnecting) {
+      setError("Please connect your wallet first")
+      return
+    }
+    
+    // If wallet is connecting, wait a bit and try again
+    if (isConnecting) {
+      setError("Wallet is connecting, please wait...")
+      setTimeout(createPrediction, 1000)
+      return
+    }
+    
     // Check if user has paid
     if (!paymentToken) {
+      console.log("No payment token, showing payment modal");
       setShowPayment(true)
       return
     }
 
+    console.log("Payment token exists, proceeding with creation");
     setLoadingSubmit(true)
     try {
-      const data: Prediction = await fetch('/api/create', {
+      const response = await fetch('/api/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -232,7 +270,13 @@ export function Hairstyle() {
           color,
           paymentToken // Include payment token in the request
         })
-      }).then(res => res.json())
+      })
+      
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+      
+      const data: Prediction = await response.json()
 
       // Add response to beginning of list
       setList(prev => [{
@@ -245,7 +289,8 @@ export function Hairstyle() {
       // Reset payment token after successful use
       setPaymentToken(null)
     } catch (e) {
-      console.error(e)
+      console.error("Error creating prediction:", e)
+      setError("Failed to create hairstyle. Please try again.")
     } finally {
       setLoadingSubmit(false)
     }
@@ -269,6 +314,18 @@ export function Hairstyle() {
       console.error(e)
     }
   }
+
+  // Debug effect to log state changes
+  useEffect(() => {
+    console.log("State changed:", { 
+      image: !!image, 
+      isConnected, 
+      isConnecting,
+      paymentToken: !!paymentToken,
+      showPayment,
+      address
+    });
+  }, [image, isConnected, isConnecting, paymentToken, showPayment, address]);
 
   return (
     <main className="pt-16">
@@ -426,7 +483,7 @@ export function Hairstyle() {
 
           <Button
             onClick={createPrediction}
-            disabled={!image || loadingSubmit}
+            disabled={!image || loadingSubmit || isConnecting}
             variant="secondary"
             size="xl"
             className="w-full rounded-full mt-4"
@@ -436,10 +493,30 @@ export function Hairstyle() {
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 Creating...
               </div>
+            ) : isConnecting ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Connecting Wallet...
+              </div>
             ) : (
               'Transform Hairstyle'
             )}
           </Button>
+          
+          {/* Error display */}
+          {error && (
+            <div className="flex items-center gap-2 text-sm text-red-500 mt-2 p-2 bg-red-50 rounded">
+              <AlertCircle className="w-4 h-4" />
+              <span>{error}</span>
+            </div>
+          )}
+          
+          {/* Debug info */}
+          <div className="text-xs text-gray-500 mt-2">
+            <div>Image: {image ? 'Selected' : 'None'}</div>
+            <div>Wallet: {isConnected ? 'Connected' : isConnecting ? 'Connecting...' : 'Not connected'}</div>
+            <div>Payment: {paymentToken ? 'Done' : 'Required'}</div>
+          </div>
           
           {/* Payment indicator */}
           {!paymentToken && isConnected && (
