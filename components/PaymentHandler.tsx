@@ -90,6 +90,7 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
   const [currentStep, setCurrentStep] = useState<'approval' | 'payment' | 'completed'>('payment');
   const [approvalHash, setApprovalHash] = useState<string | null>(null);
   const [paymentHash, setPaymentHash] = useState<string | null>(null);
+  const [paymentInitiated, setPaymentInitiated] = useState(false);
 
   const { data: hash, writeContract, isPending, isError, error: contractError } = useWriteContract();
 
@@ -153,6 +154,7 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
     setIsLoading(true);
     setError(null);
     setCurrentStep('approval');
+    setPaymentInitiated(false); // Reset flag to allow payment after approval
 
     try {
       // Approve the contract to spend the required amount of LSK tokens
@@ -188,6 +190,7 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
     setIsLoading(true);
     setError(null);
     setCurrentStep('payment');
+    setPaymentInitiated(true); // Mark that payment has been initiated
 
     try {
       // Generate a unique 32-byte token ID for this transaction
@@ -209,24 +212,26 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
       console.error("Payment error:", err);
       setError("Payment failed. Please try again.");
       setIsLoading(false);
+      setPaymentInitiated(false); // Reset flag if payment failed
     }
   };
 
   // Handle approval confirmation
   useEffect(() => {
-    if (isApprovalConfirmed && approvalHash) {
+    if (isApprovalConfirmed && approvalHash && !isPaymentConfirmed && !paymentInitiated) {
       console.log("Approval confirmed with hash:", approvalHash);
       // After approval, refresh allowance and proceed to payment
       setTimeout(() => {
         refetchAllowance();
         setIsLoading(false);
-        // Automatically proceed to payment if approved
-        if (hasEnoughTokens && !isPaymentConfirmed) {
+        // Automatically proceed to payment if approved and not already processed
+        if (hasEnoughTokens) {
+          setPaymentInitiated(true);
           handlePayment();
         }
       }, 1000);
     }
-  }, [isApprovalConfirmed, approvalHash, refetchAllowance, hasEnoughTokens, handlePayment, isPaymentConfirmed]);
+  }, [isApprovalConfirmed, approvalHash, refetchAllowance, hasEnoughTokens, handlePayment, isPaymentConfirmed, paymentInitiated]);
 
   // Handle payment confirmation
   useEffect(() => {
@@ -253,6 +258,7 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
           console.log("Payment recorded in backend");
           onPaymentSuccess(tokenId);
           setCurrentStep('completed');
+          setPaymentInitiated(false); // Reset flag for future payments
         } catch (error) {
           console.error("Failed to record payment:", error);
           setError("Payment processed but failed to verify. Please contact support.");
