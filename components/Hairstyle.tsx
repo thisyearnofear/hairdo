@@ -251,18 +251,23 @@ export function Hairstyle() {
     setPaymentToken(tokenId)
     setShowPayment(false)
     // Automatically trigger the hairstyle creation after payment
+    // Pass the token directly to avoid race condition with state update
     setTimeout(() => {
-      createPrediction()
+      createPrediction(tokenId)
     }, 500)
   }
 
-  const createPrediction = async () => {
+  const createPrediction = async (token?: string) => {
+    // Use the passed token or fall back to state
+    const activeToken = token || paymentToken;
+    
     console.log("Create prediction called with:", { 
       image: !!image, 
       isConnected, 
       isConnecting,
       isReconnecting,
-      paymentToken: !!paymentToken,
+      paymentToken: !!activeToken,
+      passedToken: !!token,
       address,
       chainId
     });
@@ -297,7 +302,7 @@ export function Hairstyle() {
     }
     
     // Check if user has paid
-    if (!paymentToken) {
+    if (!activeToken) {
       console.log("No payment token, showing payment modal");
       setShowPayment(true)
       return
@@ -316,7 +321,7 @@ export function Hairstyle() {
           hairstyle,
           shade,
           color,
-          paymentToken // Include payment token in the request
+          paymentToken: activeToken // Include payment token in the request
         })
       })
       

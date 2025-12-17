@@ -95,7 +95,7 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
   const { data: hash, writeContract, isPending, isError, error: contractError } = useWriteContract();
 
   // Get the allowance for our contract
-  const { data: allowance, refetch: refetchAllowance } = useReadContract({
+  const { data: allowance, refetch: refetchAllowance, isLoading: isLoadingAllowance } = useReadContract({
     address: LSK_TOKEN_ADDRESS,
     abi: ERC20_ABI,
     functionName: 'allowance',
@@ -106,7 +106,7 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
   });
 
   // Get user's LSK balance
-  const { data: balance } = useReadContract({
+  const { data: balance, isLoading: isLoadingBalance } = useReadContract({
     address: LSK_TOKEN_ADDRESS,
     abi: ERC20_ABI,
     functionName: 'balanceOf',
@@ -315,6 +315,19 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
   // Calculate display amounts
   const displayBalance = balance !== undefined && balance !== null && typeof balance === 'bigint' ? Number(balance) / 1e18 : 0;
   const displayRequired = Number(requiredAmount) / 1e18;
+
+  // Show loading state while fetching balance and allowance
+  if (isLoadingBalance || isLoadingAllowance) {
+    return (
+      <div className="flex flex-col items-center gap-4 p-6">
+        <div className="w-16 h-16 border-2 border-white/20 border-t-white rounded-full animate-spin mb-4" />
+        <p className="text-[10px] tracking-widest uppercase">LOADING_WALLET_DATA</p>
+        <p className="text-xs text-white/60 text-center max-w-xs">
+          FETCHING_YOUR_BALANCE_AND_ALLOWANCE
+        </p>
+      </div>
+    );
+  }
 
   if (isApprovalConfirming || isPaymentConfirming) {
     return (
