@@ -348,97 +348,109 @@ export function Hairstyle() {
               <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin" />
             </div>
           ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center gap-4 p-4">
-              <div className="flex gap-4">
+            <div className="w-full h-full flex flex-col items-center justify-center gap-6 p-6">
+              <h2 className="text-2xl font-bold text-center">Choose Your Photo</h2>
+              <div className="flex gap-6">
                 <button
                   onClick={onClickUpload}
-                  className="flex flex-col items-center gap-2 p-4 rounded-lg hover:bg-[#dddddd] transition-colors"
+                  className="flex flex-col items-center gap-3 p-6 rounded-xl bg-white shadow-md hover:bg-gray-50 transition-all"
                 >
-                  <Upload className="w-12 h-12" />
-                  <span className="text-lg">Upload Photo</span>
+                  <Upload className="w-12 h-12 text-blue-500" />
+                  <span className="text-lg font-medium">Upload Photo</span>
                 </button>
                 <button
                   onClick={startCamera}
-                  className="flex flex-col items-center gap-2 p-4 rounded-lg hover:bg-[#dddddd] transition-colors"
+                  className="flex flex-col items-center gap-3 p-6 rounded-xl bg-white shadow-md hover:bg-gray-50 transition-all"
                 >
-                  <Camera className="w-12 h-12" />
-                  <span className="text-lg">Take Photo</span>
+                  <Camera className="w-12 h-12 text-green-500" />
+                  <span className="text-lg font-medium">Take Selfie</span>
                 </button>
               </div>
-              <div className="relative group">
-                <Info className="w-5 h-5 text-gray-500 cursor-help" />
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-2 bg-black text-white text-xs rounded-lg">
-                  Photos are processed locally and never stored on our servers
-                </div>
+              <div className="flex items-center gap-2 text-sm text-gray-600 mt-4">
+                <Info className="w-4 h-4" />
+                <span>Photos are processed locally and never stored</span>
               </div>
-              <p className="text-sm text-gray-500 text-center">
-                Your privacy matters - photos are only used to generate your hairstyle and are not saved
-              </p>
             </div>
           )}
         </div>
 
         {/* Configuration area */}
         <div className="aspect-square flex flex-col justify-center gap-4">
-          <Select value={hairstyle} onValueChange={setHairstyle}>
-            <SelectTrigger>
-              <SelectValue placeholder="Style" />
-            </SelectTrigger>
-            <SelectContent>
-              {hairstyleItems.map(item => (
-                <SelectItem key={item.value} value={item.value}>
-                  {item.title}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-2 block">Hairstyle</label>
+            <Select value={hairstyle} onValueChange={setHairstyle}>
+              <SelectTrigger>
+                <SelectValue placeholder="Style" />
+              </SelectTrigger>
+              <SelectContent>
+                {hairstyleItems.map(item => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-          <Select value={shade} onValueChange={setShade}>
-            <SelectTrigger>
-              <SelectValue placeholder="Shade" />
-            </SelectTrigger>
-            <SelectContent>
-              {shadeItems.map(item => (
-                <SelectItem key={item.value} value={item.value}>
-                  {item.title}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-2 block">Shade</label>
+            <Select value={shade} onValueChange={setShade}>
+              <SelectTrigger>
+                <SelectValue placeholder="Shade" />
+              </SelectTrigger>
+              <SelectContent>
+                {shadeItems.map(item => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-          <Select value={color} onValueChange={setColor}>
-            <SelectTrigger>
-              <SelectValue placeholder="Color" />
-            </SelectTrigger>
-            <SelectContent>
-              {colorItems.map(item => (
-                <SelectItem key={item.value} value={item.value}>
-                  {item.title}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-2 block">Color</label>
+            <Select value={color} onValueChange={setColor}>
+              <SelectTrigger>
+                <SelectValue placeholder="Color" />
+              </SelectTrigger>
+              <SelectContent>
+                {colorItems.map(item => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
           <Button
             onClick={createPrediction}
             disabled={!image || loadingSubmit}
             variant="secondary"
             size="xl"
-            className="w-full rounded-full"
+            className="w-full rounded-full mt-4"
           >
-            {loadingSubmit ? 'Creating...' : 'Create hairstyle'}
+            {loadingSubmit ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Creating...
+              </div>
+            ) : (
+              'Transform Hairstyle'
+            )}
           </Button>
           
           {/* Payment indicator */}
           {!paymentToken && isConnected && (
-            <div className="flex items-center justify-center text-sm text-muted-foreground">
+            <div className="flex items-center justify-center text-sm text-muted-foreground mt-2">
               <Lock className="w-4 h-4 mr-1" />
               Payment required to generate hairstyle
             </div>
           )}
           
           {paymentToken && (
-            <div className="flex items-center justify-center text-sm text-green-600">
+            <div className="flex items-center justify-center text-sm text-green-600 mt-2">
               <Lock className="w-4 h-4 mr-1" />
               Payment verified - ready to generate
             </div>

@@ -22,6 +22,16 @@ AI-powered hairstyle generator live on LISK.
 - Pay-per-use system with Lisk blockchain integration
 - Privacy-focused - photos are processed locally and never stored
 
+## Quick Start
+
+1. Visit [hairdo.vercel.app](https://hairdo.vercel.app)
+2. Choose to upload a photo or take a selfie
+3. Select your desired hairstyle, shade, and color
+4. Connect your wallet and pay the small fee (0.001 ETH)
+5. View your transformed hairstyle!
+
+For detailed instructions, see our [Usage Guide](docs/USAGE_GUIDE.md).
+
 ## Development
 
 ### Prerequisites
