@@ -4,27 +4,29 @@ This directory contains the smart contract for processing payments on the Lisk b
 
 ## Contract Details
 
-- **Address**: [0x7Cc87B3717973D2fF477515C790859180F5139f0](https://blockscout.lisk.com/address/0x7Cc87B3717973D2fF477515C790859180F5139f0)
+- **Address**: [0x055cA743f0fFB9258ea7f8484794C293f32f2d4C](https://blockscout.lisk.com/address/0x055cA743f0fFB9258ea7f8484794C293f32f2d4C)
 - **Network**: Lisk (Chain ID: 1135)
 - **Solidity Version**: ^0.8.27
-- **Verified on Sourcify**: [View on Sourcify](https://repo.sourcify.dev/1135/0x7Cc87B3717973D2fF477515C790859180F5139f0/)
+- **Verified on Sourcify**: [View on Sourcify](https://repo.sourcify.dev/1135/0x055cA743f0fFB9258ea7f8484794C293f32f2d4C/)
 
 ## Contract Features
 
+- **LSK Token Payment**: Uses LSK ERC-20 token (0xac485391EB2d7D88253a7F1eF18C37f4242D1A24) for payments
 - **Mutable serviceFee**: Owner can adjust the service fee using `setServiceFee()` function
 - **Pause mechanism**: Owner can pause/unpause the contract using `togglePause()`
-- **Safer withdrawal**: Uses `.call{}()` instead of `.transfer()` for withdrawals
+- **Secure withdrawals**: Owner can withdraw collected LSK tokens using `withdrawLSK()` function
 - **Events**: Emits events for fee changes, withdrawals, and pause toggles
 - **Security**: Each tokenId can only be used once
 
 ## Contract Functions
 
-- `payForService(bytes32 tokenId)`: Pay the service fee to generate a hairstyle
+- `payForService(bytes32 tokenId)`: Pay the service fee in LSK tokens to generate a hairstyle
 - `isTokenUsed(bytes32 tokenId)`: Check if a token has been used
 - `getUserBalance(address user)`: Get the total amount paid by a user
 - `setServiceFee(uint256 newFee)`: Owner-only function to update the service fee
 - `togglePause()`: Owner-only function to pause/unpause the contract
-- `withdraw()`: Owner-only function to withdraw funds from the contract
+- `withdraw()`: Owner-only function to withdraw ETH from the contract
+- `withdrawLSK()`: Owner-only function to withdraw collected LSK tokens from the contract
 
 ## Integration with Frontend
 

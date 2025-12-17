@@ -1,5 +1,5 @@
 // Contract address
-export const CONTRACT_ADDRESS = "0x7Cc87B3717973D2fF477515C790859180F5139f0";
+export const CONTRACT_ADDRESS = "0x055cA743f0fFB9258ea7f8484794C293f32f2d4C";
 
 // Contract ABI
 export const CONTRACT_ABI = [
@@ -75,7 +75,7 @@ export const CONTRACT_ABI = [
         "type": "uint256"
       }
     ],
-    "name": "ServiceUsed",
+    "name": "Withdrawn",
     "type": "event"
   },
   {
@@ -94,8 +94,21 @@ export const CONTRACT_ABI = [
         "type": "uint256"
       }
     ],
-    "name": "Withdrawn",
+    "name": "LSKWithdrawn",
     "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "LSK_TOKEN",
+    "outputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],
@@ -165,7 +178,7 @@ export const CONTRACT_ABI = [
     ],
     "name": "payForService",
     "outputs": [],
-    "stateMutability": "payable",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -212,6 +225,39 @@ export const CONTRACT_ABI = [
     "name": "withdraw",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "withdrawLSK",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getLSKBalance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getETHBalance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   }
 ];

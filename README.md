@@ -84,8 +84,9 @@ HAIRDO now integrates with the Lisk blockchain for a pay-per-use model:
 
 ### Smart Contract Information
 
-- **Address**: [0x7Cc87B3717973D2fF477515C790859180F5139f0](https://blockscout.lisk.com/address/0x7Cc87B3717973D2fF477515C790859180F5139f0)
-- **Verified on Sourcify**: [View on Sourcify](https://repo.sourcify.dev/1135/0x7Cc87B3717973D2fF477515C790859180F5139f0/)
+- **Address**: [0x055cA743f0fFB9258ea7f8484794C293f32f2d4C](https://blockscout.lisk.com/address/0x055cA743f0fFB9258ea7f8484794C293f32f2d4C)
+- **Payment Token**: LSK ERC-20 Token [0xac48...1A24](https://blockscout.lisk.com/token/0xac485391EB2d7D88253a7F1eF18C37f4242D1A24)
+- **Verified on Sourcify**: [View on Sourcify](https://repo.sourcify.dev/1135/0x055cA743f0fFB9258ea7f8484794C293f32f2d4C/)
 
 See `contracts/README.md` for deployment instructions and contract details.
 

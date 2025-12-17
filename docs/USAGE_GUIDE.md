@@ -14,8 +14,9 @@ You have two options to provide a photo:
 
 ### 3. Transform Your Hairstyle
 - Click "Transform Hairstyle" to generate your new look
-- You'll need to pay a small fee (0.001 ETH) on Lisk blockchain
-- Connect your wallet and confirm the transaction
+- You'll need to pay a small fee (1 LISK) on Lisk blockchain
+- Connect your wallet and approve the contract to spend your LSK tokens
+- Confirm both the approval and payment transactions when prompted
 
 ### 4. View Results
 - Your transformed hairstyle will appear in the results section
