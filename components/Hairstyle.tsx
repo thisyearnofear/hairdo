@@ -9,10 +9,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Upload, Camera, ShoppingBag, Lock, Info, AlertCircle } from "lucide-react"
+import { Upload, Camera, ShoppingBag, Lock, Info, AlertCircle, WifiOff } from "lucide-react"
 import { Output } from "./Output"
 import { hairstyleItems, shadeItems, colorItems } from "@/lib/hair-config"
-import { useAccount } from "wagmi"
+import { useAccount, useConfig } from "wagmi"
 import { PaymentHandler } from "./PaymentHandler"
 
 interface Prediction {
@@ -25,7 +25,8 @@ interface Prediction {
 }
 
 export function Hairstyle() {
-  const { isConnected, address, isConnecting } = useAccount();
+  const { isConnected, address, isConnecting, isReconnecting } = useAccount();
+  const { chains, transports } = useConfig();
   const fileInputRef = useRef<HTMLInputElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [image, setImage] = useState<string | null>(null)
@@ -40,6 +41,24 @@ export function Hairstyle() {
   const [showCamera, setShowCamera] = useState(false)
   const [stream, setStream] = useState<MediaStream | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [web3Error, setWeb3Error] = useState<string | null>(null)
+
+  // Debug web3 state
+  useEffect(() => {
+    console.log("Web3 State:", {
+      isConnected,
+      isConnecting,
+      isReconnecting,
+      chains: chains.length,
+      hasTransports: Object.keys(transports).length > 0,
+      address: address ? `${address.substring(0, 6)}...${address.substring(address.length - 4)}` : null
+    });
+    
+    // Check for web3 errors
+    if (!process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID) {
+      setWeb3Error("WalletConnect not configured. Some wallet features may not work.");
+    }
+  }, [isConnected, isConnecting, isReconnecting, chains, transports, address]);
 
   // Compute processing predictions
   const processing = useMemo(
@@ -222,12 +241,14 @@ export function Hairstyle() {
       image: !!image, 
       isConnected, 
       isConnecting,
+      isReconnecting,
       paymentToken: !!paymentToken,
       address
     });
     
     // Reset any previous errors
     setError(null)
+    setWeb3Error(null)
     
     // Check if image is selected
     if (!image) {
@@ -236,13 +257,13 @@ export function Hairstyle() {
     }
     
     // Check if wallet is connected
-    if (!isConnected && !isConnecting) {
+    if (!isConnected && !isConnecting && !isReconnecting) {
       setError("Please connect your wallet first")
       return
     }
     
-    // If wallet is connecting, wait a bit and try again
-    if (isConnecting) {
+    // If wallet is connecting/reconnecting, wait a bit and try again
+    if (isConnecting || isReconnecting) {
       setError("Wallet is connecting, please wait...")
       setTimeout(createPrediction, 1000)
       return
@@ -321,11 +342,12 @@ export function Hairstyle() {
       image: !!image, 
       isConnected, 
       isConnecting,
+      isReconnecting,
       paymentToken: !!paymentToken,
       showPayment,
       address
     });
-  }, [image, isConnected, isConnecting, paymentToken, showPayment, address]);
+  }, [image, isConnected, isConnecting, isReconnecting, paymentToken, showPayment, address]);
 
   return (
     <main className="pt-16">
@@ -483,7 +505,7 @@ export function Hairstyle() {
 
           <Button
             onClick={createPrediction}
-            disabled={!image || loadingSubmit || isConnecting}
+            disabled={!image || loadingSubmit || isConnecting || isReconnecting}
             variant="secondary"
             size="xl"
             className="w-full rounded-full mt-4"
@@ -493,7 +515,7 @@ export function Hairstyle() {
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 Creating...
               </div>
-            ) : isConnecting ? (
+            ) : isConnecting || isReconnecting ? (
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 Connecting Wallet...
@@ -503,7 +525,14 @@ export function Hairstyle() {
             )}
           </Button>
           
-          {/* Error display */}
+          {/* Error displays */}
+          {web3Error && (
+            <div className="flex items-center gap-2 text-sm text-yellow-600 mt-2 p-2 bg-yellow-50 rounded">
+              <WifiOff className="w-4 h-4" />
+              <span>{web3Error}</span>
+            </div>
+          )}
+          
           {error && (
             <div className="flex items-center gap-2 text-sm text-red-500 mt-2 p-2 bg-red-50 rounded">
               <AlertCircle className="w-4 h-4" />
@@ -514,7 +543,7 @@ export function Hairstyle() {
           {/* Debug info */}
           <div className="text-xs text-gray-500 mt-2">
             <div>Image: {image ? 'Selected' : 'None'}</div>
-            <div>Wallet: {isConnected ? 'Connected' : isConnecting ? 'Connecting...' : 'Not connected'}</div>
+            <div>Wallet: {isConnected ? 'Connected' : isConnecting ? 'Connecting...' : isReconnecting ? 'Reconnecting...' : 'Not connected'}</div>
             <div>Payment: {paymentToken ? 'Done' : 'Required'}</div>
           </div>
           
