@@ -26,7 +26,7 @@ interface Prediction {
 
 export function Hairstyle() {
   const { isConnected, address, isConnecting, isReconnecting } = useAccount();
-  const { chains, transports } = useConfig();
+  const { chains } = useConfig();
   const fileInputRef = useRef<HTMLInputElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [image, setImage] = useState<string | null>(null)
@@ -50,7 +50,6 @@ export function Hairstyle() {
       isConnecting,
       isReconnecting,
       chains: chains.length,
-      hasTransports: Object.keys(transports).length > 0,
       address: address ? `${address.substring(0, 6)}...${address.substring(address.length - 4)}` : null
     });
     
@@ -58,7 +57,7 @@ export function Hairstyle() {
     if (!process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID) {
       setWeb3Error("WalletConnect not configured. Some wallet features may not work.");
     }
-  }, [isConnected, isConnecting, isReconnecting, chains, transports, address]);
+  }, [isConnected, isConnecting, isReconnecting, chains, address]);
 
   // Compute processing predictions
   const processing = useMemo(
