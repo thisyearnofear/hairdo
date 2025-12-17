@@ -125,10 +125,18 @@ export function Hairstyle() {
     const canvas = document.createElement('canvas')
     canvas.width = bmp.width
     canvas.height = bmp.height
-    const ctx = canvas.getContext('bitmaprenderer')
+    
+    // Use 2d context to ensure RGB format (no alpha channel)
+    const ctx = canvas.getContext('2d')
     if (!ctx) return null
-    ctx.transferFromImageBitmap(bmp)
-    const blob = await new Promise<Blob | null>((res) => canvas.toBlob(res))
+    
+    // Draw with white background to remove alpha channel
+    ctx.fillStyle = '#FFFFFF'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.drawImage(bmp, 0, 0)
+    
+    // Export as JPEG (no alpha) instead of PNG (has alpha)
+    const blob = await new Promise<Blob | null>((res) => canvas.toBlob(res, 'image/jpeg', 0.95))
     return blob
   }
 
@@ -253,21 +261,60 @@ export function Hairstyle() {
     // Automatically trigger the hairstyle creation after payment
     // Pass the token directly to avoid race condition with state update
     setTimeout(() => {
-      createPrediction(tokenId)
+      startPredictionWithToken(tokenId)
     }, 500)
   }
 
-  const createPrediction = async (token?: string) => {
-    // Use the passed token or fall back to state
-    const activeToken = token || paymentToken;
-    
+  // Helper function to actually create the prediction with a token
+  const startPredictionWithToken = async (token: string) => {
+    console.log("Starting prediction with token:", token);
+    setLoadingSubmit(true)
+    try {
+      const response = await fetch('/api/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          image,
+          hairstyle,
+          shade,
+          color,
+          paymentToken: token
+        })
+      })
+      
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+      
+      const data: Prediction = await response.json()
+
+      // Add response to beginning of list
+      setList(prev => [{
+        ...data,
+        hairstyle,
+        shade,
+        color
+      }, ...prev])
+      
+      // Clear the token since backend has consumed it (one payment = one generation)
+      setPaymentToken(null)
+    } catch (e) {
+      console.error("Error creating prediction:", e)
+      setError("Failed to create hairstyle. Please try again.")
+    } finally {
+      setLoadingSubmit(false)
+    }
+  }
+
+  const createPrediction = async () => {
     console.log("Create prediction called with:", { 
       image: !!image, 
       isConnected, 
       isConnecting,
       isReconnecting,
-      paymentToken: !!activeToken,
-      passedToken: !!token,
+      paymentToken: !!paymentToken,
       address,
       chainId
     });
@@ -302,51 +349,14 @@ export function Hairstyle() {
     }
     
     // Check if user has paid
-    if (!activeToken) {
+    if (!paymentToken) {
       console.log("No payment token, showing payment modal");
       setShowPayment(true)
       return
     }
 
-    console.log("Payment token exists, proceeding with creation");
-    setLoadingSubmit(true)
-    try {
-      const response = await fetch('/api/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          image,
-          hairstyle,
-          shade,
-          color,
-          paymentToken: activeToken // Include payment token in the request
-        })
-      })
-      
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`)
-      }
-      
-      const data: Prediction = await response.json()
-
-      // Add response to beginning of list
-      setList(prev => [{
-        ...data,
-        hairstyle,
-        shade,
-        color
-      }, ...prev])
-      
-      // Reset payment token after successful use
-      setPaymentToken(null)
-    } catch (e) {
-      console.error("Error creating prediction:", e)
-      setError("Failed to create hairstyle. Please try again.")
-    } finally {
-      setLoadingSubmit(false)
-    }
+    // Use existing payment token
+    await startPredictionWithToken(paymentToken)
   }
 
   const readPrediction = async (id: string) => {

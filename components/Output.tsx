@@ -45,12 +45,51 @@ export function Output({ output }: OutputProps) {
         )}
         
         {!isSuccess && !isFail && (
-          <div className="py-4">
-            <div className="w-16 h-16 mx-auto mb-4 border-4 border-secondary border-t-transparent rounded-full animate-spin" />
-            <h3 className="text-2xl font-normal">
-              {output.status}
-              <span className="normal-case"> (may take 3 minutes)...</span>
+          <div className="py-8">
+            {/* Enhanced loading animation */}
+            <div className="relative w-24 h-24 mx-auto mb-6">
+              {/* Outer rotating ring */}
+              <div className="absolute inset-0 border-4 border-secondary/20 rounded-full" />
+              <div className="absolute inset-0 border-4 border-secondary border-t-transparent rounded-full animate-spin" />
+              
+              {/* Inner pulsing circle */}
+              <div className="absolute inset-3 bg-secondary/10 rounded-full animate-pulse" />
+              
+              {/* Center dot */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-3 h-3 bg-secondary rounded-full animate-ping" />
+                <div className="absolute w-3 h-3 bg-secondary rounded-full" />
+              </div>
+            </div>
+            
+            <h3 className="text-2xl font-normal mb-3">
+              {output.status === 'starting' ? 'Initializing AI Model' : 'Transforming Your Look'}
             </h3>
+            
+            {/* Progress indicator */}
+            <div className="max-w-xs mx-auto">
+              <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                <span>Processing</span>
+                <span>~2-3 min</span>
+              </div>
+              <div className="h-1 bg-secondary/20 rounded-full overflow-hidden">
+                <div className="h-full bg-secondary rounded-full animate-[loading_3s_ease-in-out_infinite]" style={{width: '30%'}} />
+              </div>
+              
+              {/* Status messages */}
+              <div className="mt-4 space-y-2 text-sm text-muted-foreground">
+                {output.status === 'starting' && (
+                  <p className="animate-pulse">🔄 Loading neural networks...</p>
+                )}
+                {output.status === 'processing' && (
+                  <>
+                    <p className="animate-pulse">✨ Analyzing facial features...</p>
+                    <p className="animate-pulse delay-100">💇 Applying {output.hairstyle}...</p>
+                    <p className="animate-pulse delay-200">🎨 Rendering {output.shade} {output.color}...</p>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </CardContent>
