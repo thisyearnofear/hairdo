@@ -196,6 +196,11 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
       // Generate a unique 32-byte token ID for this transaction
       const tokenId = `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
 
+      // Store the tokenId for later use when the transaction is confirmed
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('pendingPaymentTokenId', tokenId);
+      }
+
       console.log("Initiating payment with params:", {
         address: CONTRACT_ADDRESS,
         tokenId: tokenId,
@@ -236,38 +241,49 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
   // Handle payment confirmation
   useEffect(() => {
     if (isPaymentConfirmed && paymentHash) {
-      console.log("Payment confirmed with hash:", paymentHash);
-      // Generate a 32-byte tokenId for the successful payment
-      const tokenId = `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
+      // Use the same tokenId that was sent to the smart contract
+      // We need to store this tokenId for later use
+      if (typeof window !== 'undefined') {
+        // Get the tokenId from local storage or component state, since the original
+        // tokenId used in the transaction is not directly available here
+        // We'll need to refactor this to track the tokenId across the transaction lifecycle
+        const storedTokenId = localStorage.getItem('pendingPaymentTokenId');
+        if (storedTokenId) {
+          localStorage.removeItem('pendingPaymentTokenId'); // Clean up after use
 
-      // Record the payment in the backend
-      const recordPayment = async () => {
-        try {
-          const response = await fetch('/api/payment', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ tokenId })
-          });
+          // Record the payment in the backend
+          const recordPayment = async () => {
+            try {
+              const response = await fetch('/api/payment', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ tokenId: storedTokenId })
+              });
 
-          if (!response.ok) {
-            throw new Error('Failed to record payment');
-          }
+              if (!response.ok) {
+                throw new Error('Failed to record payment');
+              }
 
-          console.log("Payment recorded in backend");
-          onPaymentSuccess(tokenId);
-          setCurrentStep('completed');
-          setPaymentInitiated(false); // Reset flag for future payments
-        } catch (error) {
-          console.error("Failed to record payment:", error);
-          setError("Payment processed but failed to verify. Please contact support.");
+              console.log("Payment recorded in backend");
+              onPaymentSuccess(storedTokenId);
+              setCurrentStep('completed');
+              setPaymentInitiated(false); // Reset flag for future payments
+            } catch (error) {
+              console.error("Failed to record payment:", error);
+              setError("Payment processed but failed to verify. Please contact support.");
+            }
+
+            setIsLoading(false);
+          };
+
+          recordPayment();
+        } else {
+          setError("Payment confirmation error: token ID not found");
+          setIsLoading(false);
         }
-
-        setIsLoading(false);
-      };
-
-      recordPayment();
+      }
     }
   }, [isPaymentConfirmed, paymentHash, onPaymentSuccess]);
 
