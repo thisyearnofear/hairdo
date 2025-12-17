@@ -3,7 +3,17 @@ import { NextRequest, NextResponse } from 'next/server'
 // In-memory store for payment records (in production, use a database)
 const paymentRecords: Record<string, boolean> = {}
 
-export const runtime = 'edge'
+// Share the same store between both API routes in Node.js runtime
+declare global {
+  var sharedPaymentRecords: Record<string, boolean>;
+}
+
+// Use a global variable to persist data in development
+if (!global.sharedPaymentRecords) {
+  global.sharedPaymentRecords = {};
+}
+
+export const runtime = 'nodejs'
 
 export async function POST(request: NextRequest) {
     try {
@@ -14,7 +24,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Store the payment token as valid
-        paymentRecords[tokenId] = true
+        global.sharedPaymentRecords[tokenId] = true
 
         console.log('Payment recorded successfully for token:', tokenId)
 
