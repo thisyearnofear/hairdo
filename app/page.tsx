@@ -1,14 +1,14 @@
 import { Header } from "@/components/Header"
-import { HeroNew } from "@/components/HeroNew"
-import { HairstyleNew } from "@/components/HairstyleNew"
+import { Hero } from "@/components/Hero"
+import { Hairstyle } from "@/components/Hairstyle"
 import { Footer } from "@/components/Footer"
 
 export default function Home() {
   return (
     <div className="container mx-auto max-w-7xl px-4">
       <Header />
-      <HeroNew />
-      <HairstyleNew />
+      <Hero />
+      <Hairstyle />
       <Footer />
     </div>
   )

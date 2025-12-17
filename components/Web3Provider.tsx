@@ -4,6 +4,7 @@ import { WagmiProvider, createConfig, http, type Config } from "wagmi"
 import { lisk } from "@/lib/chains"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ConnectKitProvider, getDefaultConfig } from "connectkit"
+import { useState, useEffect } from "react"
 
 // Log environment variable for debugging
 console.log("WalletConnect Project ID:", process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ? "SET" : "NOT SET")
@@ -12,51 +13,64 @@ console.log("Full env check:", {
   hasPrefix: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID?.startsWith('3c6d'),
 })
 
-// Check if WalletConnect project ID is available
-const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || ""
+export function Web3Provider({ children }: { children: React.ReactNode }) {
+  const [config, setConfig] = useState<Config | null>(null)
 
-// Create config with proper error handling
-let config: Config
-try {
-  if (walletConnectProjectId) {
-    config = createConfig(
-      getDefaultConfig({
+  useEffect(() => {
+    // Only initialize on client side to avoid SSR issues with indexedDB
+    const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || ""
+
+    try {
+      if (walletConnectProjectId) {
+        const newConfig = createConfig(
+          getDefaultConfig({
+            chains: [lisk],
+            transports: {
+              [lisk.id]: http(),
+            },
+            walletConnectProjectId: walletConnectProjectId,
+            appName: "HAIRDO",
+            appDescription: "AI-powered hairstyle generator on LISK",
+            appUrl: typeof window !== 'undefined' ? window.location.origin : "https://hairdo.vercel.app",
+            appIcon: typeof window !== 'undefined' ? `${window.location.origin}/img/logo.svg` : "https://hairdo.vercel.app/img/logo.svg",
+          })
+        )
+        console.log("Created config with WalletConnect")
+        console.log("Config chains:", newConfig.chains)
+        setConfig(newConfig)
+      } else {
+        // Fallback config without WalletConnect if project ID is missing
+        const newConfig = createConfig({
+          chains: [lisk],
+          transports: {
+            [lisk.id]: http(),
+          },
+        })
+        console.log("Created fallback config without WalletConnect")
+        console.log("Config chains:", newConfig.chains)
+        setConfig(newConfig)
+      }
+    } catch (error) {
+      console.error("Error creating wagmi config:", error)
+      // Fallback to basic config
+      const newConfig = createConfig({
         chains: [lisk],
         transports: {
           [lisk.id]: http(),
         },
-        walletConnectProjectId: walletConnectProjectId,
-        appName: "HAIRDO",
-        appDescription: "AI-powered hairstyle generator on LISK",
-        appUrl: typeof window !== 'undefined' ? window.location.origin : "https://hairdo.vercel.app",
-        appIcon: typeof window !== 'undefined' ? `${window.location.origin}/img/logo.svg` : "https://hairdo.vercel.app/img/logo.svg",
       })
-    )
-    console.log("Created config with WalletConnect")
-  } else {
-    // Fallback config without WalletConnect if project ID is missing
-    config = createConfig({
-      chains: [lisk],
-      transports: {
-        [lisk.id]: http(),
-      },
-    })
-    console.log("Created fallback config without WalletConnect")
+      console.log("Fallback config created")
+      console.log("Config chains:", newConfig.chains)
+      setConfig(newConfig)
+    }
+  }, [])
+
+  const queryClient = new QueryClient()
+
+  if (!config) {
+    return <div>Loading Web3...</div>
   }
-} catch (error) {
-  console.error("Error creating wagmi config:", error)
-  // Fallback to basic config
-  config = createConfig({
-    chains: [lisk],
-    transports: {
-      [lisk.id]: http(),
-    },
-  })
-}
 
-const queryClient = new QueryClient()
-
-export function Web3Provider({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>

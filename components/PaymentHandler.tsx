@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
@@ -57,13 +57,40 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
   };
   
   // Handle successful transaction
-  if (isConfirmed && hash) {
-    console.log("Payment confirmed with hash:", hash);
-    // Generate a tokenId for the successful payment
-    const tokenId = `0x${Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
-    onPaymentSuccess(tokenId);
-    setIsLoading(false);
-  }
+  useEffect(() => {
+    if (isConfirmed && hash) {
+      console.log("Payment confirmed with hash:", hash);
+      // Generate a tokenId for the successful payment
+      const tokenId = `0x${Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
+      
+      // Record the payment in the backend
+      const recordPayment = async () => {
+        try {
+          const response = await fetch('/api/payment', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ tokenId })
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to record payment');
+          }
+          
+          console.log("Payment recorded in backend");
+          onPaymentSuccess(tokenId);
+        } catch (error) {
+          console.error("Failed to record payment:", error);
+          setError("Payment processed but failed to verify. Please contact support.");
+        }
+        
+        setIsLoading(false);
+      };
+      
+      recordPayment();
+    }
+  }, [isConfirmed, hash, onPaymentSuccess]);
   
   // Handle errors
   if (isError) {
