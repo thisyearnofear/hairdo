@@ -1,6 +1,6 @@
 "use client"
 
-import { WagmiProvider, createConfig, http } from "wagmi"
+import { WagmiProvider, createConfig, http, type Config } from "wagmi"
 import { lisk } from "@/lib/chains"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ConnectKitProvider, getDefaultConfig } from "connectkit"
@@ -16,7 +16,7 @@ console.log("Full env check:", {
 const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || ""
 
 // Create config with proper error handling
-let config
+let config: Config
 try {
   if (walletConnectProjectId) {
     config = createConfig(
@@ -60,14 +60,9 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <ConnectKitProvider 
+        <ConnectKitProvider
           mode="auto"
-          options={{
-            walletConnectProjectId: walletConnectProjectId,
-            appName: "HAIRDO",
-            appDescription: "AI-powered hairstyle generator on LISK",
-            appUrl: typeof window !== 'undefined' ? window.location.origin : "https://hairdo.vercel.app",
-          }}
+          options={{}}
         >
           {children}
         </ConnectKitProvider>
