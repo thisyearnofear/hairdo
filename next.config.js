@@ -8,7 +8,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'changehairstyleai.com',
+        hostname: 'hairdo.vercel.app',
       },
     ],
   },

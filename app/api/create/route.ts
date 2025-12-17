@@ -73,6 +73,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to create prediction' }, { status: 500 })
   }
 }
-
-// Export the paymentRecords for demo purposes (in production, you wouldn't expose this)
-export { paymentRecords }
