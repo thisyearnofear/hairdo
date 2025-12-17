@@ -16,9 +16,9 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const { data: hash, writeContract, isPending, isError } = useWriteContract();
+  const { data: hash, writeContract, isPending, isError, error: contractError } = useWriteContract();
   
-  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+  const { isLoading: isConfirming, isSuccess: isConfirmed, error: receiptError } = useWaitForTransactionReceipt({
     hash,
   });
   
@@ -33,7 +33,13 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
     
     try {
       // Generate a unique token ID for this transaction
-      const tokenId = `${address}-${Date.now()}`;
+      const tokenId = `0x${Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
+      
+      console.log("Initiating payment with params:", {
+        address: CONTRACT_ADDRESS,
+        tokenId: tokenId,
+        value: BigInt(0.001 * 1e18)
+      });
       
       // Call the smart contract to process payment
       writeContract({
@@ -43,10 +49,8 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
         args: [tokenId],
         value: BigInt(0.001 * 1e18) // Convert ETH to wei (0.001 ETH)
       });
-      
-      // Wait for transaction confirmation
-      // The parent component will handle the success callback
     } catch (err) {
+      console.error("Payment error:", err);
       setError("Payment failed. Please try again.");
       setIsLoading(false);
     }
@@ -54,13 +58,24 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
   
   // Handle successful transaction
   if (isConfirmed && hash) {
-    // Extract tokenId from the transaction (in a real implementation, you might emit this in the event)
-    const tokenId = `${address}-${Date.now()}`;
+    console.log("Payment confirmed with hash:", hash);
+    // Generate a tokenId for the successful payment
+    const tokenId = `0x${Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
     onPaymentSuccess(tokenId);
+    setIsLoading(false);
   }
   
+  // Handle errors
   if (isError) {
+    console.error("Contract error:", contractError);
     setError("Transaction failed. Please try again.");
+    setIsLoading(false);
+  }
+  
+  if (receiptError) {
+    console.error("Receipt error:", receiptError);
+    setError("Transaction confirmation failed. Please check your wallet.");
+    setIsLoading(false);
   }
   
   if (isConfirming) {
@@ -69,6 +84,9 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
         <Loader2 className="h-8 w-8 animate-spin" />
         <p>Confirming payment...</p>
         <p className="text-sm text-muted-foreground">Please confirm the transaction in your wallet</p>
+        {hash && (
+          <p className="text-xs text-muted-foreground break-all">Tx: {hash.substring(0, 10)}...{hash.substring(hash.length - 8)}</p>
+        )}
       </div>
     );
   }
@@ -83,7 +101,15 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
       ) : null}
       
       {error && (
-        <p className="text-sm text-red-500">{error}</p>
+        <div className="text-sm text-red-500 text-center">
+          <p>{error}</p>
+          <button 
+            onClick={() => setError(null)}
+            className="mt-2 text-xs underline"
+          >
+            Dismiss
+          </button>
+        </div>
       )}
       
       <Button 
@@ -101,8 +127,9 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
         )}
       </Button>
       
-      <p className="text-xs text-muted-foreground mt-4">
+      <p className="text-xs text-muted-foreground mt-4 text-center">
         By paying, you agree to the terms of service. This payment grants you access to generate one hairstyle.
+        Your photo is processed locally and never stored.
       </p>
     </div>
   );

@@ -14,8 +14,8 @@ const config = createConfig(
     walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "",
     appName: "HAIRDO",
     appDescription: "AI-powered hairstyle generator on LISK",
-    appUrl: "https://hairdo.lisk.com",
-    appIcon: "https://hairdo.lisk.com/img/logo.svg",
+    appUrl: typeof window !== 'undefined' ? window.location.origin : "https://hairdo.vercel.app",
+    appIcon: typeof window !== 'undefined' ? `${window.location.origin}/img/logo.svg` : "https://hairdo.vercel.app/img/logo.svg",
   })
 )
 

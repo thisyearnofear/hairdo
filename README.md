@@ -37,6 +37,8 @@ REPLICATE_API_TOKEN=your_token_here
 NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id_here
 ```
 
+**Important**: Make sure to set your `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` in the environment variables. Without this, wallet connections will fail.
+
 ### Run locally
 
 ```bash
@@ -75,6 +77,16 @@ HAIRDO now integrates with the Lisk blockchain for a pay-per-use model:
 - **Verified on Sourcify**: [View on Sourcify](https://repo.sourcify.dev/1135/0x7Cc87B3717973D2fF477515C790859180F5139f0/)
 
 See `contracts/README.md` for deployment instructions and contract details.
+
+## Troubleshooting Wallet Issues
+
+If you're experiencing wallet connection issues:
+
+1. Make sure your `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` is set in `.env.local`
+2. Clear your browser cache and localStorage
+3. Try using a different browser or incognito mode
+4. Check browser console for specific error messages
+5. Ensure you're using a Lisk-compatible wallet
 
 ## Privacy Policy
 
