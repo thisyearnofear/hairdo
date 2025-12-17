@@ -14,11 +14,13 @@ AI-powered hairstyle generator live on LISK.
 
 ## Features
 
-- Upload a photo and generate AI-modified versions with different hairstyles
+- Upload a photo or take a selfie with your device camera
+- Generate AI-modified versions with different hairstyles
 - Choose from various hairstyles, shades, and colors
 - Powered by the HairCLIP model on Replicate
 - Built with Next.js, Tailwind CSS, and Lisk blockchain
 - Pay-per-use system with Lisk blockchain integration
+- Privacy-focused - photos are processed locally and never stored
 
 ## Development
 
@@ -73,6 +75,14 @@ HAIRDO now integrates with the Lisk blockchain for a pay-per-use model:
 - **Verified on Sourcify**: [View on Sourcify](https://repo.sourcify.dev/1135/0x7Cc87B3717973D2fF477515C790859180F5139f0/)
 
 See `contracts/README.md` for deployment instructions and contract details.
+
+## Privacy Policy
+
+We prioritize your privacy:
+- Photos are processed locally in your browser
+- No images are stored on our servers
+- Images are only sent to Replicate's API for processing
+- All processing happens in real-time and is not retained
 
 ## Tech Stack
 

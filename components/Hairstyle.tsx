@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Upload, ShoppingBag, Lock } from "lucide-react"
+import { Upload, Camera, ShoppingBag, Lock, Info } from "lucide-react"
 import { Output } from "./Output"
 import { hairstyleItems, shadeItems, colorItems } from "@/lib/hair-config"
 import { useAccount } from "wagmi"
@@ -27,6 +27,7 @@ interface Prediction {
 export function Hairstyle() {
   const { isConnected } = useAccount();
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
   const [image, setImage] = useState<string | null>(null)
   const [hairstyle, setHairstyle] = useState('fade hairstyle')
   const [shade, setShade] = useState('regular')
@@ -36,6 +37,8 @@ export function Hairstyle() {
   const [list, setList] = useState<Prediction[]>([])
   const [showPayment, setShowPayment] = useState(false)
   const [paymentToken, setPaymentToken] = useState<string | null>(null)
+  const [showCamera, setShowCamera] = useState(false)
+  const [stream, setStream] = useState<MediaStream | null>(null)
 
   // Compute processing predictions
   const processing = useMemo(
@@ -92,6 +95,74 @@ export function Hairstyle() {
   const onClickUpload = () => {
     if (loadingFile || loadingSubmit) return
     fileInputRef.current?.click()
+  }
+
+  const startCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: 'user' } 
+      })
+      setStream(mediaStream)
+      setShowCamera(true)
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream
+      }
+    } catch (err) {
+      console.error('Error accessing camera:', err)
+      // Fallback to file upload if camera is not available
+      onClickUpload()
+    }
+  }
+
+  const capturePhoto = () => {
+    if (!videoRef.current) return
+    
+    const video = videoRef.current
+    const canvas = document.createElement('canvas')
+    canvas.width = video.videoWidth
+    canvas.height = video.videoHeight
+    const ctx = canvas.getContext('2d')
+    
+    if (ctx) {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+      canvas.toBlob(async (blob) => {
+        if (!blob) return
+        
+        // Resize the captured image
+        const { width: resizeWidth, height: resizeHeight } = calculateAspectRatioFit(
+          canvas.width,
+          canvas.height,
+          512,
+          512
+        )
+        
+        const bmp = await createImageBitmap(blob, {
+          resizeWidth,
+          resizeHeight
+        })
+        const resizedBlob = await bmpToBlob(bmp)
+        if (!resizedBlob) return
+        
+        const reader = new FileReader()
+        reader.onload = () => {
+          setImage(String(reader.result))
+          setShowCamera(false)
+          if (stream) {
+            stream.getTracks().forEach(track => track.stop())
+            setStream(null)
+          }
+        }
+        reader.readAsDataURL(resizedBlob)
+      }, 'image/jpeg', 0.8)
+    }
+  }
+
+  const closeCamera = () => {
+    setShowCamera(false)
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop())
+      setStream(null)
+    }
   }
 
   const onFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -231,23 +302,78 @@ export function Hairstyle() {
         </div>
       )}
 
+      {/* Camera Modal */}
+      {showCamera && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+          <div className="relative w-full max-w-md">
+            <button 
+              onClick={closeCamera}
+              className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 z-10"
+            >
+              ✕
+            </button>
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              className="w-full aspect-square object-cover rounded-lg"
+            />
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+              <button
+                onClick={capturePhoto}
+                className="w-16 h-16 rounded-full bg-white border-4 border-gray-300 flex items-center justify-center"
+              >
+                <div className="w-12 h-12 rounded-full bg-gray-800" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Upload area */}
-        <div
-          onClick={onClickUpload}
-          className="aspect-square bg-[#e4e4e4] rounded-2xl cursor-pointer flex items-center justify-center hover:bg-[#dddddd] transition-colors relative overflow-hidden"
-        >
+        <div className="aspect-square bg-[#e4e4e4] rounded-2xl relative overflow-hidden">
           {image ? (
             <div
-              className="absolute inset-0 bg-cover bg-center"
+              className="absolute inset-0 bg-cover bg-center cursor-pointer"
               style={{ backgroundImage: `url(${image})` }}
+              onClick={() => setImage(null)}
             />
           ) : loadingFile ? (
-            <div className="w-16 h-16 border-4 border-secondary border-t-transparent rounded-full animate-spin" />
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="w-16 h-16 border-4 border-secondary border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : showCamera ? (
+            <div className="w-full h-full flex items-center justify-center bg-black">
+              <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin" />
+            </div>
           ) : (
-            <div className="flex flex-col items-center">
-              <Upload className="w-12 h-12 mb-2" />
-              <p className="text-2xl">Upload photo</p>
+            <div className="w-full h-full flex flex-col items-center justify-center gap-4 p-4">
+              <div className="flex gap-4">
+                <button
+                  onClick={onClickUpload}
+                  className="flex flex-col items-center gap-2 p-4 rounded-lg hover:bg-[#dddddd] transition-colors"
+                >
+                  <Upload className="w-12 h-12" />
+                  <span className="text-lg">Upload Photo</span>
+                </button>
+                <button
+                  onClick={startCamera}
+                  className="flex flex-col items-center gap-2 p-4 rounded-lg hover:bg-[#dddddd] transition-colors"
+                >
+                  <Camera className="w-12 h-12" />
+                  <span className="text-lg">Take Photo</span>
+                </button>
+              </div>
+              <div className="relative group">
+                <Info className="w-5 h-5 text-gray-500 cursor-help" />
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-2 bg-black text-white text-xs rounded-lg">
+                  Photos are processed locally and never stored on our servers
+                </div>
+              </div>
+              <p className="text-sm text-gray-500 text-center">
+                Your privacy matters - photos are only used to generate your hairstyle and are not saved
+              </p>
             </div>
           )}
         </div>
