@@ -67,7 +67,12 @@ HAIRDO now integrates with the Lisk blockchain for a pay-per-use model:
 3. After payment confirmation, users can generate a hairstyle
 4. Each payment token can only be used once for security
 
-See `contracts/README.md` for deployment instructions.
+### Smart Contract Information
+
+- **Address**: [0x7Cc87B3717973D2fF477515C790859180F5139f0](https://blockscout.lisk.com/address/0x7Cc87B3717973D2fF477515C790859180F5139f0)
+- **Verified on Sourcify**: [View on Sourcify](https://repo.sourcify.dev/1135/0x7Cc87B3717973D2fF477515C790859180F5139f0/)
+
+See `contracts/README.md` for deployment instructions and contract details.
 
 ## Tech Stack
 

@@ -2,21 +2,28 @@
 
 This directory contains the smart contract for processing payments on the Lisk blockchain for the Hairdo service.
 
-## Contract Deployment
+## Contract Details
 
-1. Open [Remix IDE](https://remix.ethereum.org/)
-2. Create a new file named `HairdoPayment.sol`
-3. Copy the contents of `contracts/HairdoPayment.sol` into the new file
-4. Compile the contract using Solidity compiler version 0.8.0 or higher
-5. Deploy the contract to the Lisk network using the "Deploy & Run Transactions" tab
-6. After deployment, copy the contract address
-7. Update the `CONTRACT_ADDRESS` in `lib/contract-config.ts` with the deployed address
+- **Address**: [0x7Cc87B3717973D2fF477515C790859180F5139f0](https://blockscout.lisk.com/address/0x7Cc87B3717973D2fF477515C790859180F5139f0)
+- **Network**: Lisk (Chain ID: 1135)
+- **Solidity Version**: ^0.8.27
+- **Verified on Sourcify**: [View on Sourcify](https://repo.sourcify.dev/1135/0x7Cc87B3717973D2fF477515C790859180F5139f0/)
+
+## Contract Features
+
+- **Mutable serviceFee**: Owner can adjust the service fee using `setServiceFee()` function
+- **Pause mechanism**: Owner can pause/unpause the contract using `togglePause()`
+- **Safer withdrawal**: Uses `.call{}()` instead of `.transfer()` for withdrawals
+- **Events**: Emits events for fee changes, withdrawals, and pause toggles
+- **Security**: Each tokenId can only be used once
 
 ## Contract Functions
 
-- `payForService(bytes32 tokenId)`: Pay the service fee (0.001 ETH) to generate a hairstyle
+- `payForService(bytes32 tokenId)`: Pay the service fee to generate a hairstyle
 - `isTokenUsed(bytes32 tokenId)`: Check if a token has been used
 - `getUserBalance(address user)`: Get the total amount paid by a user
+- `setServiceFee(uint256 newFee)`: Owner-only function to update the service fee
+- `togglePause()`: Owner-only function to pause/unpause the contract
 - `withdraw()`: Owner-only function to withdraw funds from the contract
 
 ## Integration with Frontend
@@ -28,5 +35,6 @@ The frontend uses wagmi hooks to interact with the smart contract:
 ## Security Notes
 
 - Each tokenId can only be used once
-- Only the contract owner can withdraw funds
-- The service fee is hardcoded to 0.001 ETH (very cheap)
+- Only the contract owner can withdraw funds, update fees, or pause the contract
+- The default service fee is 0.001 ETH (very cheap)
+- The contract can be paused by the owner in case of emergencies
