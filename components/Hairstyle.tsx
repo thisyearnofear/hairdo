@@ -9,29 +9,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Upload, Camera, ShoppingBag, Lock, Info, AlertCircle, WifiOff } from "lucide-react"
+import { Upload, Camera, Lock, AlertCircle, WifiOff } from "lucide-react"
 import { Output } from "./Output"
 import { hairstyleItems, shadeItems, colorItems } from "@/lib/hair-config"
 import { useAccount, useSwitchChain, useConfig } from "wagmi"
 import { PaymentHandler } from "./PaymentHandler"
 import { lisk } from "@/lib/chains"
+import {
+  processImageFile,
+  validateImage,
+  ImageValidationError,
+  calculateAspectRatioFit,
+  bmpToBlob
+} from "@/lib/image"
+import { usePredictionHistory, StoredPrediction } from "@/lib/hooks/usePredictionHistory"
 
-interface Prediction {
-  id: string
-  status: string
-  output?: string
-  hairstyle: string
-  shade: string
-  color: string
+interface Prediction extends StoredPrediction {
+  // Extends stored prediction with additional runtime properties
 }
 
 export function Hairstyle() {
   const { isConnected, address, isConnecting, isReconnecting, chainId } = useAccount();
   const { switchChain } = useSwitchChain();
   const { chains } = useConfig();
+  const { history, addPrediction, updatePrediction } = usePredictionHistory();
+  
   const fileInputRef = useRef<HTMLInputElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [image, setImage] = useState<string | null>(null)
+  const [sourceImage, setSourceImage] = useState<string | null>(null)
   const [hairstyle, setHairstyle] = useState('fade hairstyle')
   const [shade, setShade] = useState('regular')
   const [color, setColor] = useState('blonde')
@@ -97,48 +103,7 @@ export function Hairstyle() {
     return () => clearInterval(interval)
   }, [processing])
 
-  // Image processing helpers
-  const getFileDimensions = (file: File): Promise<{ width: number; height: number }> => {
-    return new Promise((resolve) => {
-      const url = URL.createObjectURL(file)
-      const img = new Image()
-      img.onload = () => {
-        const { width, height } = img
-        URL.revokeObjectURL(img.src)
-        resolve({ width, height })
-      }
-      img.src = url
-    })
-  }
 
-  const calculateAspectRatioFit = (
-    srcWidth: number,
-    srcHeight: number,
-    maxWidth: number,
-    maxHeight: number
-  ) => {
-    const ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight)
-    return { width: srcWidth * ratio, height: srcHeight * ratio }
-  }
-
-  const bmpToBlob = async (bmp: ImageBitmap): Promise<Blob | null> => {
-    const canvas = document.createElement('canvas')
-    canvas.width = bmp.width
-    canvas.height = bmp.height
-    
-    // Use 2d context to ensure RGB format (no alpha channel)
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return null
-    
-    // Draw with white background to remove alpha channel
-    ctx.fillStyle = '#FFFFFF'
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-    ctx.drawImage(bmp, 0, 0)
-    
-    // Export as JPEG (no alpha) instead of PNG (has alpha)
-    const blob = await new Promise<Blob | null>((res) => canvas.toBlob(res, 'image/jpeg', 0.95))
-    return blob
-  }
 
   const onClickUpload = () => {
     if (loadingFile || loadingSubmit) return
@@ -163,47 +128,73 @@ export function Hairstyle() {
     }
   }
 
-  const capturePhoto = () => {
+  const capturePhoto = async () => {
     if (!videoRef.current) return
     
-    const video = videoRef.current
-    const canvas = document.createElement('canvas')
-    canvas.width = video.videoWidth
-    canvas.height = video.videoHeight
-    const ctx = canvas.getContext('2d')
-    
-    if (ctx) {
+    try {
+      const video = videoRef.current
+      const canvas = document.createElement('canvas')
+      canvas.width = video.videoWidth
+      canvas.height = video.videoHeight
+      const ctx = canvas.getContext('2d')
+      
+      if (!ctx) {
+        setError('Failed to capture photo. Please try again.')
+        return
+      }
+      
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-      canvas.toBlob(async (blob) => {
-        if (!blob) return
-        
-        // Resize the captured image
-        const { width: resizeWidth, height: resizeHeight } = calculateAspectRatioFit(
-          canvas.width,
-          canvas.height,
-          512,
-          512
-        )
-        
-        const bmp = await createImageBitmap(blob, {
-          resizeWidth,
-          resizeHeight
-        })
-        const resizedBlob = await bmpToBlob(bmp)
-        if (!resizedBlob) return
-        
-        const reader = new FileReader()
-        reader.onload = () => {
-          setImage(String(reader.result))
-          setShowCamera(false)
-          if (stream) {
-            stream.getTracks().forEach(track => track.stop())
-            setStream(null)
-          }
-          setError(null)
+      
+      const blob = await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob(resolve, 'image/jpeg', 0.95)
+      })
+      
+      if (!blob) {
+        setError('Failed to process captured photo. Please try again.')
+        return
+      }
+
+      // Validate and process the captured image
+      const validationError = await validateImage(blob as any)
+      if (validationError) {
+        setError(validationError.solution)
+        return
+      }
+
+      // Resize and convert
+      const { width: resizeWidth, height: resizeHeight } = calculateAspectRatioFit(
+        canvas.width,
+        canvas.height,
+        512,
+        512
+      )
+      
+      const bmp = await createImageBitmap(blob, {
+        resizeWidth,
+        resizeHeight
+      })
+      const resizedBlob = await bmpToBlob(bmp)
+      if (!resizedBlob) {
+        setError('Failed to process photo. Please try again.')
+        return
+      }
+      
+      const reader = new FileReader()
+      reader.onload = () => {
+        setImage(String(reader.result))
+        setSourceImage(String(reader.result))
+        setShowCamera(false)
+        if (stream) {
+          stream.getTracks().forEach(track => track.stop())
+          setStream(null)
         }
-        reader.readAsDataURL(resizedBlob)
-      }, 'image/jpeg', 0.8)
+        setError(null)
+      }
+      reader.readAsDataURL(resizedBlob)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to capture photo'
+      setError(message)
+      console.error(err)
     }
   }
 
@@ -217,6 +208,7 @@ export function Hairstyle() {
 
   const onFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setImage(null)
+    setSourceImage(null)
     setError(null)
     setLoadingFile(true)
     
@@ -224,31 +216,22 @@ export function Hairstyle() {
       const file = e.target.files?.[0]
       if (!file) return
 
-      // Get uploaded file dimensions
-      const { width, height } = await getFileDimensions(file)
-
-      // Resize image (max width/height 512/512)
-      const { width: resizeWidth, height: resizeHeight } = calculateAspectRatioFit(
-        width,
-        height,
-        512,
-        512
-      )
-      const bmp = await createImageBitmap(file, {
-        resizeWidth,
-        resizeHeight
-      })
-      const blob = await bmpToBlob(bmp)
-      if (!blob) throw new Error('Failed to create blob.')
-
-      const reader = new FileReader()
-      reader.onload = () => {
-        setImage(String(reader.result))
+      // Validate image before processing
+      const validationError = await validateImage(file)
+      if (validationError) {
+        setError(validationError.message)
+        return
       }
-      reader.readAsDataURL(blob)
-    } catch (e) {
-      console.error(e)
-      setError('Failed to process image. Please try another photo.')
+
+      // Process image: resize, convert, validate
+      const processedImage = await processImageFile(file)
+      setImage(processedImage)
+      setSourceImage(processedImage) // Store original for comparison
+    } catch (err) {
+      // Handle validation errors and processing errors
+      const message = err instanceof Error ? err.message : 'Failed to process image. Please try another photo.'
+      setError(message)
+      console.error(err)
     } finally {
       setLoadingFile(false)
     }
@@ -290,13 +273,19 @@ export function Hairstyle() {
       
       const data: Prediction = await response.json()
 
-      // Add response to beginning of list
-      setList(prev => [{
+      // Add response to beginning of list with source image for comparison
+      const newPrediction: Prediction = {
         ...data,
         hairstyle,
         shade,
-        color
-      }, ...prev])
+        color,
+        sourceImage: image || undefined,
+        timestamp: Date.now()
+      }
+      setList(prev => [newPrediction, ...prev])
+      
+      // Store in history
+      addPrediction(newPrediction)
       
       // Clear the token since backend has consumed it (one payment = one generation)
       setPaymentToken(null)

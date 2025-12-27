@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
+import { Download } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { generateImageFilename, downloadImage } from "@/lib/image"
 
 interface OutputProps {
   output: {
@@ -11,40 +14,141 @@ interface OutputProps {
     hairstyle?: string
     shade?: string
     color?: string
+    sourceImage?: string
   }
 }
 
 export function Output({ output }: OutputProps) {
   const isSuccess = output.status === 'succeeded'
   const isFail = output.status === 'failed'
+  const [sliderPosition, setSliderPosition] = useState(50)
+  const [isDownloading, setIsDownloading] = useState(false)
+  const [showComparison, setShowComparison] = useState(false)
+
+  const handleDownload = async () => {
+    if (!output.output) return
+    
+    setIsDownloading(true)
+    try {
+      const filename = generateImageFilename(
+        output.hairstyle || 'hairstyle',
+        output.color || 'color',
+        output.shade || 'shade'
+      )
+      await downloadImage(output.output, filename)
+    } catch (error) {
+      console.error('Download failed:', error)
+    } finally {
+      setIsDownloading(false)
+    }
+  }
 
   return (
     <Card className="rounded-2xl shadow-[0_10px_35px_-5px_rgba(0,0,0,0.06)]">
       <CardContent className="p-4 text-center">
         {isSuccess && (
           <>
-            <h3 className="text-2xl font-normal capitalize">
+            <h3 className="text-2xl font-normal capitalize mb-4">
               {output.hairstyle}, {output.shade} {output.color}
             </h3>
+            
             {output.output && (
-              <div className="mt-4 relative w-full aspect-square">
-                <Image 
-                  src={output.output} 
-                  alt="Generated hairstyle" 
-                  fill
-                  className="object-contain"
-                />
-              </div>
+              <>
+                {/* Toggle button for comparison view */}
+                {output.sourceImage && (
+                  <button
+                    onClick={() => setShowComparison(!showComparison)}
+                    className="text-xs tracking-widest uppercase opacity-60 hover:opacity-100 transition-opacity mb-4"
+                  >
+                    {showComparison ? '← RESULT_ONLY' : 'COMPARISON →'}
+                  </button>
+                )}
+
+                {/* Before/After Comparison Slider */}
+                {showComparison && output.sourceImage ? (
+                  <div className="mt-4 relative w-full aspect-square overflow-hidden rounded-lg group cursor-col-resize">
+                    {/* Before image */}
+                    <div className="absolute inset-0">
+                      <Image
+                        src={output.sourceImage}
+                        alt="Original"
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+
+                    {/* After image with slider mask */}
+                    <div
+                      className="absolute inset-0"
+                      style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
+                    >
+                      <Image
+                        src={output.output}
+                        alt="Generated"
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+
+                    {/* Slider handle */}
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={sliderPosition}
+                      onChange={(e) => setSliderPosition(Number(e.target.value))}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-col-resize z-10"
+                      style={{ pointerEvents: 'auto' }}
+                    />
+
+                    {/* Visual slider line */}
+                    <div
+                      className="absolute top-0 bottom-0 w-1 bg-white/60 pointer-events-none transition-all duration-75"
+                      style={{ left: `${sliderPosition}%` }}
+                    />
+
+                    {/* Labels */}
+                    <div className="absolute top-4 left-4 text-xs tracking-widest uppercase bg-black/50 px-2 py-1 rounded">
+                      BEFORE
+                    </div>
+                    <div className="absolute top-4 right-4 text-xs tracking-widest uppercase bg-black/50 px-2 py-1 rounded">
+                      AFTER
+                    </div>
+                  </div>
+                ) : (
+                  /* Result only view */
+                  <div className="mt-4 relative w-full aspect-square">
+                    <Image
+                      src={output.output}
+                      alt="Generated hairstyle"
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                )}
+
+                {/* Download button */}
+                <Button
+                  onClick={handleDownload}
+                  disabled={isDownloading}
+                  variant="secondary"
+                  size="sm"
+                  className="w-full mt-4 text-xs tracking-widest uppercase"
+                >
+                  <Download className="w-3 h-3 mr-2" />
+                  {isDownloading ? 'DOWNLOADING...' : 'DOWNLOAD_RESULT'}
+                </Button>
+              </>
             )}
           </>
         )}
-        
+
         {isFail && (
           <h3 className="text-2xl font-normal">
             Something failed. Try again.
           </h3>
         )}
-        
+
         {!isSuccess && !isFail && (
           <LoadingAnimation output={output} />
         )}
