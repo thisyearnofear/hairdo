@@ -40,11 +40,24 @@ The backend (`/api/create`) verifies payments on-chain using viem:
 1. User calls `payForService(tokenId)` on the contract (marks token as used on-chain)
 2. Frontend passes the `tokenId` to `/api/create`
 3. The API calls `isTokenUsed(tokenId)` on the contract to verify the payment is real
-4. An in-memory set provides best-effort replay protection (one generation per token)
+4. Upstash Redis provides persistent replay protection (one generation per token)
 5. If verification passes, the Replicate API is called to generate the hairstyle
 
 The previous in-memory-only verification was replaced because serverless cold starts
 could lose payment records, allowing users to bypass payment.
+
+### Environment Variables for Replay Protection
+
+Set these in your deployment (Vercel Project Settings → Environment Variables)
+to enable persistent replay protection via Upstash Redis:
+
+```
+KV_REST_API_URL=https://your-upstash-redis-url.upstash.io
+KV_REST_API_TOKEN=your-upstash-token
+```
+
+If these are not set, the app falls back to in-memory replay protection
+(not suitable for production — cold starts will reset the consumed token set).
 
 ## Security Notes
 

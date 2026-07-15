@@ -40,15 +40,20 @@ For detailed instructions, see our [Usage Guide](docs/USAGE_GUIDE.md).
 1. Get a [Replicate API token](https://replicate.com/account)
 2. Get a [WalletConnect project ID](https://cloud.walletconnect.com)
 3. Deploy the smart contract (see `contracts/README.md`)
+4. (Production) Create an [Upstash Redis](https://upstash.com) instance for persistent replay protection
 
 Add to `.env.local`:
 
 ```bash
 REPLICATE_API_TOKEN=your_token_here
 NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id_here
+
+# Optional — persistent replay protection (recommended for production)
+KV_REST_API_URL=your_upstash_redis_url
+KV_REST_API_TOKEN=your_upstash_token
 ```
 
-**Important**: Make sure to set your `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` in the environment variables. Without this, wallet connections will fail.
+**Important**: Make sure to set your `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` in the environment variables. Without this, wallet connections will fail. Without the Upstash Redis env vars, replay protection falls back to in-memory (lost on cold starts).
 
 ### Run locally
 

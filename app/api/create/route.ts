@@ -1,19 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createPublicClient, http, parseAbiItem } from 'viem'
+import { Redis } from '@upstash/redis'
 import { lisk } from '@/lib/chains'
 
 export const runtime = 'nodejs'
 
 const CONTRACT_ADDRESS = '0x055cA743f0fFB9258ea7f8484794C293f32f2d4C'
 
-// Best-effort replay protection: tracks tokens that have already been
-// consumed for a generation. This is in-memory and will reset on cold
-// starts — the primary verification is the on-chain isTokenUsed check.
-// For production, replace with Vercel KV or a database.
+// Upstash Redis client for persistent replay protection.
+// Falls back to in-memory if env vars are not set (e.g. local dev).
+let redis: Redis | null = null
+function getRedis() {
+  if (!redis && process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+    redis = new Redis({
+      url: process.env.KV_REST_API_URL,
+      token: process.env.KV_REST_API_TOKEN,
+    })
+  }
+  return redis
+}
+
+// In-memory fallback for local development
 declare global {
   var consumedTokens: Set<string>
 }
-
 if (!global.consumedTokens) {
   global.consumedTokens = new Set()
 }
@@ -33,6 +43,11 @@ function getClient() {
 
 // Verify on-chain that the token was used in a real payment transaction
 async function verifyPaymentOnChain(tokenId: string): Promise<boolean> {
+  // tokenId must be a 0x-prefixed 32-byte hex string (66 chars total)
+  if (!tokenId || !tokenId.startsWith('0x') || tokenId.length !== 66) {
+    return false
+  }
+
   try {
     const isUsed = await getClient().readContract({
       address: CONTRACT_ADDRESS,
@@ -47,6 +62,27 @@ async function verifyPaymentOnChain(tokenId: string): Promise<boolean> {
   }
 }
 
+// Check if a token has already been consumed (replay protection)
+async function isTokenConsumed(tokenId: string): Promise<boolean> {
+  const r = getRedis()
+  if (r) {
+    const result = await r.get(`consumed:${tokenId}`)
+    return result !== null
+  }
+  return global.consumedTokens.has(tokenId)
+}
+
+// Mark a token as consumed (replay protection)
+async function markTokenConsumed(tokenId: string): Promise<void> {
+  const r = getRedis()
+  if (r) {
+    // TTL of 30 days — tokens are one-time use, no need to keep forever
+    await r.set(`consumed:${tokenId}`, '1', { ex: 30 * 24 * 60 * 60 })
+  } else {
+    global.consumedTokens.add(tokenId)
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { image, hairstyle, shade, color, paymentToken } = await request.json()
@@ -56,8 +92,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Payment required' }, { status: 402 })
     }
 
-    // Check replay protection (best-effort, in-memory)
-    if (global.consumedTokens.has(paymentToken)) {
+    // Check replay protection
+    if (await isTokenConsumed(paymentToken)) {
       return NextResponse.json({ error: 'Payment token already used' }, { status: 409 })
     }
 
@@ -68,7 +104,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Mark token as consumed for replay protection
-    global.consumedTokens.add(paymentToken)
+    await markTokenConsumed(paymentToken)
 
     // Using public model
     const endpoint = 'https://api.replicate.com/v1/predictions'

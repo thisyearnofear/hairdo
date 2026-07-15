@@ -3,7 +3,7 @@
  * Single source of truth for local persistence
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 export function useLocalStorage<T>(
   key: string,
@@ -12,19 +12,17 @@ export function useLocalStorage<T>(
     maxItems?: number;
   }
 ): [T, (value: T | ((val: T) => T)) => void] {
-  const [storedValue, setStoredValue] = useState<T>(initialValue);
-
-  // Hydrate from localStorage on mount
-  useEffect(() => {
+  // Lazy init from localStorage (avoids set-state-in-effect)
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    if (typeof window === 'undefined') return initialValue
     try {
-      const item = typeof window !== 'undefined' ? window.localStorage.getItem(key) : null;
-      if (item) {
-        setStoredValue(JSON.parse(item));
-      }
+      const item = window.localStorage.getItem(key)
+      return item ? JSON.parse(item) : initialValue
     } catch (error) {
-      console.error(`Failed to read from localStorage[${key}]:`, error);
+      console.error(`Failed to read from localStorage[${key}]:`, error)
+      return initialValue
     }
-  }, [key]);
+  });
 
   // Update localStorage when value changes
   const setValue = useCallback(

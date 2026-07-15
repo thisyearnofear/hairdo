@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect, useMemo } from "react"
+import { useState, useRef, useEffect, useMemo, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { 
   Select,
@@ -31,12 +31,11 @@ export function Hairstyle() {
   const { isConnected, address, isConnecting, isReconnecting, chainId } = useConnection();
   const { mutate: switchChain } = useSwitchChain();
   const chains = useChains();
-  const { history, addPrediction, updatePrediction } = usePredictionHistory();
-  
+  const { addPrediction } = usePredictionHistory();
+
   const fileInputRef = useRef<HTMLInputElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [image, setImage] = useState<string | null>(null)
-  const [sourceImage, setSourceImage] = useState<string | null>(null)
   const [hairstyle, setHairstyle] = useState('fade hairstyle')
   const [shade, setShade] = useState('regular')
   const [color, setColor] = useState('blonde')
@@ -50,6 +49,9 @@ export function Hairstyle() {
   const [error, setError] = useState<string | null>(null)
   const [web3Error, setWeb3Error] = useState<string | null>(null)
 
+  // Derive web3 error from env (no setState in effect needed)
+  const walletConnectConfigured = !!process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+
   // Debug web3 state
   useEffect(() => {
     console.log("Web3 State:", {
@@ -60,11 +62,6 @@ export function Hairstyle() {
       chainId,
       address: address ? `${address.substring(0, 6)}...${address.substring(address.length - 4)}` : null
     });
-    
-    // Check for web3 errors
-    if (!process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID) {
-      setWeb3Error("WalletConnect not configured. Some wallet features may not work.");
-    }
   }, [isConnected, isConnecting, isReconnecting, chains, chainId, address]);
 
   // Automatic network switching to Lisk
@@ -91,6 +88,26 @@ export function Hairstyle() {
     [list]
   )
 
+  // Read prediction status from API
+  const readPrediction = useCallback(async (id: string) => {
+    try {
+      const data: Prediction = await fetch('/api/read', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id })
+      }).then(res => res.json())
+
+      // Patch response back to list
+      setList(prev => prev.map(item =>
+        item.id === id ? { ...item, ...data } : item
+      ))
+    } catch (e) {
+      console.error(e)
+    }
+  }, [])
+
   // Poll processing predictions
   useEffect(() => {
     if (processing.length === 0) return
@@ -100,7 +117,7 @@ export function Hairstyle() {
     }, 2000)
 
     return () => clearInterval(interval)
-  }, [processing])
+  }, [processing, readPrediction])
 
 
 
@@ -154,7 +171,7 @@ export function Hairstyle() {
       }
 
       // Validate and process the captured image
-      const validationError = await validateImage(blob as any)
+      const validationError = await validateImage(blob as File)
       if (validationError) {
         setError(validationError.solution)
         return
@@ -181,7 +198,6 @@ export function Hairstyle() {
       const reader = new FileReader()
       reader.onload = () => {
         setImage(String(reader.result))
-        setSourceImage(String(reader.result))
         setShowCamera(false)
         if (stream) {
           stream.getTracks().forEach(track => track.stop())
@@ -207,7 +223,6 @@ export function Hairstyle() {
 
   const onFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setImage(null)
-    setSourceImage(null)
     setError(null)
     setLoadingFile(true)
     
@@ -225,7 +240,6 @@ export function Hairstyle() {
       // Process image: resize, convert, validate
       const processedImage = await processImageFile(file)
       setImage(processedImage)
-      setSourceImage(processedImage) // Store original for comparison
     } catch (err) {
       // Handle validation errors and processing errors
       const message = err instanceof Error ? err.message : 'Failed to process image. Please try another photo.'
@@ -345,25 +359,6 @@ export function Hairstyle() {
 
     // Use existing payment token
     await startPredictionWithToken(paymentToken)
-  }
-
-  const readPrediction = async (id: string) => {
-    try {
-      const data: Prediction = await fetch('/api/read', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id })
-      }).then(res => res.json())
-
-      // Patch response back to list
-      setList(prev => prev.map(item => 
-        item.id === id ? { ...item, ...data } : item
-      ))
-    } catch (e) {
-      console.error(e)
-    }
   }
 
   // Debug effect to log state changes
@@ -610,6 +605,13 @@ export function Hairstyle() {
       </div>
 
       {/* Error displays */}
+      {!walletConnectConfigured && (
+        <div className="flex items-center gap-2 text-sm text-yellow-600 mt-2 p-2 bg-yellow-50 rounded">
+          <WifiOff className="w-4 h-4" />
+          <span>WalletConnect not configured. Some wallet features may not work.</span>
+        </div>
+      )}
+
       {web3Error && (
         <div className="flex items-center gap-2 text-sm text-yellow-600 mt-2 p-2 bg-yellow-50 rounded">
           <WifiOff className="w-4 h-4" />

@@ -208,7 +208,7 @@ function LoadingAnimation({ output }: { output: OutputProps['output'] }) {
       setColorIndex((prev) => (prev + 1) % colors.length)
     }, 2000)
     return () => clearInterval(interval)
-  }, [])
+  }, [colors.length])
   
   const currentColor = colors[colorIndex]
   
@@ -234,7 +234,7 @@ function LoadingAnimation({ output }: { output: OutputProps['output'] }) {
           
           {/* Inner counter-spinning ring */}
           <div 
-            className={`absolute inset-6 border-3 ${currentColor.ring} opacity-60 border-b-transparent rounded-full transition-all duration-500`}
+            className={`absolute inset-6 border-[3px] ${currentColor.ring} opacity-60 border-b-transparent rounded-full transition-all duration-500`}
             style={{ animation: 'spin 2s linear infinite reverse' }}
           />
           

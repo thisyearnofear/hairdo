@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useConnection, useWriteContract, useWaitForTransactionReceipt, useReadContract } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { WifiOff } from "lucide-react";
@@ -88,8 +88,6 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<'approval' | 'payment' | 'completed'>('payment');
-  const [approvalHash, setApprovalHash] = useState<string | null>(null);
-  const [paymentHash, setPaymentHash] = useState<string | null>(null);
   const [paymentInitiated, setPaymentInitiated] = useState(false);
 
   const { data: hash, writeContract, isPending, isError, error: contractError } = useWriteContract();
@@ -124,13 +122,10 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
   // Check if the contract is approved for the required amount
   const isApproved = allowance !== undefined && allowance !== null && typeof allowance === 'bigint' && allowance >= requiredAmount;
 
-  useEffect(() => {
-    if (hash && currentStep === 'approval') {
-      setApprovalHash(hash);
-    } else if (hash && currentStep === 'payment') {
-      setPaymentHash(hash);
-    }
-  }, [hash, currentStep]);
+  // Derive transaction hashes from the writeContract hash and current step
+  // (avoids set-state-in-effect anti-pattern)
+  const approvalHash = (hash && currentStep === 'approval') ? hash : null;
+  const paymentHash = (hash && currentStep === 'payment') ? hash : null;
 
   const { isLoading: isApprovalConfirming, isSuccess: isApprovalConfirmed, error: approvalReceiptError } = useWaitForTransactionReceipt({
     hash: approvalHash as `0x${string}`,
@@ -171,7 +166,7 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
     }
   };
 
-  const handlePayment = async () => {
+  const handlePayment = useCallback(async () => {
     if (!isConnected || !address) {
       setError("Please connect your wallet first");
       return;
@@ -219,7 +214,7 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
       setIsLoading(false);
       setPaymentInitiated(false); // Reset flag if payment failed
     }
-  };
+  }, [isConnected, address, hasEnoughTokens, isApproved, writeContract]);
 
   // Handle approval confirmation
   useEffect(() => {
@@ -238,7 +233,7 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
     }
   }, [isApprovalConfirmed, approvalHash, refetchAllowance, hasEnoughTokens, handlePayment, isPaymentConfirmed, paymentInitiated]);
 
-  // Handle payment confirmation
+  // Handle payment confirmation — react to external tx confirmation
   useEffect(() => {
     if (isPaymentConfirmed && paymentHash) {
       if (typeof window !== 'undefined') {
@@ -251,6 +246,7 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
           // prediction flow which will verify it against the contract.
           console.log("Payment confirmed on-chain, token:", storedTokenId);
           onPaymentSuccess(storedTokenId);
+          // eslint-disable-next-line react-hooks/set-state-in-effect
           setCurrentStep('completed');
           setPaymentInitiated(false);
           setIsLoading(false);
@@ -262,30 +258,22 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
     }
   }, [isPaymentConfirmed, paymentHash, onPaymentSuccess]);
 
-  // Handle errors
-  useEffect(() => {
-    if (isError) {
-      console.error("Contract error:", contractError);
-      setError("Transaction failed. Please try again.");
-      setIsLoading(false);
-    }
-  }, [isError, contractError]);
+  // Derive error from hook error states (avoids set-state-in-effect)
+  const hookError = contractError || approvalReceiptError || paymentReceiptError
+  const derivedError = isError
+    ? "Transaction failed. Please try again."
+    : approvalReceiptError
+      ? "Approval confirmation failed. Please check your wallet."
+      : paymentReceiptError
+        ? "Payment confirmation failed. Please check your wallet."
+        : null
+
+  // Merge derived hook errors with user-action errors
+  const displayError = derivedError || error
 
   useEffect(() => {
-    if (approvalReceiptError) {
-      console.error("Approval receipt error:", approvalReceiptError);
-      setError("Approval confirmation failed. Please check your wallet.");
-      setIsLoading(false);
-    }
-  }, [approvalReceiptError]);
-
-  useEffect(() => {
-    if (paymentReceiptError) {
-      console.error("Payment receipt error:", paymentReceiptError);
-      setError("Payment confirmation failed. Please check your wallet.");
-      setIsLoading(false);
-    }
-  }, [paymentReceiptError]);
+    if (hookError) console.error("Hook error:", hookError)
+  }, [hookError])
 
   // Calculate display amounts
   const displayBalance = balance !== undefined && balance !== null && typeof balance === 'bigint' ? Number(balance) / 1e18 : 0;
@@ -357,9 +345,9 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
         </div>
       ) : null}
 
-      {error && (
+      {displayError && (
         <div className="bg-red-50/10 border border-red-500/20 p-3 rounded text-center">
-          <p className="text-xs text-red-400 tracking-wide uppercase mb-2">{error}</p>
+          <p className="text-xs text-red-400 tracking-wide uppercase mb-2">{displayError}</p>
           <button
             onClick={() => setError(null)}
             className="text-[10px] tracking-widest uppercase text-red-300 hover:text-red-200 underline"
