@@ -9,8 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Upload, Camera, AlertCircle, Sparkles, Zap } from "lucide-react"
+import { Upload, Camera, AlertCircle, Sparkles, Zap, Link2 } from "lucide-react"
 import { Output } from "./Output"
+import { AttestationHandler, type AttestationResult } from "./AttestationHandler"
+import { useConnection } from "wagmi"
+import { lisk } from "@/lib/chains"
 import {
   processImageFile,
   validateImage,
@@ -140,6 +143,12 @@ export function StyleAdvisor() {
 
   // Onchain premium (easter egg)
   const [showOnchainHint, setShowOnchainHint] = useState(false)
+
+  // Attestation modal
+  const { isConnected, chainId } = useConnection()
+  const [showAttestation, setShowAttestation] = useState(false)
+  const [attestingStyle, setAttestingStyle] = useState<Recommendation | null>(null)
+  const [attestationResult, setAttestationResult] = useState<AttestationResult | null>(null)
 
   // Compute processing predictions
   const processing = useMemo(
@@ -392,6 +401,18 @@ export function StyleAdvisor() {
     } finally {
       setLoadingSubmit(false)
     }
+  }
+
+  // --- Attestation ---
+
+  const openAttestation = (rec: Recommendation) => {
+    setAttestingStyle(rec)
+    setShowAttestation(true)
+    setAttestationResult(null)
+  }
+
+  const handleAttestationSuccess = (result: AttestationResult) => {
+    setAttestationResult(result)
   }
 
   // --- Render ---
@@ -791,23 +812,41 @@ export function StyleAdvisor() {
                 </div>
 
                 {/* Visualize button */}
-                <Button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    visualizeStyle(rec)
-                  }}
-                  disabled={!image || loadingSubmit}
-                  variant="secondary"
-                  size="sm"
-                  className="w-full mt-4 text-xs tracking-widest uppercase"
-                >
-                  <Zap className="w-3 h-3 mr-2" />
-                  {image
-                    ? loadingSubmit && selectedStyleId === rec.style.id
-                      ? "GENERATING..."
-                      : "VISUALIZE_ON_ME"
-                    : "UPLOAD_PHOTO_FIRST"}
-                </Button>
+                <div className="flex gap-2 mt-4">
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      visualizeStyle(rec)
+                    }}
+                    disabled={!image || loadingSubmit}
+                    variant="secondary"
+                    size="sm"
+                    className="flex-1 text-xs tracking-widest uppercase"
+                  >
+                    <Zap className="w-3 h-3 mr-2" />
+                    {image
+                      ? loadingSubmit && selectedStyleId === rec.style.id
+                        ? "GENERATING..."
+                        : "VISUALIZE"
+                      : "UPLOAD_FIRST"}
+                  </Button>
+
+                  {/* Onchain attestation — only visible when wallet connected */}
+                  {isConnected && chainId === lisk.id && (
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        openAttestation(rec)
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="text-xs tracking-widest uppercase border-yellow-500/30 text-yellow-400/80 hover:bg-yellow-500/10"
+                    >
+                      <Link2 className="w-3 h-3 mr-1" />
+                      ATTEST
+                    </Button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -853,14 +892,65 @@ export function StyleAdvisor() {
           )}
 
           {/* Onchain premium hint (easter egg) */}
-          {showOnchainHint && (
+          {showOnchainHint && !isConnected && (
             <div className="mt-8 text-center">
               <p className="text-[10px] tracking-widest uppercase opacity-30 hover:opacity-60 transition-opacity cursor-pointer">
-                ⚡ WANT_TO_ATTEST_YOUR_STYLE_ONCHAIN? // LISK_L2 //{" "}
+                {"⚡"} WANT_TO_ATTEST_YOUR_STYLE_ONCHAIN? {"//"} LISK_L2 {"//"}{" "}
                 <span className="underline">CONNECT_WALLET_IN_HEADER</span>
               </p>
             </div>
           )}
+
+          {/* Attestation success display */}
+          {attestationResult && (
+            <div className="mt-8 max-w-md mx-auto bg-green-500/5 border border-green-500/20 p-4 rounded text-center">
+              <p className="text-[10px] tracking-widest uppercase text-green-400 mb-2">
+                ATTESTATION_RECORDED
+              </p>
+              <p className="text-sm text-white/80 mb-2">
+                {attestationResult.styleName} attested onchain
+              </p>
+              <p className="text-[10px] text-white/40 tracking-wider break-all">
+                TOKEN: {attestationResult.tokenId.substring(0, 20)}...
+                {attestationResult.tokenId.substring(58)}
+              </p>
+              <a
+                href={`https://blockscout.lisk.com/address/${attestationResult.userAddress}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[10px] tracking-widest uppercase text-green-400/60 hover:text-green-400 underline mt-2 inline-block"
+              >
+                VIEW_ON_EXPLORER
+              </a>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Attestation Modal */}
+      {showAttestation && attestingStyle && (
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
+          <div className="bg-black/95 border border-white/10 p-6 w-full max-w-md rounded-lg max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-end items-center mb-4">
+              <button
+                onClick={() => {
+                  setShowAttestation(false)
+                  setAttestingStyle(null)
+                  setAttestationResult(null)
+                }}
+                className="text-white/60 hover:text-white/90 text-xl"
+              >
+                ✕
+              </button>
+            </div>
+            <AttestationHandler
+              onAttestationSuccess={handleAttestationSuccess}
+              amount="1"
+              styleId={attestingStyle.style.id}
+              styleName={attestingStyle.style.name}
+              photoHash={undefined}
+            />
+          </div>
         </div>
       )}
 

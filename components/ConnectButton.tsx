@@ -51,22 +51,28 @@ export function ConnectButton() {
 
   return (
     <>
-      <Button
-        variant="secondary"
-        size="sm"
-        onClick={() => setShowModal(true)}
-        disabled={isConnecting}
-        className="tracking-wider"
-      >
-        {isConnecting ? (
-          <>
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            Connecting...
-          </>
-        ) : (
-          "Connect Wallet"
-        )}
-      </Button>
+      <div className="flex flex-col items-center">
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => setShowModal(true)}
+          disabled={isConnecting}
+          className="tracking-wider"
+        >
+          {isConnecting ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Connecting...
+            </>
+          ) : (
+            "Connect Wallet"
+          )}
+        </Button>
+
+        <p className="text-[9px] tracking-widest uppercase opacity-30 mt-1 hidden md:block">
+          ONCHAIN_PREMIUM
+        </p>
+      </div>
 
       {showModal && (
         <div
