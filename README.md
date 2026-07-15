@@ -59,6 +59,15 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000)
 
+### Linting
+
+```bash
+npm run lint
+```
+
+A precommit hook (husky + lint-staged) automatically lints staged files and
+scans for secrets (API keys, private keys, tokens) before each commit.
+
 ### Deploy
 
 Deploy to Vercel:

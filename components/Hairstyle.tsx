@@ -18,7 +18,6 @@ import { lisk } from "@/lib/chains"
 import {
   processImageFile,
   validateImage,
-  ImageValidationError,
   calculateAspectRatioFit,
   bmpToBlob
 } from "@/lib/image"
@@ -404,7 +403,7 @@ export function Hairstyle() {
 
       {/* Payment Modal */}
       {showPayment && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
           <div className="bg-black/95 border border-white/10 p-6 w-full max-w-md rounded-lg">
             <div className="flex justify-end items-center mb-4">
               <button
@@ -424,11 +423,11 @@ export function Hairstyle() {
 
       {/* Camera Modal */}
       {showCamera && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
           <div className="relative w-full max-w-md">
             <button 
               onClick={closeCamera}
-              className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 z-10"
+              className="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 z-10"
             >
               ✕
             </button>
@@ -476,7 +475,7 @@ export function Hairstyle() {
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
                   style={{ backgroundImage: `url(${image})` }}
                 />
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-linear-to-t from-black/80 to-transparent">
                   <p className="text-[10px] tracking-wider uppercase opacity-70">IMAGE_LOADED</p>
                 </div>
               </>
@@ -592,7 +591,7 @@ export function Hairstyle() {
             className="w-full h-14 text-sm tracking-widest uppercase mt-4 relative overflow-hidden group"
           >
             <span className="relative z-10">EXECUTE_TRANSFORM</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+            <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
           </Button>
 
           {/* Status Indicator */}

@@ -1,0 +1,24 @@
+# Secret scanning — block commits that look like they contain secrets
+# Checks staged files for common secret patterns
+SECRETS_PATTERN='(
+  (sk-[a-zA-Z0-9]{20,})              # OpenAI API keys
+  | (gh[pousr]_[A-Za-z0-9]{36})      # GitHub tokens
+  | (AKIA[0-9A-Z]{16})               # AWS access keys
+  | (-----BEGIN (RSA |EC )?PRIVATE KEY-----)  # Private keys
+  | (REPLICATE_API_TOKEN=[^\s"\x27]+) # Replicate tokens in .env
+  | (NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=[0-9a-f]{32}) # WalletConnect IDs in .env
+)'
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx|js|jsx|mjs|json|env|env\.local)$' || true)
+
+if [ -n "$STAGED" ]; then
+  if echo "$STAGED" | xargs grep -rEn "$SECRETS_PATTERN" 2>/dev/null; then
+    echo ""
+    echo "ERROR: Potential secret detected in staged files."
+    echo "Remove the secret before committing. If this is a false positive, use 'git commit --no-verify'."
+    exit 1
+  fi
+fi
+
+# Lint staged files
+npx lint-staged

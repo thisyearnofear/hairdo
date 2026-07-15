@@ -34,9 +34,21 @@ The frontend uses wagmi hooks to interact with the smart contract:
 - `useWriteContract`: To initiate payment transactions
 - `useWaitForTransactionReceipt`: To wait for transaction confirmation
 
+## Payment Verification
+
+The backend (`/api/create`) verifies payments on-chain using viem:
+1. User calls `payForService(tokenId)` on the contract (marks token as used on-chain)
+2. Frontend passes the `tokenId` to `/api/create`
+3. The API calls `isTokenUsed(tokenId)` on the contract to verify the payment is real
+4. An in-memory set provides best-effort replay protection (one generation per token)
+5. If verification passes, the Replicate API is called to generate the hairstyle
+
+The previous in-memory-only verification was replaced because serverless cold starts
+could lose payment records, allowing users to bypass payment.
+
 ## Security Notes
 
-- Each tokenId can only be used once
+- Each tokenId can only be used once (enforced on-chain)
 - Only the contract owner can withdraw funds, update fees, or pause the contract
 - The default service fee is 0.001 ETH (very cheap)
 - The contract can be paused by the owner in case of emergencies

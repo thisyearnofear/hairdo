@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useConnection, useWriteContract, useWaitForTransactionReceipt, useReadContract } from "wagmi";
 import { Button } from "@/components/ui/button";
-import { Loader2, WifiOff, Coins } from "lucide-react";
+import { WifiOff } from "lucide-react";
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/lib/contract-config";
 
 interface PaymentHandlerProps {
@@ -241,44 +241,19 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
   // Handle payment confirmation
   useEffect(() => {
     if (isPaymentConfirmed && paymentHash) {
-      // Use the same tokenId that was sent to the smart contract
-      // We need to store this tokenId for later use
       if (typeof window !== 'undefined') {
-        // Get the tokenId from local storage or component state, since the original
-        // tokenId used in the transaction is not directly available here
-        // We'll need to refactor this to track the tokenId across the transaction lifecycle
         const storedTokenId = localStorage.getItem('pendingPaymentTokenId');
         if (storedTokenId) {
-          localStorage.removeItem('pendingPaymentTokenId'); // Clean up after use
+          localStorage.removeItem('pendingPaymentTokenId');
 
-          // Record the payment in the backend
-          const recordPayment = async () => {
-            try {
-              const response = await fetch('/api/payment', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ tokenId: storedTokenId })
-              });
-
-              if (!response.ok) {
-                throw new Error('Failed to record payment');
-              }
-
-              console.log("Payment recorded in backend");
-              onPaymentSuccess(storedTokenId);
-              setCurrentStep('completed');
-              setPaymentInitiated(false); // Reset flag for future payments
-            } catch (error) {
-              console.error("Failed to record payment:", error);
-              setError("Payment processed but failed to verify. Please contact support.");
-            }
-
-            setIsLoading(false);
-          };
-
-          recordPayment();
+          // Payment is verified on-chain by /api/create via isTokenUsed().
+          // No need to record it separately — just pass the token to the
+          // prediction flow which will verify it against the contract.
+          console.log("Payment confirmed on-chain, token:", storedTokenId);
+          onPaymentSuccess(storedTokenId);
+          setCurrentStep('completed');
+          setPaymentInitiated(false);
+          setIsLoading(false);
         } else {
           setError("Payment confirmation error: token ID not found");
           setIsLoading(false);
@@ -407,12 +382,12 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
               {isLoading || isPending ? (
                 <>
                   <span className="relative z-10">PROCESSING_APPROVAL</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                 </>
               ) : (
                 <>
                   <span className="relative z-10">APPROVE_CONTRACT_TO_SPEND_LSK</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                 </>
               )}
             </Button>
@@ -427,12 +402,12 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
               {isLoading || isPending ? (
                 <>
                   <span className="relative z-10">PROCESSING_TRANSACTION</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                 </>
               ) : (
                 <>
                   <span className="relative z-10">PAY_{amount}_LSK</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                 </>
               )}
             </Button>

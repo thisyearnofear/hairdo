@@ -241,7 +241,7 @@ function LoadingAnimation({ output }: { output: OutputProps['output'] }) {
           {/* Center pulsing glow */}
           <div className="absolute inset-0 flex items-center justify-center">
             <div className={`w-8 h-8 ${currentColor.glow} rounded-full animate-ping transition-all duration-500`} />
-            <div className={`absolute w-8 h-8 ${currentColor.glow} rounded-full blur-sm transition-all duration-500 ${currentColor.shadow}`} />
+            <div className={`absolute w-8 h-8 ${currentColor.glow} rounded-full blur-xs transition-all duration-500 ${currentColor.shadow}`} />
           </div>
           
           {/* Orbiting dots */}
@@ -254,7 +254,7 @@ function LoadingAnimation({ output }: { output: OutputProps['output'] }) {
         </div>
         
         {/* Animated title */}
-        <h3 className="text-3xl font-bold mb-6 animate-pulse bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
+        <h3 className="text-3xl font-bold mb-6 animate-pulse bg-linear-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
           {output.status === 'starting' ? '🎬 Getting Ready...' : '✨ Creating Magic...'}
         </h3>
         
@@ -275,7 +275,7 @@ function LoadingAnimation({ output }: { output: OutputProps['output'] }) {
               className={`absolute inset-y-0 left-0 ${currentColor.glow} rounded-full transition-all duration-1000 animate-[shimmer_2s_ease-in-out_infinite]`}
               style={{ width: '45%' }}
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[slide_2s_ease-in-out_infinite]" />
+            <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent animate-[slide_2s_ease-in-out_infinite]" />
           </div>
           
           {/* Time estimate */}

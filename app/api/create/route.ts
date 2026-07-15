@@ -1,27 +1,50 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-// Share the same store between both API routes in Node.js runtime
-declare global {
-  var sharedPaymentRecords: Record<string, boolean>;
-}
-
-// Initialize the shared store
-if (!global.sharedPaymentRecords) {
-  global.sharedPaymentRecords = {};
-}
+import { createPublicClient, http, parseAbiItem } from 'viem'
+import { lisk } from '@/lib/chains'
 
 export const runtime = 'nodejs'
 
-// In production, this would be replaced with actual blockchain verification
-async function verifyPayment(tokenId: string): Promise<boolean> {
-  const isValid = global.sharedPaymentRecords[tokenId] === true;
+const CONTRACT_ADDRESS = '0x055cA743f0fFB9258ea7f8484794C293f32f2d4C'
 
-  // Remove the token after use to prevent reuse
-  if (isValid) {
-    delete global.sharedPaymentRecords[tokenId];
+// Best-effort replay protection: tracks tokens that have already been
+// consumed for a generation. This is in-memory and will reset on cold
+// starts — the primary verification is the on-chain isTokenUsed check.
+// For production, replace with Vercel KV or a database.
+declare global {
+  var consumedTokens: Set<string>
+}
+
+if (!global.consumedTokens) {
+  global.consumedTokens = new Set()
+}
+
+// Lazily create the viem public client (reused across invocations)
+let client: ReturnType<typeof createPublicClient> | null = null
+
+function getClient() {
+  if (!client) {
+    client = createPublicClient({
+      chain: lisk,
+      transport: http(),
+    })
   }
+  return client
+}
 
-  return isValid;
+// Verify on-chain that the token was used in a real payment transaction
+async function verifyPaymentOnChain(tokenId: string): Promise<boolean> {
+  try {
+    const isUsed = await getClient().readContract({
+      address: CONTRACT_ADDRESS,
+      abi: [parseAbiItem('function isTokenUsed(bytes32 tokenId) view returns (bool)')],
+      functionName: 'isTokenUsed',
+      args: [tokenId as `0x${string}`],
+    })
+    return isUsed === true
+  } catch (e) {
+    console.error('On-chain verification failed:', e)
+    return false
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -33,10 +56,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Payment required' }, { status: 402 })
     }
 
-    const isPaymentValid = await verifyPayment(paymentToken);
-    if (!isPaymentValid) {
-      return NextResponse.json({ error: 'Invalid or expired payment' }, { status: 402 })
+    // Check replay protection (best-effort, in-memory)
+    if (global.consumedTokens.has(paymentToken)) {
+      return NextResponse.json({ error: 'Payment token already used' }, { status: 409 })
     }
+
+    // Primary verification: check on-chain that the token was paid
+    const isPaymentValid = await verifyPaymentOnChain(paymentToken)
+    if (!isPaymentValid) {
+      return NextResponse.json({ error: 'Payment not found on-chain' }, { status: 402 })
+    }
+
+    // Mark token as consumed for replay protection
+    global.consumedTokens.add(paymentToken)
 
     // Using public model
     const endpoint = 'https://api.replicate.com/v1/predictions'
