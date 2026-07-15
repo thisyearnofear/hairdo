@@ -1,6 +1,6 @@
 import { Header } from "@/components/Header"
 import { Hero } from "@/components/Hero"
-import { Hairstyle } from "@/components/Hairstyle"
+import { StyleAdvisor } from "@/components/StyleAdvisor"
 import { Footer } from "@/components/Footer"
 
 export default function Home() {
@@ -8,7 +8,7 @@ export default function Home() {
     <div className="container mx-auto max-w-7xl px-4">
       <Header />
       <Hero />
-      <Hairstyle />
+      <StyleAdvisor />
       <Footer />
     </div>
   )

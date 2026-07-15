@@ -1,0 +1,1381 @@
+{
+  "version": "1.0.0",
+  "description": "Curated tradeoff metadata for Black men's hairstyles. The defensible moat — no one has structured this data.",
+  "hairTypes": {
+    "1A": "Straight (fine, soft)",
+    "1B": "Straight (medium texture)",
+    "1C": "Straight (coarse)",
+    "2A": "Wavy (fine)",
+    "2B": "Wavy (medium)",
+    "2C": "Wavy (coarse)",
+    "3A": "Curly (loose curls)",
+    "3B": "Curly (springy, voluminous)",
+    "3C": "Curly (tight corkscrews)",
+    "4A": "Coily (soft, defined S-pattern)",
+    "4B": "Coily (tight Z-pattern, less defined)",
+    "4C": "Coily (dense, tight, no defined pattern)"
+  },
+  "styles": [
+    {
+      "id": "skin-fade",
+      "name": "Skin Fade",
+      "category": "fade",
+      "description": "Hair gradually fades to skin at the sides and back. Can be high, mid, or low. Top remains longer and can be styled various ways.",
+      "replicatePrompt": "skin fade hairstyle, clean fade to skin on sides and back, longer hair on top",
+      "hairTypes": ["3A", "3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong"],
+      "maintenance": {
+        "barberFrequency": "weekly",
+        "barberFrequencyDays": 7,
+        "dailyMinutes": 5,
+        "description": "Fades grow out quickly and lose their crisp look. Weekly or biweekly barber visits to maintain the fade line."
+      },
+      "cost": {
+        "perVisit": 25,
+        "currency": "USD",
+        "monthlyCost": 100
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 2,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "Very comfortable. Low heat retention. No itchiness. Works well with helmets and headphones."
+      },
+      "climate": {
+        "humid": 5,
+        "dry": 5,
+        "hot": 5,
+        "cold": 4,
+        "description": "Works in all climates. Excellent for hot and humid weather. Slightly less coverage in cold weather."
+      },
+      "skillRequired": "specialist",
+      "skillDescription": "A clean skin fade requires a skilled barber. Cheap barbers often can't deliver a crisp fade line.",
+      "culturalContext": "The most popular style in Black barbershops worldwide. Originated in military cuts, adapted and perfected in Black barbershop culture.",
+      "popularity": 95,
+      "versatility": 4,
+      "tags": ["fade", "low-maintenance-daily", "hot-climate", "popular", "versatile"]
+    },
+    {
+      "id": "low-fade",
+      "name": "Low Fade",
+      "category": "fade",
+      "description": "Fade starts low, near the ears and nape. More conservative than a mid or high fade. Maintains more hair on the sides.",
+      "replicatePrompt": "low fade hairstyle, subtle fade starting low near the ears, longer hair on top and upper sides",
+      "hairTypes": ["3A", "3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "maintenance": {
+        "barberFrequency": "biweekly",
+        "barberFrequencyDays": 14,
+        "dailyMinutes": 5,
+        "description": "More forgiving than a skin fade. Biweekly visits keep it looking fresh, but it survives 3 weeks without looking unkempt."
+      },
+      "cost": {
+        "perVisit": 25,
+        "currency": "USD",
+        "monthlyCost": 50
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 2,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "Comfortable and low-profile. Good for professional environments."
+      },
+      "climate": {
+        "humid": 5,
+        "dry": 5,
+        "hot": 5,
+        "cold": 4,
+        "description": "Versatile across climates. Good for hot weather without exposing too much scalp."
+      },
+      "skillRequired": "standard",
+      "skillDescription": "Most barbers can do a low fade. Doesn't require the precision of a skin fade.",
+      "culturalContext": "A more conservative fade option. Popular in corporate and professional settings.",
+      "popularity": 85,
+      "versatility": 5,
+      "tags": ["fade", "professional", "versatile", "low-maintenance"]
+    },
+    {
+      "id": "mid-fade",
+      "name": "Mid Fade",
+      "category": "fade",
+      "description": "Fade starts at the midpoint around the temples. Balanced between low and high fade. The most common fade height.",
+      "replicatePrompt": "mid fade hairstyle, fade starting at temple height, balanced look, longer hair on top",
+      "hairTypes": ["3A", "3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong"],
+      "maintenance": {
+        "barberFrequency": "biweekly",
+        "barberFrequencyDays": 14,
+        "dailyMinutes": 5,
+        "description": "Standard fade maintenance. Biweekly barber visits recommended."
+      },
+      "cost": {
+        "perVisit": 25,
+        "currency": "USD",
+        "monthlyCost": 50
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 2,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "Comfortable. Good balance of style and practicality."
+      },
+      "climate": {
+        "humid": 5,
+        "dry": 5,
+        "hot": 5,
+        "cold": 4,
+        "description": "Works well in all climates."
+      },
+      "skillRequired": "standard",
+      "skillDescription": "Most barbers can execute a mid fade competently.",
+      "culturalContext": "The default fade. The most requested style in Black barbershops.",
+      "popularity": 90,
+      "versatility": 5,
+      "tags": ["fade", "popular", "versatile", "standard"]
+    },
+    {
+      "id": "high-fade",
+      "name": "High Fade",
+      "category": "fade",
+      "description": "Fade starts high on the head, near the crown. Dramatic contrast between faded sides and longer top. Bold look.",
+      "replicatePrompt": "high fade hairstyle, dramatic fade starting high near the crown, strong contrast, longer hair on top",
+      "hairTypes": ["3A", "3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "square", "diamond", "oblong"],
+      "maintenance": {
+        "barberFrequency": "weekly",
+        "barberFrequencyDays": 7,
+        "dailyMinutes": 5,
+        "description": "High fades show growth quickly. Weekly visits ideal, biweekly minimum."
+      },
+      "cost": {
+        "perVisit": 25,
+        "currency": "USD",
+        "monthlyCost": 100
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 1,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "Very cool and breathable. Minimal hair on sides."
+      },
+      "climate": {
+        "humid": 5,
+        "dry": 5,
+        "hot": 5,
+        "cold": 3,
+        "description": "Excellent for hot climates. Less insulation in cold weather."
+      },
+      "skillRequired": "specialist",
+      "skillDescription": "A clean high fade requires precision. The dramatic contrast highlights any unevenness.",
+      "culturalContext": "Bolder than a mid or low fade. Popular in hip-hop and sports culture.",
+      "popularity": 80,
+      "versatility": 3,
+      "tags": ["fade", "bold", "hot-climate", "high-maintenance"]
+    },
+    {
+      "id": "burst-fade",
+      "name": "Burst Fade",
+      "category": "fade",
+      "description": "Fade bursts around the ears in a semi-circle, leaving hair longer at the nape. Distinctive look often paired with a mullet or textured top.",
+      "replicatePrompt": "burst fade hairstyle, semi-circular fade around the ears, hair longer at the nape, textured top",
+      "hairTypes": ["3A", "3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "round", "square", "diamond"],
+      "maintenance": {
+        "barberFrequency": "biweekly",
+        "barberFrequencyDays": 14,
+        "dailyMinutes": 10,
+        "description": "The burst shape needs precise maintenance. Biweekly barber visits. Daily styling for the top."
+      },
+      "cost": {
+        "perVisit": 30,
+        "currency": "USD",
+        "monthlyCost": 60
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 2,
+        "helmetCompatible": true,
+        "headphoneCompatible": false,
+        "description": "Comfortable but headphones can press against the longer hair at the nape."
+      },
+      "climate": {
+        "humid": 4,
+        "dry": 5,
+        "hot": 4,
+        "cold": 4,
+        "description": "Works in most climates. The nape hair provides some warmth."
+      },
+      "skillRequired": "specialist",
+      "skillDescription": "The burst shape requires a skilled barber. Not all barbers can execute this cleanly.",
+      "culturalContext": "Trendy style popularized on social media. Often paired with a mullet for a modern look.",
+      "popularity": 75,
+      "versatility": 3,
+      "tags": ["fade", "trendy", "social-media", "distinctive"]
+    },
+    {
+      "id": "taper-fade",
+      "name": "Taper Fade",
+      "category": "fade",
+      "description": "A subtle taper at the hairline and sideburns. Not a full fade — hair remains on the sides, just neatly tapered at the edges.",
+      "replicatePrompt": "taper fade hairstyle, subtle taper at hairline and sideburns, neat edges, hair remains on sides",
+      "hairTypes": ["3A", "3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "maintenance": {
+        "barberFrequency": "biweekly",
+        "barberFrequencyDays": 14,
+        "dailyMinutes": 5,
+        "description": "Low maintenance. The taper grows out gracefully and still looks good at 3 weeks."
+      },
+      "cost": {
+        "perVisit": 25,
+        "currency": "USD",
+        "monthlyCost": 50
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 3,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "Comfortable. More hair coverage than a full fade, slightly more heat retention."
+      },
+      "climate": {
+        "humid": 4,
+        "dry": 5,
+        "hot": 4,
+        "cold": 5,
+        "description": "Good for all climates. Better cold weather coverage than full fades."
+      },
+      "skillRequired": "standard",
+      "skillDescription": "Most barbers can do a taper. One of the most reliable cuts to get right.",
+      "culturalContext": "The most conservative fade option. Popular across all age groups and settings.",
+      "popularity": 88,
+      "versatility": 5,
+      "tags": ["fade", "conservative", "professional", "low-maintenance", "versatile"]
+    },
+    {
+      "id": "afro",
+      "name": "Afro",
+      "category": "natural",
+      "description": "Natural hair worn in its full, rounded shape. Requires picking/brushing to maintain the round form. A statement of natural texture.",
+      "replicatePrompt": "afro hairstyle, full rounded natural hair, voluminous, picked out",
+      "hairTypes": ["3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong"],
+      "maintenance": {
+        "barberFrequency": "monthly",
+        "barberFrequencyDays": 30,
+        "dailyMinutes": 15,
+        "description": "Daily picking and moisturizing needed to maintain shape. Monthly barber visits for shaping. Regular washing and deep conditioning."
+      },
+      "cost": {
+        "perVisit": 30,
+        "currency": "USD",
+        "monthlyCost": 30
+      },
+      "comfort": {
+        "itchiness": 2,
+        "heatRetention": 4,
+        "helmetCompatible": false,
+        "headphoneCompatible": false,
+        "description": "Can be warm in hot weather. Helmets and over-ear headphones don't fit well. Requires regular moisturizing to prevent dryness and itchiness."
+      },
+      "climate": {
+        "humid": 3,
+        "dry": 3,
+        "hot": 2,
+        "cold": 5,
+        "description": "Great for cold weather (natural insulation). Challenging in humid weather (frizz). Requires moisturizing in dry climates."
+      },
+      "skillRequired": "standard",
+      "skillDescription": "Any barber familiar with natural hair can shape an afro. The daily maintenance is on you.",
+      "culturalContext": "Iconic symbol of Black pride and the natural hair movement. Originated in the 1960s-70s. A cultural statement, not just a hairstyle.",
+      "popularity": 70,
+      "versatility": 3,
+      "tags": ["natural", "cultural", "statement", "high-daily-maintenance", "cold-climate"]
+    },
+    {
+      "id": "short-afro",
+      "name": "Short Afro / TWA",
+      "category": "natural",
+      "description": "Teeny Weeny Afro. A short, compact natural. Low commitment, great starting point for going natural.",
+      "replicatePrompt": "short afro hairstyle, compact natural hair, short length, neat",
+      "hairTypes": ["3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "maintenance": {
+        "barberFrequency": "monthly",
+        "barberFrequencyDays": 30,
+        "dailyMinutes": 5,
+        "description": "Low maintenance. Daily moisturizing. Monthly shape-up. Grows out gracefully into a full afro."
+      },
+      "cost": {
+        "perVisit": 25,
+        "currency": "USD",
+        "monthlyCost": 25
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 2,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "Comfortable and practical. Minimal heat retention. Works with helmets and headphones."
+      },
+      "climate": {
+        "humid": 5,
+        "dry": 4,
+        "hot": 5,
+        "cold": 4,
+        "description": "Works well in all climates. Great for hot and humid weather."
+      },
+      "skillRequired": "standard",
+      "skillDescription": "Any barber can shape a TWA. Very forgiving cut.",
+      "culturalContext": "Often the first step in a natural hair journey. Popular among men transitioning from chemically processed hair.",
+      "popularity": 65,
+      "versatility": 4,
+      "tags": ["natural", "low-maintenance", "versatile", "beginner-friendly"]
+    },
+    {
+      "id": "buzz-cut",
+      "name": "Buzz Cut",
+      "category": "short",
+      "description": "Uniform short cut all over. Can be done with different guard sizes. The ultimate low-maintenance cut.",
+      "replicatePrompt": "buzz cut hairstyle, uniform short hair all over, clean and simple",
+      "hairTypes": ["1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "square", "diamond", "oblong"],
+      "maintenance": {
+        "barberFrequency": "monthly",
+        "barberFrequencyDays": 30,
+        "dailyMinutes": 0,
+        "description": "Zero daily maintenance. Monthly or biweekly cut to maintain length. Can be done at home with clippers."
+      },
+      "cost": {
+        "perVisit": 15,
+        "currency": "USD",
+        "monthlyCost": 15
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 1,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "Maximum comfort. No heat retention. No itchiness. Works with everything."
+      },
+      "climate": {
+        "humid": 5,
+        "dry": 5,
+        "hot": 5,
+        "cold": 2,
+        "description": "Perfect for hot climates. No insulation for cold weather — you'll need a hat."
+      },
+      "skillRequired": "minimal",
+      "skillDescription": "Can be done at home with clippers. The simplest cut possible.",
+      "culturalContext": "Universal style across all cultures. Popular in military, sports, and practical lifestyles.",
+      "popularity": 70,
+      "versatility": 2,
+      "tags": ["short", "zero-maintenance", "hot-climate", "practical", "budget"]
+    },
+    {
+      "id": "crew-cut",
+      "name": "Crew Cut",
+      "category": "short",
+      "description": "Short on the sides and back, slightly longer on top with a gradual taper. Classic, clean-cut look.",
+      "replicatePrompt": "crew cut hairstyle, short on sides and back, slightly longer on top, gradual taper, classic",
+      "hairTypes": ["1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C", "4A"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong"],
+      "maintenance": {
+        "barberFrequency": "monthly",
+        "barberFrequencyDays": 30,
+        "dailyMinutes": 2,
+        "description": "Monthly barber visits. Minimal daily styling — maybe a quick comb."
+      },
+      "cost": {
+        "perVisit": 20,
+        "currency": "USD",
+        "monthlyCost": 20
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 1,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "Very comfortable. Low maintenance and practical."
+      },
+      "climate": {
+        "humid": 5,
+        "dry": 5,
+        "hot": 5,
+        "cold": 3,
+        "description": "Good for all climates. Slightly less coverage in cold."
+      },
+      "skillRequired": "standard",
+      "skillDescription": "Any barber can do a crew cut. One of the most standard cuts."
+      ,
+      "culturalContext": "Classic American cut. Popular in professional and academic settings.",
+      "popularity": 60,
+      "versatility": 3,
+      "tags": ["short", "classic", "professional", "low-maintenance", "budget"]
+    },
+    {
+      "id": "caesar-cut",
+      "name": "Caesar Cut",
+      "category": "short",
+      "description": "Short cut with the top hair brushed forward in a fringe. Named after Julius Caesar. Even length all around with forward fringe.",
+      "replicatePrompt": "caesar cut hairstyle, short even length, hair brushed forward in a fringe, classic",
+      "hairTypes": ["1A", "1B", "1C", "2A", "2B", "3A", "3B", "3C", "4A", "4B"],
+      "faceShapes": ["oval", "square", "diamond", "oblong", "heart"],
+      "maintenance": {
+        "barberFrequency": "monthly",
+        "barberFrequencyDays": 30,
+        "dailyMinutes": 3,
+        "description": "Monthly barber visits. Quick daily brush forward. Minimal product needed."
+      },
+      "cost": {
+        "perVisit": 20,
+        "currency": "USD",
+        "monthlyCost": 20
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 2,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "Comfortable and practical. The fringe can sometimes feel warm on the forehead."
+      },
+      "climate": {
+        "humid": 4,
+        "dry": 5,
+        "hot": 4,
+        "cold": 4,
+        "description": "Works in most climates. The fringe provides slight forehead coverage."
+      },
+      "skillRequired": "standard",
+      "skillDescription": "Any barber can do a Caesar cut. Simple and reliable.",
+      "culturalContext": "Popularized in the 90s. Named after Julius Caesar. Has had periodic revivals.",
+      "popularity": 45,
+      "versatility": 3,
+      "tags": ["short", "classic", "fringe", "low-maintenance", "budget"]
+    },
+    {
+      "id": "cornrows",
+      "name": "Cornrows",
+      "category": "braids",
+      "description": "Hair braided close to the scalp in rows. Can be straight back, geometric patterns, or designs. Lasts 2-4 weeks.",
+      "replicatePrompt": "cornrows hairstyle, hair braided close to the scalp in rows, neat parallel braids",
+      "hairTypes": ["3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong"],
+      "maintenance": {
+        "barberFrequency": "biweekly",
+        "barberFrequencyDays": 21,
+        "dailyMinutes": 5,
+        "description": "Lasts 2-4 weeks. Daily moisturizing of scalp between rows. Cover with durag at night. No daily styling needed while braided."
+      },
+      "cost": {
+        "perVisit": 60,
+        "currency": "USD",
+        "monthlyCost": 90
+      },
+      "comfort": {
+        "itchiness": 3,
+        "heatRetention": 3,
+        "helmetCompatible": false,
+        "headphoneCompatible": true,
+        "description": "Can be tight and uncomfortable for the first few days. Scalp may itch between rows. Helmets don't fit over braids."
+      },
+      "climate": {
+        "humid": 5,
+        "dry": 4,
+        "hot": 4,
+        "cold": 4,
+        "description": "Good for humid weather (hair is controlled). Need scalp moisturizing in dry climates."
+      },
+      "skillRequired": "specialist",
+      "skillDescription": "Requires a skilled braider. Not all barbers braid — you may need a braiding specialist.",
+      "culturalContext": "Ancient African tradition dating back thousands of years. Patterns and styles carry cultural significance. Deeply rooted in Black heritage.",
+      "popularity": 75,
+      "versatility": 3,
+      "tags": ["braids", "cultural", "protective", "medium-maintenance", "specialist"]
+    },
+    {
+      "id": "box-braids",
+      "name": "Box Braids",
+      "category": "braids",
+      "description": "Individual braids sectioned into square boxes. Can be various lengths. Often uses extensions for added length.",
+      "replicatePrompt": "box braids hairstyle, individual braids sectioned into squares, medium length, neat",
+      "hairTypes": ["3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "maintenance": {
+        "barberFrequency": "monthly",
+        "barberFrequencyDays": 42,
+        "dailyMinutes": 5,
+        "description": "Lasts 4-8 weeks. Daily scalp moisturizing. Cover at night. Wash gently every 1-2 weeks."
+      },
+      "cost": {
+        "perVisit": 120,
+        "currency": "USD",
+        "monthlyCost": 90
+      },
+      "comfort": {
+        "itchiness": 3,
+        "heatRetention": 4,
+        "helmetCompatible": false,
+        "headphoneCompatible": false,
+        "description": "Heavy if extensions are used. Can cause tension headaches for the first week. Not compatible with helmets or over-ear headphones."
+      },
+      "climate": {
+        "humid": 5,
+        "dry": 4,
+        "hot": 3,
+        "cold": 5,
+        "description": "Excellent for humid weather. Warm in hot climates. Great cold weather coverage."
+      },
+      "skillRequired": "specialist",
+      "skillDescription": "Requires a skilled braider. Box braids take 4-8 hours to install. Usually done by braiding specialists, not barbers.",
+      "culturalContext": "Popularized in the 90s by hip-hop culture. Roots in African braiding traditions. A protective style that gives natural hair a break.",
+      "popularity": 70,
+      "versatility": 3,
+      "tags": ["braids", "protective", "cultural", "high-cost", "long-lasting", "specialist"]
+    },
+    {
+      "id": "dreadlocks",
+      "name": "Dreadlocks / Locs",
+      "category": "locs",
+      "description": "Hair that has been allowed to mat and lock into rope-like strands. Can be started via various methods and worn short or long.",
+      "replicatePrompt": "dreadlocks hairstyle, hair locked into rope-like strands, medium length, neat locs",
+      "hairTypes": ["3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "maintenance": {
+        "barberFrequency": "monthly",
+        "barberFrequencyDays": 30,
+        "dailyMinutes": 10,
+        "description": "Monthly retwisting/grooming. Daily palm rolling and moisturizing while maturing. Mature locs need less daily work."
+      },
+      "cost": {
+        "perVisit": 50,
+        "currency": "USD",
+        "monthlyCost": 50
+      },
+      "comfort": {
+        "itchiness": 2,
+        "heatRetention": 4,
+        "helmetCompatible": false,
+        "headphoneCompatible": false,
+        "description": "Can be warm. Buildup can cause itchiness if not properly washed. Helmets and over-ear headphones don't fit well."
+      },
+      "climate": {
+        "humid": 3,
+        "dry": 4,
+        "hot": 3,
+        "cold": 5,
+        "description": "Good for cold weather. Can be heavy and warm in hot climates. Humidity can cause frizz at the roots."
+      },
+      "skillRequired": "specialist",
+      "skillDescription": "Starting and maintaining locs requires a loctician or barber experienced with locs. Not all barbers do loc maintenance.",
+      "culturalContext": "Deep spiritual and cultural significance in Rastafarian and African traditions. Also worn as a fashion statement. Represents commitment and patience.",
+      "popularity": 70,
+      "versatility": 4,
+      "tags": ["locs", "cultural", "commitment", "medium-maintenance", "specialist"]
+    },
+    {
+      "id": "short-locs",
+      "name": "Short Locs / Starter Locs",
+      "category": "locs",
+      "description": "Locs in the early stages, typically shorter than 6 inches. Can be started with coils, two-strand twists, or free-form.",
+      "replicatePrompt": "short locs hairstyle, starter dreadlocks, short coiled locs, neat",
+      "hairTypes": ["3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "maintenance": {
+        "barberFrequency": "monthly",
+        "barberFrequencyDays": 30,
+        "dailyMinutes": 5,
+        "description": "Monthly retwisting. Daily moisturizing. No washing for the first few weeks to allow locking."
+      },
+      "cost": {
+        "perVisit": 40,
+        "currency": "USD",
+        "monthlyCost": 40
+      },
+      "comfort": {
+        "itchiness": 2,
+        "heatRetention": 3,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "More comfortable than mature locs. Lighter and less heat retention. Helmets fit better with short locs."
+      },
+      "climate": {
+        "humid": 4,
+        "dry": 4,
+        "hot": 4,
+        "cold": 4,
+        "description": "Works in most climates. More versatile than mature locs for hot weather."
+      },
+      "skillRequired": "specialist",
+      "skillDescription": "Starting locs requires a loctician. The starter phase is critical — poor technique leads to thin or broken locs.",
+      "culturalContext": "The beginning of a loc journey. Represents a commitment to a multi-year hair process.",
+      "popularity": 60,
+      "versatility": 3,
+      "tags": ["locs", "starter", "commitment", "medium-maintenance", "specialist"]
+    },
+    {
+      "id": "twists",
+      "name": "Two-Strand Twists",
+      "category": "natural",
+      "description": "Hair twisted into two-strand sections. Can be worn as a style or used as a protective measure. Lasts 1-2 weeks.",
+      "replicatePrompt": "two-strand twists hairstyle, hair twisted into neat sections, medium length, defined twists",
+      "hairTypes": ["3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "maintenance": {
+        "barberFrequency": "biweekly",
+        "barberFrequencyDays": 14,
+        "dailyMinutes": 5,
+        "description": "Lasts 1-2 weeks. Daily moisturizing. Cover at night with a durag or satin cap."
+      },
+      "cost": {
+        "perVisit": 50,
+        "currency": "USD",
+        "monthlyCost": 100
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 3,
+        "helmetCompatible": false,
+        "headphoneCompatible": true,
+        "description": "Comfortable. No itchiness if moisturized. Helmets can flatten twists."
+      },
+      "climate": {
+        "humid": 4,
+        "dry": 4,
+        "hot": 4,
+        "cold": 4,
+        "description": "Works in most climates. Good protective style for any weather."
+      },
+      "skillRequired": "standard",
+      "skillDescription": "Most natural hair stylists can do twists. Can also be done at home with practice.",
+      "culturalContext": "A versatile natural style. Can be unraveled for a twist-out (curly defined look). Popular in the natural hair community.",
+      "popularity": 65,
+      "versatility": 4,
+      "tags": ["natural", "protective", "versatile", "medium-maintenance"]
+    },
+    {
+      "id": "fade-with-curls",
+      "name": "Fade with Curly Top",
+      "category": "fade",
+      "description": "Skin or taper fade on the sides with natural curls left longer on top. Best of both worlds — clean sides, textured top.",
+      "replicatePrompt": "fade with curly top hairstyle, clean fade on sides, natural curls on top, textured",
+      "hairTypes": ["3A", "3B", "3C", "4A", "4B"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong"],
+      "maintenance": {
+        "barberFrequency": "biweekly",
+        "barberFrequencyDays": 14,
+        "dailyMinutes": 10,
+        "description": "Biweekly fade maintenance. Daily curl definition routine (moisturize, style curls on top)."
+      },
+      "cost": {
+        "perVisit": 30,
+        "currency": "USD",
+        "monthlyCost": 60
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 2,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "Comfortable. Clean sides stay cool. Curls on top need moisturizing to prevent dryness."
+      },
+      "climate": {
+        "humid": 4,
+        "dry": 4,
+        "hot": 4,
+        "cold": 4,
+        "description": "Versatile. Curls may frizz in high humidity. Need moisturizing in dry climates."
+      },
+      "skillRequired": "standard",
+      "skillDescription": "Most barbers can do this. The fade needs to be clean, and the top needs to be cut to the right length for curl definition.",
+      "culturalContext": "One of the most popular modern Black men's styles. Combines the crispness of a fade with natural texture.",
+      "popularity": 92,
+      "versatility": 5,
+      "tags": ["fade", "curly", "natural-texture", "popular", "versatile"]
+    },
+    {
+      "id": "textured-crop",
+      "name": "Textured Crop",
+      "category": "short",
+      "description": "Short, textured hair cut forward on the forehead. Modern, European-influenced style that works with curly/coily hair.",
+      "replicatePrompt": "textured crop hairstyle, short textured hair cut forward, modern fringe, neat",
+      "hairTypes": ["2A", "2B", "2C", "3A", "3B", "3C", "4A"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "maintenance": {
+        "barberFrequency": "biweekly",
+        "barberFrequencyDays": 21,
+        "dailyMinutes": 5,
+        "description": "Tri-weekly barber visits for the shape. Daily styling with matte product to maintain texture."
+      },
+      "cost": {
+        "perVisit": 30,
+        "currency": "USD",
+        "monthlyCost": 40
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 2,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "Comfortable and practical. Low heat retention."
+      },
+      "climate": {
+        "humid": 4,
+        "dry": 5,
+        "hot": 4,
+        "cold": 4,
+        "description": "Works in most climates. Product may need adjustment in high humidity."
+      },
+      "skillRequired": "standard",
+      "skillDescription": "Most modern barbers can do a textured crop. Requires texturizing technique.",
+      "culturalContext": "European-influenced style that's gained popularity among Black men with looser curl patterns. Modern and trendy.",
+      "popularity": 55,
+      "versatility": 4,
+      "tags": ["short", "modern", "trendy", "textured", "low-maintenance"]
+    },
+    {
+      "id": "high-top-fade",
+      "name": "High-Top Fade",
+      "category": "fade",
+      "description": "Flat-top or rounded top with high fade on sides. Iconic 90s hip-hop style. Makes a bold vertical statement.",
+      "replicatePrompt": "high-top fade hairstyle, tall flat or rounded top, high fade on sides, 90s style",
+      "hairTypes": ["3A", "3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "square", "diamond", "oblong"],
+      "maintenance": {
+        "barberFrequency": "biweekly",
+        "barberFrequencyDays": 14,
+        "dailyMinutes": 15,
+        "description": "Biweekly barber visits to maintain the shape. Daily brushing and picking to maintain the top structure."
+      },
+      "cost": {
+        "perVisit": 35,
+        "currency": "USD",
+        "monthlyCost": 70
+      },
+      "comfort": {
+        "itchiness": 2,
+        "heatRetention": 3,
+        "helmetCompatible": false,
+        "headphoneCompatible": false,
+        "description": "The tall top doesn't fit under helmets or over-ear headphones. Can be warm."
+      },
+      "climate": {
+        "humid": 3,
+        "dry": 4,
+        "hot": 3,
+        "cold": 4,
+        "description": "Challenging in humid weather (top can lose shape). Better in temperate climates."
+      },
+      "skillRequired": "specialist",
+      "skillDescription": "The high-top shape requires a skilled barber. The flat-top version is especially technical.",
+      "culturalContext": "Iconic 90s hip-hop style (Kid 'n Play, Will Smith in Fresh Prince). Has had a revival in recent years.",
+      "popularity": 50,
+      "versatility": 2,
+      "tags": ["fade", "90s", "retro", "bold", "high-maintenance", "statement"]
+    },
+    {
+      "id": "mohawk-fade",
+      "name": "Mohawk Fade",
+      "category": "edgy",
+      "description": "Strip of hair down the center with faded or shaved sides. Can be subtle (fauxhawk) or full. Bold, edgy look.",
+      "replicatePrompt": "mohawk fade hairstyle, strip of hair down center, faded sides, bold edgy look",
+      "hairTypes": ["3A", "3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "square", "diamond", "oblong"],
+      "maintenance": {
+        "barberFrequency": "biweekly",
+        "barberFrequencyDays": 14,
+        "dailyMinutes": 10,
+        "description": "Biweekly barber visits for the sides. Daily styling for the center strip."
+      },
+      "cost": {
+        "perVisit": 30,
+        "currency": "USD",
+        "monthlyCost": 60
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 2,
+        "helmetCompatible": false,
+        "headphoneCompatible": true,
+        "description": "Cool and breathable. Helmets flatten the center strip."
+      },
+      "climate": {
+        "humid": 4,
+        "dry": 5,
+        "hot": 5,
+        "cold": 3,
+        "description": "Great for hot climates. Less insulation in cold."
+      },
+      "skillRequired": "specialist",
+      "skillDescription": "Requires a barber who can execute the precise center strip and clean fade.",
+      "culturalContext": "Punk rock origins, adapted in Black barbershop culture. Associated with individuality and rebellion.",
+      "popularity": 40,
+      "versatility": 2,
+      "tags": ["edgy", "bold", "statement", "hot-climate", "specialist"]
+    },
+    {
+      "id": "line-up",
+      "name": "Line Up / Shape Up",
+      "category": "detail",
+      "description": "Not a standalone cut but a detailing technique — sharp, geometric hairline shaping. Can be added to any short style.",
+      "replicatePrompt": "line up hairstyle, sharp geometric hairline, clean shape up, precise edges",
+      "hairTypes": ["1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "maintenance": {
+        "barberFrequency": "weekly",
+        "barberFrequencyDays": 7,
+        "description": "Weekly or biweekly line-ups to maintain the sharp hairline. This is the detail that makes any cut look fresh."
+      },
+      "cost": {
+        "perVisit": 15,
+        "currency": "USD",
+        "monthlyCost": 60
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 1,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "No comfort impact — it's a detailing service, not a style change."
+      },
+      "climate": {
+        "humid": 5,
+        "dry": 5,
+        "hot": 5,
+        "cold": 5,
+        "description": "No climate impact — works everywhere."
+      },
+      "skillRequired": "specialist",
+      "skillDescription": "A sharp line-up is the signature skill of a good Black barber. Precision work with a straight razor or liner.",
+      "culturalContext": "The line-up is essential to Black barbershop culture. A fresh line-up is the difference between a good cut and a great one.",
+      "popularity": 95,
+      "versatility": 5,
+      "tags": ["detail", "essential", "sharp", "weekly", "signature"]
+    },
+    {
+      "id": "waves",
+      "name": "360 Waves",
+      "category": "natural",
+      "description": "Short hair trained into a wave pattern using brushing, durag compression, and pomade. Iconic Black men's style.",
+      "replicatePrompt": "360 waves hairstyle, short hair trained into wave pattern, deep waves, shiny",
+      "hairTypes": ["3A", "3B", "3C", "4A", "4B"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "maintenance": {
+        "barberFrequency": "biweekly",
+        "barberFrequencyDays": 14,
+        "dailyMinutes": 30,
+        "description": "High daily maintenance — 30+ minutes of brushing daily. Durag at night. Weekly wolfing phase. This is a lifestyle, not just a haircut."
+      },
+      "cost": {
+        "perVisit": 25,
+        "currency": "USD",
+        "monthlyCost": 50
+      },
+      "comfort": {
+        "itchiness": 2,
+        "heatRetention": 2,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "Comfortable to wear. The durag can feel warm at night. Pomade can cause buildup and itchiness if not washed properly."
+      },
+      "climate": {
+        "humid": 4,
+        "dry": 4,
+        "hot": 4,
+        "cold": 4,
+        "description": "Works in all climates. The wave pattern is resilient once trained."
+      },
+      "skillRequired": "standard",
+      "skillDescription": "Any barber can cut for waves, but the wave training is entirely on you. The barber just needs to cut at the right length.",
+      "culturalContext": "Deeply rooted in Black culture. A rite of passage for many young Black men. The wave game is a point of pride and community.",
+      "popularity": 80,
+      "versatility": 2,
+      "tags": ["natural", "cultural", "high-daily-maintenance", "lifestyle", "commitment"]
+    },
+    {
+      "id": "sponge-twists",
+      "name": "Sponge Twists / Nubian Twists",
+      "category": "natural",
+      "description": "Short hair twisted into small coils using a twist sponge. Quick, easy, and enhances natural curl pattern.",
+      "replicatePrompt": "sponge twists hairstyle, short hair twisted into small coils, defined coil pattern, neat",
+      "hairTypes": ["3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "maintenance": {
+        "barberFrequency": "monthly",
+        "barberFrequencyDays": 30,
+        "dailyMinutes": 10,
+        "description": "Monthly barber cut. Daily twisting with sponge (10 min). Moisturize daily."
+      },
+      "cost": {
+        "perVisit": 25,
+        "currency": "USD",
+        "monthlyCost": 25
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 2,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "Comfortable and low-profile. Can flatten under helmets — just re-twist."
+      },
+      "climate": {
+        "humid": 4,
+        "dry": 4,
+        "hot": 5,
+        "cold": 4,
+        "description": "Great for hot climates. Works well in most conditions."
+      },
+      "skillRequired": "minimal",
+      "skillDescription": "Can be done at home with a twist sponge. The barber just needs to cut the right length.",
+      "culturalContext": "Popular low-maintenance natural style. Common among young Black men and those new to natural hair.",
+      "popularity": 60,
+      "versatility": 3,
+      "tags": ["natural", "low-cost", "easy", "beginner-friendly", "hot-climate"]
+    },
+    {
+      "id": "bald",
+      "name": "Clean Shave / Bald",
+      "category": "short",
+      "description": "Completely shaved head. The ultimate low-maintenance choice. Works for any hair type since there's no hair.",
+      "replicatePrompt": "bald hairstyle, clean shaved head, smooth, no hair",
+      "hairTypes": ["1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "square", "diamond", "oblong"],
+      "maintenance": {
+        "barberFrequency": "weekly",
+        "barberFrequencyDays": 7,
+        "dailyMinutes": 5,
+        "description": "Daily or every-other-day shaving at home. Weekly barber visit optional for a professional shave."
+      },
+      "cost": {
+        "perVisit": 20,
+        "currency": "USD",
+        "monthlyCost": 20
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 1,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "Maximum comfort. No heat retention. Sun protection needed — scalp can burn."
+      },
+      "climate": {
+        "humid": 5,
+        "dry": 5,
+        "hot": 5,
+        "cold": 2,
+        "description": "Perfect for hot climates. No insulation for cold — need a hat. Sun protection essential."
+      },
+      "skillRequired": "minimal",
+      "skillDescription": "Can be maintained at home with a razor or shaver. No barber needed for basic maintenance.",
+      "culturalContext": "A confident choice. Popular among men with thinning hair who choose to embrace baldness rather than fight it.",
+      "popularity": 55,
+      "versatility": 1,
+      "tags": ["short", "zero-maintenance", "budget", "hot-climate", "practical"]
+    },
+    {
+      "id": "fauxhawk",
+      "name": "Faux Hawk",
+      "category": "edgy",
+      "description": "A subtle mohawk — hair is longer on top in the center and shorter on the sides, but not shaved. More professional than a full mohawk.",
+      "replicatePrompt": "fauxhawk hairstyle, longer hair in center, shorter on sides, subtle mohawk, modern",
+      "hairTypes": ["2A", "2B", "2C", "3A", "3B", "3C", "4A", "4B"],
+      "faceShapes": ["oval", "square", "diamond", "oblong"],
+      "maintenance": {
+        "barberFrequency": "biweekly",
+        "barberFrequencyDays": 21,
+        "dailyMinutes": 10,
+        "description": "Tri-weekly barber visits. Daily styling to maintain the center volume."
+      },
+      "cost": {
+        "perVisit": 30,
+        "currency": "USD",
+        "monthlyCost": 40
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 2,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "Comfortable. More practical than a full mohawk."
+      },
+      "climate": {
+        "humid": 4,
+        "dry": 5,
+        "hot": 4,
+        "cold": 4,
+        "description": "Works in most climates. Versatile."
+      },
+      "skillRequired": "standard",
+      "skillDescription": "Most barbers can do a faux hawk. Requires texturizing and fading.",
+      "culturalContext": "A more wearable version of the mohawk. Popular in creative and fashion-forward circles.",
+      "popularity": 45,
+      "versatility": 3,
+      "tags": ["edgy", "modern", "versatile", "medium-maintenance"]
+    },
+    {
+      "id": "curly-fade",
+      "name": "Curly Fade with Volume",
+      "category": "fade",
+      "description": "Fade on sides with voluminous natural curls on top. The curls are left longer for maximum volume and definition.",
+      "replicatePrompt": "curly fade with volume hairstyle, clean fade on sides, voluminous natural curls on top, defined",
+      "hairTypes": ["3A", "3B", "3C", "4A"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "maintenance": {
+        "barberFrequency": "biweekly",
+        "barberFrequencyDays": 14,
+        "dailyMinutes": 15,
+        "description": "Biweekly fade. Daily curl routine: moisturize, define, fluff. More daily work than a standard fade."
+      },
+      "cost": {
+        "perVisit": 30,
+        "currency": "USD",
+        "monthlyCost": 60
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 3,
+        "helmetCompatible": false,
+        "headphoneCompatible": true,
+        "description": "Comfortable but the volume on top can be warm. Helmets flatten the curls."
+      },
+      "climate": {
+        "humid": 3,
+        "dry": 4,
+        "hot": 3,
+        "cold": 4,
+        "description": "Curls can frizz in humidity. Need good moisturizing in dry climates. Warm in hot weather due to volume."
+      },
+      "skillRequired": "standard",
+      "skillDescription": "Most barbers can execute this. The key is cutting the top at the right length for curl definition.",
+      "culturalContext": "Popular modern style that embraces natural texture. Seen across sports and entertainment.",
+      "popularity": 85,
+      "versatility": 4,
+      "tags": ["fade", "curly", "volume", "natural-texture", "popular"]
+    },
+    {
+      "id": "slick-back",
+      "name": "Slick Back with Fade",
+      "category": "medium",
+      "description": "Longer hair on top slicked back with product, faded on the sides. Polished, mature look.",
+      "replicatePrompt": "slick back with fade hairstyle, longer hair on top slicked back, clean fade on sides, polished",
+      "hairTypes": ["1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B"],
+      "faceShapes": ["oval", "square", "diamond", "oblong"],
+      "maintenance": {
+        "barberFrequency": "biweekly",
+        "barberFrequencyDays": 21,
+        "dailyMinutes": 10,
+        "description": "Tri-weekly barber visits for the fade. Daily styling with pomade or gel to slick back."
+      },
+      "cost": {
+        "perVisit": 30,
+        "currency": "USD",
+        "monthlyCost": 40
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 2,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "Product can feel heavy or greasy. Otherwise comfortable."
+      },
+      "climate": {
+        "humid": 3,
+        "dry": 5,
+        "hot": 3,
+        "cold": 5,
+        "description": "Good for cold and dry climates. Humidity can cause the slick to fall. Product melts in extreme heat."
+      },
+      "skillRequired": "standard",
+      "skillDescription": "Most barbers can do a slick back fade. The styling is on you.",
+      "culturalContext": "Classic, mature look. Associated with sophistication and old-school elegance.",
+      "popularity": 50,
+      "versatility": 3,
+      "tags": ["medium", "classic", "polished", "professional", "product-dependent"]
+    },
+    {
+      "id": "undercut",
+      "name": "Undercut",
+      "category": "medium",
+      "description": "Long hair on top with disconnected short sides. The contrast is sharp — no fade, just a clean disconnect.",
+      "replicatePrompt": "undercut hairstyle, long hair on top, disconnected short sides, sharp contrast, modern",
+      "hairTypes": ["1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C"],
+      "faceShapes": ["oval", "square", "diamond", "oblong"],
+      "maintenance": {
+        "barberFrequency": "biweekly",
+        "barberFrequencyDays": 21,
+        "dailyMinutes": 10,
+        "description": "Tri-weekly barber visits for the sides. Daily styling for the top."
+      },
+      "cost": {
+        "perVisit": 30,
+        "currency": "USD",
+        "monthlyCost": 40
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 2,
+        "helmetCompatible": false,
+        "headphoneCompatible": true,
+        "description": "Comfortable. The long top doesn't fit well under helmets."
+      },
+      "climate": {
+        "humid": 3,
+        "dry": 5,
+        "hot": 3,
+        "cold": 4,
+        "description": "Good for dry climates. The long top can be warm in hot weather and frizz in humidity."
+      },
+      "skillRequired": "standard",
+      "skillDescription": "Most barbers can do an undercut. The disconnect is straightforward."
+      ,
+      "culturalContext": "Popularized in the 2010s. Has a rockabilly and punk heritage. Modern revival made it mainstream.",
+      "popularity": 55,
+      "versatility": 3,
+      "tags": ["medium", "modern", "disconnected", "bold"]
+    },
+    {
+      "id": "jheri-curl",
+      "name": "Jheri Curl (Modern)",
+      "category": "natural",
+      "description": "Chemically processed curls with a glossy, moisturized look. The modern version uses texturizers for a looser curl pattern.",
+      "replicatePrompt": "jheri curl hairstyle, glossy moisturized curls, loose curl pattern, wet look",
+      "hairTypes": ["3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong"],
+      "maintenance": {
+        "barberFrequency": "monthly",
+        "barberFrequencyDays": 30,
+        "dailyMinutes": 10,
+        "description": "Monthly barber visits. Daily moisturizing with curl activator. Chemical touch-ups every few months."
+      },
+      "cost": {
+        "perVisit": 40,
+        "currency": "USD",
+        "monthlyCost": 40
+      },
+      "comfort": {
+        "itchiness": 3,
+        "heatRetention": 3,
+        "helmetCompatible": false,
+        "headphoneCompatible": false,
+        "description": "The activator product is greasy and can stain. Chemical processing can cause scalp irritation. Not compatible with helmets."
+      },
+      "climate": {
+        "humid": 3,
+        "dry": 3,
+        "hot": 2,
+        "cold": 4,
+        "description": "Challenging in hot weather (product melts). Humidity affects the curl pattern. Better in moderate climates."
+      },
+      "skillRequired": "specialist",
+      "skillDescription": "Chemical processing requires a skilled stylist. Not all barbers do chemical texturizing.",
+      "culturalContext": "Iconic 80s style (Michael Jackson, Eddie Murphy). The modern version is more subtle. A nostalgic choice with cultural significance.",
+      "popularity": 25,
+      "versatility": 2,
+      "tags": ["natural", "retro", "chemical", "product-heavy", "nostalgic"]
+    },
+    {
+      "id": "freeform-locs",
+      "name": "Freeform Locs",
+      "category": "locs",
+      "description": "Locs that form naturally without manipulation or retwisting. Embraces the organic locking process. Each head is unique.",
+      "replicatePrompt": "freeform locs hairstyle, naturally forming dreadlocks, organic unmanipulated locs, varied sizes",
+      "hairTypes": ["3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "maintenance": {
+        "barberFrequency": "quarterly",
+        "barberFrequencyDays": 90,
+        "dailyMinutes": 2,
+        "description": "Minimal maintenance. Wash regularly. Separate locs at the root occasionally. No retwisting needed — that's the point."
+      },
+      "cost": {
+        "perVisit": 30,
+        "currency": "USD",
+        "monthlyCost": 10
+      },
+      "comfort": {
+        "itchiness": 2,
+        "heatRetention": 4,
+        "helmetCompatible": false,
+        "headphoneCompatible": false,
+        "description": "Can be warm. Need regular washing to prevent buildup and itchiness. Helmets and headphones don't fit."
+      },
+      "climate": {
+        "humid": 4,
+        "dry": 4,
+        "hot": 3,
+        "cold": 5,
+        "description": "Good for cold and moderate climates. Warm in hot weather. Humidity doesn't affect freeform locs as much as styled locs."
+      },
+      "skillRequired": "minimal",
+      "skillDescription": "No barber skill needed for the locs themselves. Just need occasional cleaning and separating.",
+      "culturalContext": "Associated with the Rastafarian movement and natural hair philosophy. Represents letting go of control and embracing natural processes.",
+      "popularity": 45,
+      "versatility": 2,
+      "tags": ["locs", "natural", "low-maintenance", "cultural", "spiritual", "commitment"]
+    },
+    {
+      "id": "temp-fade",
+      "name": "Temp Fade / Temple Fade",
+      "category": "fade",
+      "description": "Fade concentrated at the temples only. Keeps hair on the sides and back. Subtle and clean — often paired with a line-up.",
+      "replicatePrompt": "temp fade hairstyle, fade at temples only, hair remains on sides and back, subtle clean look",
+      "hairTypes": ["1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "maintenance": {
+        "barberFrequency": "biweekly",
+        "barberFrequencyDays": 14,
+        "dailyMinutes": 2,
+        "description": "Biweekly barber visits. Minimal daily maintenance."
+      },
+      "cost": {
+        "perVisit": 20,
+        "currency": "USD",
+        "monthlyCost": 40
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 3,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "Comfortable. Keeps most hair, so more warmth than full fades."
+      },
+      "climate": {
+        "humid": 4,
+        "dry": 5,
+        "hot": 4,
+        "cold": 5,
+        "description": "Good for all climates. More hair coverage than full fades, better for cold."
+      },
+      "skillRequired": "standard",
+      "skillDescription": "Most barbers can do a temp fade. Straightforward technique.",
+      "culturalContext": "Classic, understated cut. Popular among older Black men and those who prefer a conservative look.",
+      "popularity": 65,
+      "versatility": 4,
+      "tags": ["fade", "conservative", "professional", "low-maintenance", "versatile"]
+    },
+    {
+      "id": "shadow-fade",
+      "name": "Shadow Fade",
+      "category": "fade",
+      "description": "Fade that doesn't go to skin — leaves a shadow of hair (guard 0.5-1). Softer than a skin fade but still crisp.",
+      "replicatePrompt": "shadow fade hairstyle, fade leaving short hair shadow not to skin, soft but crisp, neat",
+      "hairTypes": ["1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "maintenance": {
+        "barberFrequency": "biweekly",
+        "barberFrequencyDays": 14,
+        "dailyMinutes": 3,
+        "description": "Biweekly barber visits. Minimal daily styling."
+      },
+      "cost": {
+        "perVisit": 25,
+        "currency": "USD",
+        "monthlyCost": 50
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 2,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "Comfortable. The shadow provides slight warmth without being hot."
+      },
+      "climate": {
+        "humid": 5,
+        "dry": 5,
+        "hot": 4,
+        "cold": 4,
+        "description": "Excellent for all climates. The shadow provides a bit more coverage than a skin fade."
+      },
+      "skillRequired": "standard",
+      "skillDescription": "Most barbers can do a shadow fade. More forgiving than a skin fade.",
+      "culturalContext": "A softer alternative to the skin fade. Popular among men who want a clean look without exposing the scalp.",
+      "popularity": 70,
+      "versatility": 5,
+      "tags": ["fade", "soft", "versatile", "professional", "low-maintenance"]
+    },
+    {
+      "id": "twist-out",
+      "name": "Twist Out",
+      "category": "natural",
+      "description": "Hair that was twisted and then unraveled to create a defined, curly look. A styling technique rather than a cut.",
+      "replicatePrompt": "twist out hairstyle, defined curls from unraveled twists, voluminous natural texture, curly",
+      "hairTypes": ["3B", "3C", "4A", "4B", "4C"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "maintenance": {
+        "barberFrequency": "monthly",
+        "barberFrequencyDays": 30,
+        "dailyMinutes": 15,
+        "description": "Monthly cut. The twist-out itself lasts 2-3 days, then needs re-twisting overnight and unraveling again. High daily maintenance for the style."
+      },
+      "cost": {
+        "perVisit": 30,
+        "currency": "USD",
+        "monthlyCost": 30
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 3,
+        "helmetCompatible": false,
+        "headphoneCompatible": false,
+        "description": "Comfortable to wear but the style is fragile — helmets, headphones, wind, and humidity can destroy it."
+      },
+      "climate": {
+        "humid": 2,
+        "dry": 4,
+        "hot": 3,
+        "cold": 4,
+        "description": "Humidity is the enemy — it reverts the twist-out to frizz. Best in dry, moderate climates."
+      },
+      "skillRequired": "standard",
+      "skillDescription": "Can be done at home with practice. The barber just cuts the base shape.",
+      "culturalContext": "A staple of the natural hair movement. Celebrates and defines natural curl patterns.",
+      "popularity": 55,
+      "versatility": 3,
+      "tags": ["natural", "curly", "defined", "high-daily-maintenance", "fragile"]
+    },
+    {
+      "id": "low-taper-textured-top",
+      "name": "Low Taper with Textured Top",
+      "category": "fade",
+      "description": "Subtle low taper at the edges with a textured, messy top. The most popular modern men's cut of 2024-2025.",
+      "replicatePrompt": "low taper with textured top hairstyle, subtle taper at edges, messy textured top, modern",
+      "hairTypes": ["1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C", "4A"],
+      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "maintenance": {
+        "barberFrequency": "biweekly",
+        "barberFrequencyDays": 21,
+        "dailyMinutes": 5,
+        "description": "Tri-weekly barber visits for the taper. Daily texturizing with matte product."
+      },
+      "cost": {
+        "perVisit": 30,
+        "currency": "USD",
+        "monthlyCost": 40
+      },
+      "comfort": {
+        "itchiness": 1,
+        "heatRetention": 2,
+        "helmetCompatible": true,
+        "headphoneCompatible": true,
+        "description": "Comfortable and practical. The textured top is low-profile enough for helmets."
+      },
+      "climate": {
+        "humid": 4,
+        "dry": 5,
+        "hot": 4,
+        "cold": 4,
+        "description": "Works in most climates. Product may need adjustment in humidity."
+      },
+      "skillRequired": "standard",
+      "skillDescription": "Most modern barbers can do this. It's the most requested cut of 2024-2025.",
+      "culturalContext": "The defining men's cut of the 2020s. Popularized by TikTok and celebrity barbers. Crosses racial and cultural boundaries.",
+      "popularity": 95,
+      "versatility": 5,
+      "tags": ["fade", "modern", "trendy", "versatile", "popular", "low-maintenance"]
+    }
+  ]
+}

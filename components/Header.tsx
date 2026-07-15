@@ -25,6 +25,7 @@ export function Header() {
       <h1 className="text-2xl font-normal ml-0 md:ml-4">HAIRDO</h1>
       <div className="flex-1" />
       <div className="flex items-center gap-2">
+        {/* Onchain premium — subtle, opt-in */}
         <ConnectButton />
         <Button
           asChild
