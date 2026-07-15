@@ -1,46 +1,48 @@
 # HAIRDO
 
-AI-powered hairstyle generator live on LISK.
+An agentic style advisor for Black men — upload a photo, describe your
+lifestyle and constraints, and get ranked style recommendations with real
+tradeoff metadata (maintenance, cost, comfort, climate fit). Try on any style
+with AI visualization. Optionally, attest your style choice onchain via Lisk.
+
+**Full product plan: [docs/PRODUCT_PLAN.md](docs/PRODUCT_PLAN.md)**
 
 ## How it works
 
-🚀 [Replicate](https://replicate.com) - ML model hosting platform
+1. Upload a photo or take a selfie
+2. Set your preferences — hair type, climate, budget, maintenance tolerance
+3. Get ranked style recommendations with tradeoff metadata
+4. Try on any style with AI visualization (Replicate)
+5. (Optional) Attest your style choice onchain via Lisk
 
-✂️ [HairCLIP](https://replicate.com/wty-ustc/hairclip) - AI hairstyle generation model
+## Architecture
 
-⛓️ [LISK](https://lisk.com) - Layer 2 blockchain
+- **Frontend**: Landing page + interactive demo (also serves as API test harness)
+- **Backend**: Style Intelligence ASP — x402-paid API endpoints on Lisk
+  - `api/recommend` — ranked style recommendations with tradeoffs
+  - `api/visualize` — AI try-on via Replicate
+  - `api/attest` — onchain attestation of style choice (Lisk premium)
+- **Data**: `data/styles.json` — curated tradeoff metadata for 30-40+ Black
+  men's styles (the defensible moat)
+- **Onchain**: Lisk mainnet — x402 payments + attestation infrastructure
 
-💰 Pay-per-use with LISK blockchain integration
+## Tech Stack
 
-## Features
-
-- Upload a photo or take a selfie with your device camera
-- Generate AI-modified versions with different hairstyles
-- Choose from various hairstyles, shades, and colors
-- Powered by the HairCLIP model on Replicate
-- Built with Next.js, Tailwind CSS, and Lisk blockchain
-- Pay-per-use system with Lisk blockchain integration
-- Privacy-focused - photos are processed locally and never stored
-
-## Quick Start
-
-1. Visit [hairdo.vercel.app](https://hairdo.vercel.app)
-2. Connect your wallet using the button in the top right corner
-3. Choose to upload a photo or take a selfie
-4. Select your desired hairstyle, shade, and color
-5. Click "Transform Hairstyle" and pay the small fee (0.001 ETH)
-6. View your transformed hairstyle!
-
-For detailed instructions, see our [Usage Guide](docs/USAGE_GUIDE.md).
+- Next.js 16 (App Router, Turbopack)
+- React 19 + TypeScript
+- Tailwind CSS v4 + shadcn/ui
+- Replicate (HairCLIP model for AI try-on)
+- Wagmi v3 + Viem (Web3)
+- Lisk L2 (Chain ID: 1135) — x402 payments + onchain attestations
+- Vercel (deployment)
 
 ## Development
 
 ### Prerequisites
 
 1. Get a [Replicate API token](https://replicate.com/account)
-2. Get a [WalletConnect project ID](https://cloud.walletconnect.com)
-3. Deploy the smart contract (see `contracts/README.md`)
-4. (Production) Create an [Upstash Redis](https://upstash.com) instance for persistent replay protection
+2. Get a [WalletConnect project ID](https://cloud.walletconnect.com) (for the onchain premium)
+3. (Production) Create an [Upstash Redis](https://upstash.com) instance for replay protection
 
 Add to `.env.local`:
 
@@ -52,8 +54,6 @@ NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id_here
 KV_REST_API_URL=your_upstash_redis_url
 KV_REST_API_TOKEN=your_upstash_token
 ```
-
-**Important**: Make sure to set your `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` in the environment variables. Without this, wallet connections will fail. Without the Upstash Redis env vars, replay protection falls back to in-memory (lost on cold starts).
 
 ### Run locally
 
@@ -81,50 +81,39 @@ Deploy to Vercel:
 vercel
 ```
 
-Set `REPLICATE_API_TOKEN` and `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` in your deployment environment variables.
+Set `REPLICATE_API_TOKEN` and `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` in your
+deployment environment variables.
 
-Also remember to:
-1. Deploy the smart contract (see `contracts/README.md`)
-2. Update the contract address in `lib/contract-config.ts`
+## Onchain Integration
 
-## Blockchain Integration
+### Lisk Mainnet
+- **Chain ID**: 1135
+- **RPC**: https://rpc.api.lisk.com
+- **Explorer**: https://blockscout.lisk.com
+- **Currency**: ETH
 
-HAIRDO now integrates with the Lisk blockchain for a pay-per-use model:
-
-1. Users must connect their wallet and pay a small fee (0.001 ETH) on Lisk
-2. Payment is processed through our smart contract
-3. After payment confirmation, users can generate a hairstyle
-4. Each payment token can only be used once for security
-
-### Smart Contract Information
-
+### Smart Contract (existing — being repurposed)
 - **Address**: [0x055cA743f0fFB9258ea7f8484794C293f32f2d4C](https://blockscout.lisk.com/address/0x055cA743f0fFB9258ea7f8484794C293f32f2d4C)
 - **Payment Token**: LSK ERC-20 Token [0xac48...1A24](https://blockscout.lisk.com/token/0xac485391EB2d7D88253a7F1eF18C37f4242D1A24)
 - **Verified on Sourcify**: [View on Sourcify](https://repo.sourcify.dev/1135/0x055cA743f0fFB9258ea7f8484794C293f32f2d4C/)
 
-See `contracts/README.md` for deployment instructions and contract details.
+The existing smart contract is being repurposed from a payment gate to an
+attestation issuance flow. See [docs/PRODUCT_PLAN.md](docs/PRODUCT_PLAN.md)
+for the full onchain strategy and Lisk grant path.
 
-## Troubleshooting
+See `contracts/README.md` for contract details.
 
-If you're experiencing issues:
+## Documentation
 
-1. **Wallet Connection Problems**: Make sure your `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` is set in `.env.local`
-2. **Payment Flow Not Triggering**: Check that you've connected your wallet and selected an image
-3. **General Issues**: See our [Troubleshooting Guide](docs/TROUBLESHOOTING.md)
+- [Product Plan](docs/PRODUCT_PLAN.md) — vision, architecture, build order, onchain strategy
+- [Design System](docs/DESIGN_SYSTEM.md) — UI principles and component patterns
+- [Web3 Integration](docs/WEB3_INTEGRATION.md) — wagmi/viem configuration
+- [Usage Guide](docs/USAGE_GUIDE.md) — how to use the app
+- [Troubleshooting](docs/TROUBLESHOOTING.md) — common issues
 
-## Privacy Policy
+## Privacy
 
-We prioritize your privacy:
 - Photos are processed locally in your browser
 - No images are stored on our servers
 - Images are only sent to Replicate's API for processing
-- All processing happens in real-time and is not retained
-
-## Tech Stack
-
-- Next.js 16 (App Router, Turbopack)
-- React 19 + TypeScript
-- Tailwind CSS v4 + shadcn/ui
-- Vercel (Node.js + Edge Runtime)
-- Wagmi v3 + Viem (Web3)
-- Lisk L2 (Chain ID: 1135)
+- Onchain attestations store only a photo hash, never the image itself
