@@ -108,9 +108,9 @@ We prioritize your privacy:
 
 ## Tech Stack
 
-- Next.js 14 (App Router)
-- React + TypeScript
-- Tailwind CSS + shadcn/ui
-- Vercel Edge Runtime
-- Wagmi + ConnectKit (Web3)
+- Next.js 16 (App Router, Turbopack)
+- React 19 + TypeScript
+- Tailwind CSS v4 + shadcn/ui
+- Vercel (Node.js + Edge Runtime)
+- Wagmi v3 + Viem (Web3)
 - Lisk L2 (Chain ID: 1135)

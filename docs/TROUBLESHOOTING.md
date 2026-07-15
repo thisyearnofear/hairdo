@@ -16,7 +16,7 @@ NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_actual_project_id_here
 ### 2. Wallet Not Connected
 **Problem**: The "Transform Hairstyle" button doesn't trigger the payment flow.
 **Solution**:
-- Make sure you've connected your wallet using the ConnectKit button in the header
+- Make sure you've connected your wallet using the Connect Wallet button in the header
 - Look for wallet connection status in the configuration panel
 - Check that you're using a Lisk-compatible wallet (MetaMask, Coinbase Wallet, etc.)
 

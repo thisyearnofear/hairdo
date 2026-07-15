@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract } from "wagmi";
+import { useConnection, useWriteContract, useWaitForTransactionReceipt, useReadContract } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { Loader2, WifiOff, Coins } from "lucide-react";
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/lib/contract-config";
@@ -84,7 +84,7 @@ const ERC20_ABI = [
 ];
 
 export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps) {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected } = useConnection();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<'approval' | 'payment' | 'completed'>('payment');

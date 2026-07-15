@@ -1,10 +1,10 @@
-# Web3 Integration Complete
+# Web3 Integration
 
-## Added
+## Stack
 
-✅ **ConnectKit** - Web3 wallet connection UI
-✅ **Wagmi** - React hooks for Ethereum
+✅ **Wagmi v3** - React hooks for Ethereum
 ✅ **Viem** - TypeScript Ethereum library
+✅ **Custom ConnectButton** - Wallet connection UI (replaces ConnectKit)
 ✅ **Lisk Mainnet** - Configured as primary chain
 
 ## Configuration
@@ -15,27 +15,27 @@
 - **Explorer**: https://blockscout.lisk.com
 - **Currency**: ETH
 
-### Files Created
+### Files
 - `lib/chains.ts` - Lisk chain configuration
-- `components/Web3Provider.tsx` - Wagmi + ConnectKit provider
-
-### Files Updated
-- `app/layout.tsx` - Wrapped app in Web3Provider
-- `components/Header.tsx` - Added ConnectKit button
-- `.env.example` - Added WalletConnect project ID
-- `README.md` - Added Web3 setup instructions
+- `lib/wagmi-config.ts` - Wagmi v3 config (chains, connectors, transports)
+- `components/Web3Provider.tsx` - Wagmi + React Query provider
+- `components/ConnectButton.tsx` - Custom wallet connect/disconnect button
+- `components/Header.tsx` - Renders ConnectButton in header
 
 ## Usage
 
-Users can now:
+Users can:
 1. Click "Connect Wallet" in the header
-2. Connect MetaMask, WalletConnect, or other wallets
-3. Automatically connect to Lisk mainnet
+2. Connect via injected wallet (MetaMask) or WalletConnect
+3. Automatically switch to Lisk mainnet
 4. Use the app onchain
 
-## Next Steps
+## Wagmi v3 Hooks
 
-To enable onchain features:
-- Use `useAccount()` hook to get connected address
-- Use `useWriteContract()` to interact with smart contracts
-- Use `useBalance()` to check ETH balance on Lisk
+The app uses the wagmi v3 hook API:
+- `useConnection()` - connected address, chain, status (replaces deprecated `useAccount()`)
+- `useChains()` - configured chains (replaces `useConfig().chains`)
+- `useSwitchChain()` - switch network (use `mutate` / `mutateAsync`)
+- `useWriteContract()` - write to smart contracts
+- `useReadContract()` - read from smart contracts
+- `useWaitForTransactionReceipt()` - wait for tx confirmation

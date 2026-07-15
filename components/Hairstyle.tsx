@@ -12,7 +12,7 @@ import {
 import { Upload, Camera, Lock, AlertCircle, WifiOff } from "lucide-react"
 import { Output } from "./Output"
 import { hairstyleItems, shadeItems, colorItems } from "@/lib/hair-config"
-import { useAccount, useSwitchChain, useConfig } from "wagmi"
+import { useConnection, useSwitchChain, useChains } from "wagmi"
 import { PaymentHandler } from "./PaymentHandler"
 import { lisk } from "@/lib/chains"
 import {
@@ -29,9 +29,9 @@ interface Prediction extends StoredPrediction {
 }
 
 export function Hairstyle() {
-  const { isConnected, address, isConnecting, isReconnecting, chainId } = useAccount();
-  const { switchChain } = useSwitchChain();
-  const { chains } = useConfig();
+  const { isConnected, address, isConnecting, isReconnecting, chainId } = useConnection();
+  const { mutate: switchChain } = useSwitchChain();
+  const chains = useChains();
   const { history, addPrediction, updatePrediction } = usePredictionHistory();
   
   const fileInputRef = useRef<HTMLInputElement>(null)
