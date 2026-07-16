@@ -95,8 +95,7 @@ contract HairdoProtocol {
     // ─── Staking + Slashing Parameters ──────────────────────────────────
     // ═══════════════════════════════════════════════════════════════════
 
-    IERC20 public constant LSK_TOKEN =
-        IERC20(0xac485391EB2d7D88253a7F1eF18C37f4242D1A24);
+    IERC20 public immutable LSK_TOKEN;
 
     uint256 public constant MIN_STAKE = 10e18;     // 10 LSK to register
     uint256 public constant MAX_SLASH = 5e18;      // max slash per dispute (5 LSK)
@@ -163,8 +162,9 @@ contract HairdoProtocol {
     // ─── Constructor ────────────────────────────────────────────────────
     // ═══════════════════════════════════════════════════════════════════
 
-    constructor() {
+    constructor(address lskToken) {
         owner = msg.sender;
+        LSK_TOKEN = IERC20(lskToken);
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -240,8 +240,8 @@ contract HairdoProtocol {
 
     function decodeHairType(uint16 code) public pure returns (string memory) {
         require(code >= 1 && code <= 12, "Invalid code");
-        uint8 first = (code - 1) / 3 + 1;
-        uint8 second = (code - 1) % 3;
+        uint8 first = uint8((code - 1) / 3 + 1);
+        uint8 second = uint8((code - 1) % 3);
         bytes memory result = new bytes(2);
         result[0] = bytes1(uint8(first + 48));
         result[1] = bytes1(uint8(second + 65));
