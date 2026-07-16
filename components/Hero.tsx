@@ -2,13 +2,66 @@
 
 import { useScrollProgress } from "@/lib/hooks/useScroll"
 import { Reveal } from "@/components/ui/reveal"
+import { StyleIllustration } from "@/components/ui/style-illustration"
 
 export function Hero() {
   const { scrollY } = useScrollProgress()
 
   return (
     <section className="relative pt-32 pb-20 text-center overflow-hidden">
-      {/* Parallax decorative layer — subtle geometric shapes */}
+      {/* Hairstyle illustrations backdrop — large, semi-transparent, parallax */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          transform: `translate3d(0, ${scrollY * 0.12}px, 0)`,
+          willChange: "transform",
+        }}
+      >
+        {/* Left side — fade illustration */}
+        <div
+          className="absolute top-[15%] left-[5%] text-amber/15 hidden md:block"
+          style={{ animation: "drift-1 25s ease-in-out infinite alternate" }}
+        >
+          <StyleIllustration category="fade" size={180} />
+        </div>
+        {/* Right side — afro illustration */}
+        <div
+          className="absolute top-[10%] right-[5%] text-gold/12 hidden md:block"
+          style={{ animation: "drift-2 30s ease-in-out infinite alternate" }}
+        >
+          <StyleIllustration category="natural" size={200} />
+        </div>
+        {/* Bottom left — cornrows */}
+        <div
+          className="absolute bottom-[10%] left-[8%] text-burnt-orange/10 hidden lg:block"
+          style={{ animation: "drift-3 28s ease-in-out infinite alternate" }}
+        >
+          <StyleIllustration category="braids" size={160} />
+        </div>
+        {/* Bottom right — locs */}
+        <div
+          className="absolute bottom-[15%] right-[8%] text-caramel/10 hidden lg:block"
+          style={{ animation: "drift-4 22s ease-in-out infinite alternate" }}
+        >
+          <StyleIllustration category="locs" size={170} />
+        </div>
+        {/* Mid left — line up */}
+        <div
+          className="absolute top-[45%] left-[2%] text-amber/8 hidden xl:block"
+          style={{ animation: "drift-1 35s ease-in-out infinite alternate-reverse" }}
+        >
+          <StyleIllustration category="detail" size={140} />
+        </div>
+        {/* Mid right — buzz cut */}
+        <div
+          className="absolute top-[50%] right-[2%] text-gold/8 hidden xl:block"
+          style={{ animation: "drift-2 32s ease-in-out infinite alternate-reverse" }}
+        >
+          <StyleIllustration category="short" size={140} />
+        </div>
+      </div>
+
+      {/* Parallax decorative layer — warm orbs */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{

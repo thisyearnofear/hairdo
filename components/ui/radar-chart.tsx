@@ -39,17 +39,18 @@ export function RadarChart({
   const n = data.length
   const angleStep = (Math.PI * 2) / n
 
-  // Calculate points for each axis
+  // Calculate points for each axis — guard against NaN values
   const points = data.map((d, i) => {
     const angle = i * angleStep - Math.PI / 2 // start from top
-    const r = (d.value / max) * radius
+    const safeValue = typeof d.value === "number" && !isNaN(d.value) ? d.value : 0
+    const r = (safeValue / max) * radius
     return {
       x: center + r * Math.cos(angle),
       y: center + r * Math.sin(angle),
       labelX: center + (radius + 10) * Math.cos(angle),
       labelY: center + (radius + 10) * Math.sin(angle),
       label: d.label,
-      value: d.value,
+      value: safeValue,
     }
   })
 

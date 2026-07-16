@@ -123,6 +123,7 @@ export function StyleAdvisor() {
   // Image state
   const fileInputRef = useRef<HTMLInputElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const resultsRef = useRef<HTMLDivElement>(null)
   const [image, setImage] = useState<string | null>(null)
   const [loadingFile, setLoadingFile] = useState(false)
   const [showCamera, setShowCamera] = useState(false)
@@ -373,6 +374,11 @@ export function StyleAdvisor() {
       const data = await response.json()
       setRecommendations(data.recommendations)
       play("chime")
+
+      // Autoscroll to results after they render
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+      }, 100)
     } catch (e) {
       console.error("Recommendation error:", e)
       setError("Failed to get recommendations. Please try again.")
@@ -426,7 +432,10 @@ export function StyleAdvisor() {
       play("success")
     } catch (e) {
       console.error("Visualization error:", e)
-      setError("Failed to generate visualization. Please try again.")
+      const errMsg = e instanceof Error ? e.message : "Failed to generate visualization"
+      setError(errMsg.includes("502")
+        ? "The AI visualization service is unavailable. Please try again in a moment."
+        : "Failed to generate visualization. Please try again.")
       play("error")
     } finally {
       setLoadingSubmit(false)
@@ -460,9 +469,32 @@ export function StyleAdvisor() {
       />
 
       {/* Flow Progress Steps */}
-      <div className="mb-12">
+      <div className="mb-8">
         <ProgressSteps currentStep={currentStep} />
       </div>
+
+      {/* Onboarding explainer — how the flow works */}
+      {!image && recommendations.length === 0 && (
+        <Reveal direction="fade" className="mb-10 max-w-2xl mx-auto">
+          <div className="flex items-start gap-4 p-4 border border-amber/15 bg-amber/5 rounded-lg glass-warm">
+            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-amber/10 border border-amber/20 flex items-center justify-center">
+              <HelpCircle className="w-5 h-5 text-amber/70" />
+            </div>
+            <div className="space-y-1.5">
+              <p className="text-sm font-medium text-amber/90">How it works</p>
+              <p className="text-xs opacity-70 leading-relaxed">
+                <strong className="opacity-90">1.</strong> Upload a selfie or take one with your camera.
+                <br />
+                <strong className="opacity-90">2.</strong> Set your hair type and preferences — get ranked style recommendations.
+                <br />
+                <strong className="opacity-90">3.</strong> Pick a style and we&apos;ll generate an AI visualization of it on <em>your</em> face.
+                <br />
+                <strong className="opacity-90">4.</strong> Attest your cut onchain to find and review verified barbers.
+              </p>
+            </div>
+          </div>
+        </Reveal>
+      )}
 
       {/* Camera Modal */}
       {showCamera && (
@@ -495,6 +527,10 @@ export function StyleAdvisor() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
         {/* Upload Section */}
         <Reveal direction="left" className="relative">
+          {/* Section label */}
+          <div className="absolute -top-7 left-0 text-[10px] tracking-wider uppercase opacity-50">
+            Step 1 — Your photo
+          </div>
           {/* Corner Brackets — warm tone */}
           <div className="absolute -top-4 -left-4 w-8 h-8 border-l-2 border-t-2 border-amber/20" />
           <div className="absolute -top-4 -right-4 w-8 h-8 border-r-2 border-t-2 border-amber/20" />
@@ -522,7 +558,7 @@ export function StyleAdvisor() {
                 />
                 <div className="absolute bottom-0 left-0 right-0 p-4 bg-linear-to-t from-black/80 to-transparent">
                   <p className="text-xs tracking-wide opacity-70">
-                    Image loaded
+                    Photo ready — we&apos;ll use this to show styles on your face
                   </p>
                 </div>
               </>
@@ -564,7 +600,11 @@ export function StyleAdvisor() {
         </Reveal>
 
         {/* Preferences Section */}
-        <Reveal direction="right" className="flex flex-col justify-center gap-5 px-4">
+        <Reveal direction="right" className="flex flex-col justify-center gap-5 px-4 relative">
+          {/* Section label */}
+          <div className="absolute -top-7 left-4 text-[10px] tracking-wider uppercase opacity-50">
+            Step 2 — Your preferences
+          </div>
           <div className="space-y-4">
             {/* Hair Type — with visual guide toggle */}
             <div className="space-y-2">
@@ -743,7 +783,7 @@ export function StyleAdvisor() {
 
       {/* Recommendations */}
       {recommendations.length > 0 && (
-        <div className="mt-16 max-w-6xl mx-auto">
+        <div ref={resultsRef} className="mt-16 max-w-6xl mx-auto scroll-mt-8">
           <Reveal direction="up" className="flex items-center justify-between mb-8">
             <h2 className="text-2xl tracking-tight opacity-80 font-display text-gradient-gold">
               Recommended styles
@@ -755,14 +795,15 @@ export function StyleAdvisor() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {recommendations.map((rec, index) => {
-              // Compute radar data from style attributes
+              // Compute radar data from style attributes — guard against undefined
+              const climateScore = rec.style.climate[climate as keyof typeof rec.style.climate]
               const radarData = [
-                { label: "MATCH", value: rec.score },
-                { label: "COMFORT", value: 100 - (rec.style.comfort.itchiness + rec.style.comfort.heatRetention) * 10 },
-                { label: "CLIMATE", value: rec.style.climate[climate as keyof typeof rec.style.climate] as number * 20 },
-                { label: "COST", value: Math.max(0, 100 - rec.style.cost.perVisit * 2) },
-                { label: "MAINT.", value: Math.max(0, 100 - rec.style.maintenance.barberFrequencyDays * 3) },
-                { label: "POPULAR", value: rec.style.popularity },
+                { label: "MATCH", value: rec.score ?? 0 },
+                { label: "COMFORT", value: Math.max(0, Math.min(100, 100 - ((rec.style.comfort?.itchiness ?? 0) + (rec.style.comfort?.heatRetention ?? 0)) * 10)) },
+                { label: "CLIMATE", value: typeof climateScore === "number" ? climateScore * 20 : 50 },
+                { label: "COST", value: Math.max(0, 100 - (rec.style.cost?.perVisit ?? 0) * 2) },
+                { label: "MAINT.", value: Math.max(0, 100 - (rec.style.maintenance?.barberFrequencyDays ?? 0) * 3) },
+                { label: "POPULAR", value: rec.style.popularity ?? 50 },
               ]
 
               return (
@@ -876,7 +917,7 @@ export function StyleAdvisor() {
                   />
                 </div>
 
-                {/* Visualize button */}
+                {/* Visualize button — see this style on your photo */}
                 <div className="flex gap-2 mt-4">
                   <Button
                     onClick={(e) => {
@@ -891,9 +932,9 @@ export function StyleAdvisor() {
                     <Zap className="w-3 h-3 mr-2" />
                     {image
                       ? loadingSubmit && selectedStyleId === rec.style.id
-                        ? "Generating..."
-                        : "Visualize"
-                      : "Upload first"}
+                        ? "Generating on your photo..."
+                        : "See it on me"
+                      : "Upload a selfie first"}
                   </Button>
 
                   {/* Onchain attestation — only visible when wallet connected */}
