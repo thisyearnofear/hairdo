@@ -16,9 +16,11 @@ proactively nudges you when it's time to rebook.
 2. Set your preferences — hair type, climate, budget, maintenance tolerance
 3. Get ranked style recommendations with tradeoff metadata
 4. Try on any style with AI visualization (two tiers: basic free, refined premium)
-5. Attest your style choice onchain — mints a Style Credential (soulbound NFT)
-6. The Hair Growth Agent tracks your attested cuts and nudges you to rebook
-7. Verify any attestation by tokenId at `/attestations/[tokenId]`
+5. Find verified barbers who specialize in your chosen style
+6. Attest your cut onchain — mints a Style Credential (soulbound NFT),
+   available after you've visualized the style on your face
+7. The Hair Growth Agent tracks your attested cuts and nudges you to rebook
+8. Verify any attestation by tokenId at `/attestations/[tokenId]`
 
 ## Architecture
 

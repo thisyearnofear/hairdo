@@ -922,8 +922,8 @@ export function StyleAdvisor() {
                   />
                 </div>
 
-                {/* Visualize button — see this style on your photo */}
-                <div className="flex gap-2 mt-4">
+                {/* Visualize button — see this style on your photo (primary action) */}
+                <div className="mt-4">
                   <Button
                     onClick={(e) => {
                       e.stopPropagation()
@@ -932,7 +932,7 @@ export function StyleAdvisor() {
                     disabled={!image || loadingSubmit}
                     variant="secondary"
                     size="sm"
-                    className="flex-1 text-xs tracking-wide"
+                    className="w-full text-xs tracking-wide"
                   >
                     <Zap className="w-3 h-3 mr-2" />
                     {image
@@ -943,32 +943,43 @@ export function StyleAdvisor() {
                           : "See it on me"
                       : "Upload a selfie first"}
                   </Button>
-
-                  {/* Onchain attestation — only visible when wallet connected */}
-                  {isConnected && chainId === lisk.id && (
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        openAttestation(rec)
-                      }}
-                      variant="outline"
-                      size="sm"
-                      className="text-xs tracking-wide border-amber/30 text-amber/80 hover:bg-amber/10"
-                    >
-                      <Link2 className="w-3 h-3 mr-1" />
-                      Attest
-                    </Button>
-                  )}
                 </div>
 
-                {/* Find barbers link — Phase 4 integration, filtered by style */}
+                {/* Find barbers — primary next step, always visible */}
                 <Link
                   href={`/barbers?style=${rec.style.id}`}
-                  className="flex items-center justify-center gap-1.5 mt-3 text-[10px] tracking-wide uppercase opacity-40 hover:opacity-70 transition-opacity"
+                  className="flex items-center justify-center gap-1.5 mt-3 text-xs tracking-wide text-amber/80 hover:text-amber border border-amber/20 hover:border-amber/40 hover:bg-amber/5 rounded-lg py-2 transition-colors"
                 >
                   <Scissors className="w-3 h-3" />
                   Find barbers for this style
                 </Link>
+
+                {/* Onchain attestation — only after you've seen it on your face,
+                    and only when wallet is connected on Lisk.
+                    Self-attest is a personal timestamp; barber-attested cuts
+                    carry more trust weight (stake-backed, two-sided). */}
+                {isConnected && chainId === lisk.id && (
+                  <div className="mt-3">
+                    {list.some((p) => p.hairstyle === rec.style.name) ? (
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          openAttestation(rec)
+                        }}
+                        variant="outline"
+                        size="sm"
+                        className="w-full text-xs tracking-wide border-amber/30 text-amber/80 hover:bg-amber/10"
+                      >
+                        <Link2 className="w-3 h-3 mr-1" />
+                        Attest this cut
+                      </Button>
+                    ) : (
+                      <p className="text-[10px] tracking-wide opacity-30 text-center font-display italic">
+                        Visualize it first, then attest your cut onchain
+                      </p>
+                    )}
+                  </div>
+                )}
               </Reveal>
               )
             })}

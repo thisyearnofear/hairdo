@@ -268,7 +268,7 @@ contract HairdoProtocol {
         // Transfer LSK stake
         require(
             LSK_TOKEN.transferFrom(msg.sender, address(this), stakeAmount),
-            "Stake transfer failed — check approval and balance"
+            "Stake transfer failed - check approval and balance"
         );
 
         Barber storage b = barbers[msg.sender];
@@ -412,7 +412,7 @@ contract HairdoProtocol {
         // Barber pays the credential fee
         require(
             LSK_TOKEN.transferFrom(msg.sender, address(this), credentialFee),
-            "Fee payment failed — check approval and balance"
+            "Fee payment failed - check approval and balance"
         );
 
         uint256 tokenId = _mintCredential(
@@ -448,7 +448,7 @@ contract HairdoProtocol {
         // Client pays the credential fee
         require(
             LSK_TOKEN.transferFrom(msg.sender, address(this), credentialFee),
-            "Fee payment failed — check approval and balance"
+            "Fee payment failed - check approval and balance"
         );
 
         _mintCredential(
@@ -745,11 +745,11 @@ contract HairdoProtocol {
     }
 
     function approve(address, uint256) public pure {
-        revert("Soulbound — no approvals");
+        revert("Soulbound - no approvals");
     }
 
     function setApprovalForAll(address, bool) public pure {
-        revert("Soulbound — no approvals");
+        revert("Soulbound - no approvals");
     }
 
     // ═══════════════════════════════════════════════════════════════════

@@ -290,39 +290,46 @@ industry, disproportionately Black and African diaspora.
 19. ✅ Technical/trust aesthetic for barber verification
 20. ✅ Tiered visualization (Basic free + Refined premium)
 21. ✅ Hybrid design shift — friendlier labels, removed technical jargon
+22. ✅ Design cohesion pass — AttestationHandler rewritten in warm voice
+    (no more ALL_CAPS_UNDERSCORES), value-prop explainer added at the
+    onchain seam; recommendation card reordered (Visualize → Find barbers →
+    Attest, with attest gated behind visualization); DESIGN_SYSTEM.md
+    rewritten to match the shipped warm/magazine tokens
 
 ### Phase 5: HairdoProtocol + Growth Agent ← CURRENT
-22. ✅ Write `HairdoProtocol.sol` — unified protocol contract (style registry,
+23. ✅ Write `HairdoProtocol.sol` — unified protocol contract (style registry,
     SBT credentials, barber registry, trust score, staking/slashing, growth
     tracking)
-23. ✅ Update `lib/contract-config.ts` with new protocol ABI
-24. ✅ Build `api/growth` — growth estimation + rebook nudges
-25. ✅ Build client-side growth agent (`useGrowthAgent` hook)
-26. ✅ Build `GrowthNudge` component — surfaces agent nudges in the UI
-27. ⬜ Deploy `HairdoProtocol.sol` on Lisk mainnet
-28. ⬜ Register all 34 styles onchain (maintenance windows)
-29. ⬜ Upgrade `api/attest` to call `selfAttest()` or `attestCut()` on the
+24. ✅ Update `lib/contract-config.ts` with new protocol ABI
+25. ✅ Build `api/growth` — growth estimation + rebook nudges
+26. ✅ Build client-side growth agent (`useGrowthAgent` hook)
+27. ✅ Build `GrowthNudge` component — surfaces agent nudges in the UI
+28. ✅ Write deployment scripts (`script/Deploy.s.sol`,
+    `script/RegisterStyles.s.sol`) + Foundry config (`foundry.toml`)
+29. ⬜ Deploy `HairdoProtocol.sol` on Lisk mainnet
+30. ⬜ Register all 34 styles onchain (maintenance windows)
+31. ⬜ Upgrade `api/attest` to call `selfAttest()` or `attestCut()` on the
     new contract instead of verifying legacy payment
-30. ⬜ Upgrade `AttestationHandler` to mint SBTs through the new contract
-31. ⬜ Build barber registration flow (stake LSK, declare specialties)
-32. ⬜ Build growth dashboard — shows attested cut history, growth status,
+32. ⬜ Upgrade `AttestationHandler` to mint SBTs through the new contract
+33. ⬜ Build barber registration flow (stake LSK, declare specialties)
+34. ⬜ Build growth dashboard — shows attested cut history, growth status,
     rebook urgency, barber recommendations
-33. ⬜ Feed attestation history back into style matcher for recommendation
+35. ⬜ Feed attestation history back into style matcher for recommendation
     refinement (users who liked X also tried Y; you rebook late, try Z)
 
 ### Phase 6: Barber Attestation Protocol (grant-funded, future)
-31. ⬜ Deploy barber attestation contract on Lisk mainnet
-32. ⬜ Build barber-facing flow: issue attestation after a cut
-33. ⬜ Link barber attestations to client Style Credentials (two-sided trust)
-34. ⬜ Barber staking + slashing (economic security layer)
-35. ⬜ Pilot with one barbershop — real attestations happening
-36. ⬜ Apply for Lisk DAO Builder Grant with pilot data
+36. ⬜ Deploy barber attestation contract on Lisk mainnet
+37. ⬜ Build barber-facing flow: issue attestation after a cut
+38. ⬜ Link barber attestations to client Style Credentials (two-sided trust)
+39. ⬜ Barber staking + slashing (economic security layer)
+40. ⬜ Pilot with one barbershop — real attestations happening
+41. ⬜ Apply for Lisk DAO Builder Grant with pilot data
 
 ### Phase 7: Agentic Booking + Escrow (future)
-37. ⬜ Agent finds verified barbers who specialize in recommended style
-38. ⬜ Agent negotiates a slot and escrows payment onchain
-39. ⬜ Payment released after user attests satisfaction
-40. ⬜ Dispute resolution based on attestation evidence
+42. ⬜ Agent finds verified barbers who specialize in recommended style
+43. ⬜ Agent negotiates a slot and escrows payment onchain
+44. ⬜ Payment released after user attests satisfaction
+45. ⬜ Dispute resolution based on attestation evidence
 
 ## What Stays From the Current Codebase
 
