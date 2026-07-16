@@ -395,6 +395,40 @@
   border-radius: 2px;
 }
 
+/* Cornrow pattern — converging row motif for section dividers */
+@utility cornrow-pattern {
+  height: 6px;
+  background-image:
+    repeating-linear-gradient(
+      88deg,
+      transparent 0px,
+      transparent 10px,
+      hsl(38 70% 55%) 10px,
+      hsl(38 70% 55%) 12px,
+      transparent 12px,
+      transparent 22px,
+      hsl(18 55% 42%) 22px,
+      hsl(18 55% 42%) 24px
+    );
+  opacity: 0.12;
+  border-radius: 3px;
+}
+
+/* Fade gradient — vertical skin-to-hair blend for decorative bars */
+@utility fade-stripe {
+  height: 40px;
+  background: linear-gradient(
+    180deg,
+    hsl(38 70% 55%) 0%,
+    hsl(38 70% 45%) 30%,
+    hsl(30 40% 25%) 60%,
+    hsl(25 20% 10%) 85%,
+    transparent 100%
+  );
+  opacity: 0.2;
+  border-radius: 4px;
+}
+
 /* ============================================
    Glass — warm frosted glass for cards
    ============================================ */

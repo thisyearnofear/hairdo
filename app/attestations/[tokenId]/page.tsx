@@ -102,7 +102,10 @@ export default function AttestationPage({
           <p className="text-[10px] tracking-wider opacity-50 break-all">
             {tokenId}
           </p>
-          <div className="max-w-xs mx-auto barbershop-divider mt-6" />
+          <div className="max-w-xs mx-auto space-y-1.5 mt-6">
+            <div className="barbershop-divider" />
+            <div className="cornrow-pattern" />
+          </div>
         </Reveal>
 
         {/* Loading state */}

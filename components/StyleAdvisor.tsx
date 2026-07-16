@@ -929,7 +929,10 @@ export function StyleAdvisor() {
           {/* Shade & Color controls for visualization */}
           {image && (
             <>
-            <div className="max-w-xs mx-auto barbershop-divider mt-8 mb-8" />
+            <div className="max-w-xs mx-auto space-y-1.5 mt-8 mb-8">
+              <div className="barbershop-divider" />
+              <div className="cornrow-pattern" />
+            </div>
             <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
               <div className="space-y-2">
                 <label className="text-xs tracking-wide font-medium opacity-60">

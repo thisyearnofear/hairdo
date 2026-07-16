@@ -68,7 +68,7 @@ export function Hero() {
       </div>
 
       {/* Subtitle — warm, human, italic display serif */}
-      <Reveal direction="up" delay={200} className="relative z-10 max-w-xl mx-auto mb-8">
+      <Reveal direction="up" delay={200} className="relative z-10 max-w-xl mx-auto mb-6">
         <p className="text-base tracking-normal opacity-75 leading-relaxed font-display italic">
           An agentic style advisor for Black men. Upload a photo, describe your
           lifestyle, and get ranked recommendations with real tradeoffs —
@@ -76,15 +76,26 @@ export function Hero() {
         </p>
       </Reveal>
 
+      {/* Cultural homage — real hairstyle names as a subtle marquee */}
+      <Reveal direction="fade" delay={300} className="relative z-10 max-w-2xl mx-auto mb-8">
+        <p className="text-[11px] tracking-[0.2em] uppercase opacity-30 leading-relaxed">
+          Skin Fade · Box Braids · Cornrows · Dread Locs · 360 Waves ·
+          Afro · Shape Up · High Top Fade · Two-Strand Twists · Slick Back
+        </p>
+      </Reveal>
+
       {/* Technical Descriptor — kept as meta label */}
-      <Reveal direction="fade" delay={300} className="relative z-10 max-w-2xl mx-auto mb-16">
+      <Reveal direction="fade" delay={400} className="relative z-10 max-w-2xl mx-auto mb-12">
         <p className="text-[10px] tracking-wider uppercase opacity-40 leading-relaxed">
           34 styles · tradeoff database · Replicate engine · Lisk 1135
         </p>
       </Reveal>
 
-      {/* Barbershop stripe divider — cultural motif */}
-      <div className="relative z-10 max-w-xs mx-auto barbershop-divider" />
+      {/* Barbershop stripe + cornrow pattern — cultural motifs */}
+      <div className="relative z-10 max-w-xs mx-auto space-y-1.5">
+        <div className="barbershop-divider" />
+        <div className="cornrow-pattern" />
+      </div>
 
       {/* Corner Markers — warm tone */}
       <div className="absolute top-24 left-8 w-8 h-8 border-l border-t border-amber/20" />

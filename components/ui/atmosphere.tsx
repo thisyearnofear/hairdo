@@ -109,17 +109,17 @@ export function Atmosphere() {
         />
       </div>
 
-      {/* Layer 3: Cultural geometric pattern — kente-inspired crosshatch */}
+      {/* Layer 3: Cornrow-inspired geometric pattern — converging rows */}
       <div
-        className="absolute inset-0 opacity-[0.06]"
+        className="absolute inset-0 opacity-[0.05]"
         style={{
           transform: `translate3d(0, ${scrollY * 0.04}px, 0)`,
           willChange: "transform",
           backgroundImage: `
-            repeating-linear-gradient(45deg, transparent, transparent 20px, hsl(38 70% 55%) 20px, hsl(38 70% 55%) 22px, transparent 22px, transparent 40px, hsl(18 55% 42%) 40px, hsl(18 55% 42%) 42px),
-            repeating-linear-gradient(-45deg, transparent, transparent 30px, hsl(45 70% 50%) 30px, hsl(45 70% 50%) 32px)
+            repeating-linear-gradient(175deg, transparent, transparent 18px, hsl(38 70% 55%) 18px, hsl(38 70% 55%) 20px, transparent 20px, transparent 38px, hsl(18 55% 42%) 38px, hsl(18 55% 42%) 40px),
+            repeating-linear-gradient(185deg, transparent, transparent 26px, hsl(45 70% 50%) 26px, hsl(45 70% 50%) 28px)
           `,
-          backgroundSize: "80px 80px",
+          backgroundSize: "90px 90px",
         }}
       />
 

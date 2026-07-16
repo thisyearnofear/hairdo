@@ -117,28 +117,28 @@ interface HairTypeGuideProps {
 }
 
 const ALL_TYPES = [
-  { value: "1A", label: "Straight (fine)" },
-  { value: "1B", label: "Straight (medium)" },
-  { value: "1C", label: "Straight (coarse)" },
-  { value: "2A", label: "Wavy (fine)" },
-  { value: "2B", label: "Wavy (medium)" },
-  { value: "2C", label: "Wavy (coarse)" },
-  { value: "3A", label: "Curly (loose)" },
-  { value: "3B", label: "Curly (springy)" },
-  { value: "3C", label: "Curly (tight)" },
-  { value: "4A", label: "Coily (soft S)" },
-  { value: "4B", label: "Coily (tight Z)" },
-  { value: "4C", label: "Coily (dense)" },
+  { value: "1A", label: "Straight (fine)", example: "Slick back" },
+  { value: "1B", label: "Straight (medium)", example: "Slick back" },
+  { value: "1C", label: "Straight (coarse)", example: "Slick back" },
+  { value: "2A", label: "Wavy (fine)", example: "Caesar cut" },
+  { value: "2B", label: "Wavy (medium)", example: "Textured crop" },
+  { value: "2C", label: "Wavy (coarse)", example: "Textured crop" },
+  { value: "3A", label: "Curly (loose)", example: "Curly fade" },
+  { value: "3B", label: "Curly (springy)", example: "Curly fade" },
+  { value: "3C", label: "Curly (tight)", example: "Two-strand twists" },
+  { value: "4A", label: "Coily (soft S)", example: "Wash & go" },
+  { value: "4B", label: "Coily (tight Z)", example: "Two-strand twists" },
+  { value: "4C", label: "Coily (dense)", example: "Afro / locs" },
 ]
 
 export function HairTypeGuide({ selected, onSelect }: HairTypeGuideProps) {
   return (
-    <div className="grid grid-cols-4 gap-2 p-3 bg-black/40 border border-white/10 rounded-lg">
+    <div className="grid grid-cols-4 gap-2 p-3 bg-black/40 border border-white/10 rounded-lg border-gradient-warm">
       {ALL_TYPES.map((type) => (
         <button
           key={type.value}
           onClick={() => onSelect(type.value)}
-          className={`flex flex-col items-center gap-1.5 p-2 rounded-md transition-all duration-150 press-scale ${
+          className={`flex flex-col items-center gap-1 p-2 rounded-md transition-all duration-150 press-scale ${
             selected === type.value
               ? "bg-amber/15 border border-amber/30"
               : "bg-transparent border border-transparent hover:bg-white/5 hover:border-white/10"
@@ -151,6 +151,9 @@ export function HairTypeGuide({ selected, onSelect }: HairTypeGuideProps) {
           />
           <span className={`text-[9px] tracking-wide font-medium ${selected === type.value ? "text-amber" : "opacity-50"}`}>
             {type.value}
+          </span>
+          <span className={`text-[8px] tracking-wide ${selected === type.value ? "text-amber/60" : "opacity-30"}`}>
+            {type.example}
           </span>
         </button>
       ))}
