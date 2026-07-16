@@ -50,8 +50,12 @@
   * {
     @apply border-border;
   }
+  html {
+    background: hsl(25 15% 5%);
+  }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background: transparent;
     font-family: var(--font-sans), system-ui, sans-serif;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     -webkit-font-smoothing: antialiased;
