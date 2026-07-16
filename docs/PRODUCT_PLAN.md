@@ -104,13 +104,31 @@ One repo, one deployment. Four layers:
 - `api/barber-score` — barber trust-score from verified onchain history
 - `api/barbers/[address]` — lookup a barber's trust profile
 
-### 3. Onchain — Style Credential Protocol
-- **StyleCredential.sol** — soulbound NFT contract. Each attested cut mints a
-  non-transferable NFT with embedded metadata: styleId, barberAddress,
-  timestamp, hairType, photoHash. Implements ERC-721 with transfer disabled.
+### 3. Onchain — HairdoProtocol
+- **HairdoProtocol.sol** — a unified protocol contract that IS the trust graph.
+  Not a payment processor with an NFT bolted on, but the source of truth for
+  the entire agentic loop:
+  - **Style Registry** — maintenance windows stored onchain so `isOverdue()`
+    is a verifiable view function the agent reads directly
+  - **Style Credentials** — soulbound NFTs for each attested cut, with
+    onchain metadata (styleId, barber, timestamp, hairType, photoHash)
+  - **Barber Registry** — barbers stake LSK to register (skin in the game),
+    declare specialties, build trust through real attestation events
+  - **Cut Attestation** — barbers attest cuts for clients (two-sided trust),
+    or clients self-attest (one-sided). Barber-attested credentials carry
+    more trust weight.
+  - **Trust Score** — computed onchain from attestation events, not from
+    offchain JSON. Four factors: verified cuts (35%), specialty coverage
+    (25%), recency (20%), stake + slashing record (20%)
+  - **Staking + Slashing** — barbers stake LSK; owner can slash for verified
+    disputes, with slashed funds going to the wronged client. This is the
+    economic security layer that makes trust real.
+  - **Growth Tracking** — `isOverdue(tokenId)`, `daysUntilOverdue(tokenId)`,
+    `daysSinceCut(tokenId)` view functions that the agent reads instead of
+    computing growth offchain
 - **Lisk L2 (Chain ID: 1135)** — all onchain operations on Lisk mainnet
-- **LSK token** — used for attestation fees and (future) barber staking
-- Replaces the old `HairdoPayment.sol` which only recorded payment receipts
+- **LSK token** — used for credential fees, barber staking, and slashing
+- Replaces the proof-of-concept `HairdoPayment.sol` (kept for reference)
 
 ### 4. Data — Style Database + Trust Graph
 - `data/styles.json` — 34 Black men's styles with full tradeoff metadata
@@ -126,22 +144,57 @@ One repo, one deployment. Four layers:
 Lisk provided initial funding. The onchain layer serves a real product purpose
 — Style Credentials and the trust graph — not just payment recording.
 
-### Style Credential Protocol
+### HairdoProtocol — The Onchain Trust Graph
 
 The old `HairdoPayment.sol` was a proof-of-concept payment recorder: users paid
 1 LSK, the contract marked a tokenId as used, and the attestation metadata lived
 in Redis. It worked but it didn't create a moat — nothing onchain was reusable
-or portable.
+or portable, and the trust data was entirely offchain.
 
-The new `StyleCredential.sol` is a soulbound NFT contract:
+`HairdoProtocol.sol` is a complete reconception. The contract IS the trust graph:
 
-1. User pays the attestation fee in LSK
-2. Contract mints a non-transferable NFT to the user's wallet
-3. NFT metadata includes: styleId, styleName, barberAddress (if applicable),
-   timestamp, hairType, photoHash (SHA-256, never the image itself)
-4. Token URI resolves to attestation metadata (stored on IPFS or Redis)
-5. Anyone can verify a credential by reading the contract
-6. The user's wallet becomes their portable hair history
+**Style Registry** — The 34 styles' maintenance windows are registered onchain.
+This means `isOverdue(tokenId)` is a verifiable view function. The growth agent
+reads growth status from the contract, not from offchain computation. Anyone
+can verify when a style expires.
+
+**Style Credentials (SBTs)** — Each attested cut mints a non-transferable NFT
+with onchain metadata: styleId, barber, timestamp, hairType, photoHash. Two
+minting paths:
+1. `attestCut()` — a registered barber attests a cut for a client. Two-sided
+   trust: client gets a credential, barber's verifiedCutCount increases.
+2. `selfAttest()` — a client self-attests their own cut. One-sided, but still
+   creates a verifiable timestamp for growth tracking.
+
+Barber-attested credentials carry more trust weight because a verified barber
+is putting their stake behind the attestation.
+
+**Barber Registry** — Barbers stake LSK (minimum 10 LSK) to register. They
+declare their specialties (styleIds from the style registry). The stake is
+skin in the game — it can be slashed for verified disputes. Barbers can
+unstake after a 7-day cooldown (prevents slashing evasion).
+
+**Trust Score (onchain)** — Computed from real attestation events, not mock
+JSON. Four factors matching the offchain engine:
+1. Verified cuts (35%) — total cuts attested onchain
+2. Specialty coverage (25%) — unique styles declared
+3. Recency (20%) — last active timestamp, decays over 30 days
+4. Stake + slashing record (20%) — higher stake = more trust, slashes reduce
+
+`computeTrustScore(address)` is a view function anyone can call.
+
+**Staking + Slashing** — The economic security layer. Owner can slash a
+barber's stake for verified disputes, with slashed funds going to the wronged
+client. Max 5 LSK per slash. This is what makes the trust real — barbers have
+actual financial consequences for bad cuts.
+
+**Growth Tracking** — Three view functions the agent reads:
+- `isOverdue(tokenId)` — boolean, is the style past its maintenance window?
+- `daysUntilOverdue(tokenId)` — int256, days remaining (negative if overdue)
+- `daysSinceCut(tokenId)` — uint256, days since the cut was attested
+
+The agent doesn't compute growth — it reads it from the contract. This makes
+the agent's logic verifiable and deterministic.
 
 **Why soulbound (non-transferable):** Your hair history is personal. If
 credentials were transferable, they'd be sellable, which destroys trust. SBTs
@@ -151,7 +204,8 @@ ensure each credential represents a real cut by a real person.
 use, a user has 6-12 credentials showing their style journey — what they tried,
 what stuck, how often they rebook. The growth agent uses this to personalize.
 Barbers use this to understand new clients. No competitor can copy this
-accumulated history.
+accumulated history. And the trust scores are computed from real onchain
+events — they can't be faked.
 
 ### Hair Growth Agent
 
@@ -237,19 +291,23 @@ industry, disproportionately Black and African diaspora.
 20. ✅ Tiered visualization (Basic free + Refined premium)
 21. ✅ Hybrid design shift — friendlier labels, removed technical jargon
 
-### Phase 5: Style Credentials + Growth Agent ← CURRENT
-22. ⬜ Write `StyleCredential.sol` — soulbound NFT contract with style metadata
-23. ⬜ Deploy `StyleCredential.sol` on Lisk mainnet
-24. ⬜ Update `lib/contract-config.ts` with new contract ABI
-25. ⬜ Upgrade `api/attest` to mint SBT instead of recording payment receipt
-26. ⬜ Upgrade `AttestationHandler` to mint SBT through new contract
-27. ⬜ Build `api/growth` — reads attestation history, estimates growth,
-    returns rebook urgency and nudge content
-28. ⬜ Build client-side growth agent — polls attestation history, surfaces
-    proactive nudges in the UI
-29. ⬜ Build growth dashboard — shows attested cut history, growth status,
+### Phase 5: HairdoProtocol + Growth Agent ← CURRENT
+22. ✅ Write `HairdoProtocol.sol` — unified protocol contract (style registry,
+    SBT credentials, barber registry, trust score, staking/slashing, growth
+    tracking)
+23. ✅ Update `lib/contract-config.ts` with new protocol ABI
+24. ✅ Build `api/growth` — growth estimation + rebook nudges
+25. ✅ Build client-side growth agent (`useGrowthAgent` hook)
+26. ✅ Build `GrowthNudge` component — surfaces agent nudges in the UI
+27. ⬜ Deploy `HairdoProtocol.sol` on Lisk mainnet
+28. ⬜ Register all 34 styles onchain (maintenance windows)
+29. ⬜ Upgrade `api/attest` to call `selfAttest()` or `attestCut()` on the
+    new contract instead of verifying legacy payment
+30. ⬜ Upgrade `AttestationHandler` to mint SBTs through the new contract
+31. ⬜ Build barber registration flow (stake LSK, declare specialties)
+32. ⬜ Build growth dashboard — shows attested cut history, growth status,
     rebook urgency, barber recommendations
-30. ⬜ Feed attestation history back into style matcher for recommendation
+33. ⬜ Feed attestation history back into style matcher for recommendation
     refinement (users who liked X also tried Y; you rebook late, try Z)
 
 ### Phase 6: Barber Attestation Protocol (grant-funded, future)
@@ -280,10 +338,13 @@ industry, disproportionately Black and African diaspora.
 
 ## What Gets Replaced
 
-- `HairdoPayment.sol` → `StyleCredential.sol` (soulbound NFT, not just payment)
-- `lib/contract-config.ts` → new ABI for StyleCredential contract
-- `api/attest` → mints SBT instead of just recording payment receipt
-- `AttestationHandler.tsx` → calls mint on new contract instead of payForService
+- `HairdoPayment.sol` → `HairdoProtocol.sol` (full trust graph, not just payment)
+- `lib/contract-config.ts` → new protocol ABI (style registry, barber registry,
+  trust score, staking, growth tracking — all onchain)
+- `api/attest` → calls `selfAttest()` or `attestCut()` on the protocol contract
+- `AttestationHandler.tsx` → mints SBTs through the protocol contract
+- `data/barbers.json` → onchain barber registry (stake, specialties, trust score
+  computed from real attestation events)
 - Static recommendations → attestation-history-aware recommendations
 
 ## Competitive Landscape

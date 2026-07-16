@@ -189,7 +189,7 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
 
     try {
       // Generate a unique 32-byte token ID for this transaction
-      const tokenId = `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
+      const tokenId = `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}` as `0x${string}`;
 
       // Store the tokenId for later use when the transaction is confirmed
       if (typeof window !== 'undefined') {

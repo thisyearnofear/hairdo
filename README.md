@@ -109,32 +109,35 @@ deployment environment variables.
 - **Currency**: ETH
 - **Payment Token**: LSK ERC-20 [0xac48...1A24](https://blockscout.lisk.com/token/0xac485391EB2d7D88253a7F1eF18C37f4242D1A24)
 
-### Style Credential Protocol (building)
+### HairdoProtocol (building)
 
 The old `HairdoPayment.sol` was a proof-of-concept payment recorder. It's being
-replaced by `StyleCredential.sol` — a soulbound NFT contract that mints a
-non-transferable credential for each attested cut.
+replaced by `HairdoProtocol.sol` — a unified protocol contract that IS the
+trust graph, not just a payment processor with an NFT bolted on.
 
 **Old contract (legacy, being replaced):**
 - **Address**: [0x055cA743f0fFB9258ea7f8484794C293f32f2d4C](https://blockscout.lisk.com/address/0x055cA743f0fFB9258ea7f8484794C293f32f2d4C)
 - **Verified on Sourcify**: [View on Sourcify](https://repo.sourcify.dev/1135/0x055cA743f0fFB9258ea7f8484794C293f32f2d4C/)
 
 **New contract (in development):**
-- `StyleCredential.sol` — ERC-721 with transfers disabled (soulbound)
-- Each attested cut mints an NFT with metadata: styleId, barberAddress,
-  timestamp, hairType, photoHash
-- The user's wallet becomes their portable, verifiable hair history
+- `HairdoProtocol.sol` — a unified protocol handling:
+  - **Style Registry** — maintenance windows onchain, `isOverdue()` view
+  - **Style Credentials** — soulbound NFTs for each attested cut
+  - **Barber Registry** — barbers stake LSK, declare specialties
+  - **Cut Attestation** — barbers attest cuts for clients (two-sided trust)
+  - **Trust Score** — computed onchain from real attestation events
+  - **Staking + Slashing** — economic security for the trust graph
+  - **Growth Tracking** — `isOverdue()`, `daysUntilOverdue()`, `daysSinceCut()`
 
 The attestation flow (new):
-1. User pays the attestation fee in LSK
+1. User pays the credential fee in LSK (or barber pays for barber-attested cuts)
 2. Contract mints a Style Credential SBT to the user's wallet
-3. NFT metadata (styleId, barber, timestamp, hairType, photoHash) is stored
-   onchain + in Redis for fast reads
-4. The Hair Growth Agent reads the user's credentials to estimate growth
+3. Onchain metadata: styleId, barber, timestamp, hairType, photoHash
+4. The Hair Growth Agent reads `isOverdue(tokenId)` from the contract
 5. Anyone can verify a credential by reading the contract or visiting
    `/attestations/[tokenId]`
 
-See `contracts/` for contract source code.
+See `contracts/HairdoProtocol.sol` for the full contract source.
 
 ## Barber Trust-Score ASP
 
