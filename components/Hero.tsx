@@ -86,13 +86,13 @@ export function Hero() {
         />
       </div>
 
-      {/* Meta Info Top — staggered entrance */}
-      <div className="relative z-10 mb-10 flex justify-center gap-6 text-[10px] tracking-wider uppercase opacity-50">
-        <span className="animate-enter-fade" style={{ animationDelay: "0ms" }}>Style Intelligence</span>
-        <span className="w-px h-3 bg-white/30" />
-        <span className="animate-enter-fade" style={{ animationDelay: "60ms" }}>Lisk L2</span>
-        <span className="w-px h-3 bg-white/30" />
-        <span className="animate-enter-fade" style={{ animationDelay: "120ms" }}>v2.0</span>
+      {/* Tagline — warm, human, staggered entrance */}
+      <div className="relative z-10 mb-10 flex justify-center gap-3 text-[11px] tracking-wide opacity-50 animate-enter-fade">
+        <span>For Black men</span>
+        <span className="w-1 h-1 bg-amber/60 rounded-full self-center" />
+        <span>Powered by AI</span>
+        <span className="w-1 h-1 bg-amber/60 rounded-full self-center" />
+        <span>Verified onchain</span>
       </div>
 
       {/* Main Title — dramatic gradient typography, parallax */}
@@ -137,10 +137,10 @@ export function Hero() {
         </p>
       </Reveal>
 
-      {/* Technical Descriptor — kept as meta label */}
+      {/* Soft CTA hint */}
       <Reveal direction="fade" delay={400} className="relative z-10 max-w-2xl mx-auto mb-12">
-        <p className="text-[10px] tracking-wider uppercase opacity-40 leading-relaxed">
-          34 styles · tradeoff database · Replicate engine · Lisk 1135
+        <p className="text-xs tracking-wide opacity-40 leading-relaxed font-display italic">
+          34 styles · real tradeoffs · see them on your face
         </p>
       </Reveal>
 

@@ -132,16 +132,16 @@ function BarbersContent() {
 
         {/* Technical Header */}
         <Reveal direction="up" className="mb-12 text-center">
-          <div className="flex items-center justify-center gap-6 text-[10px] tracking-wider uppercase opacity-50 mb-4">
-            <span>Barber Trust Directory</span>
-            <span className="w-px h-3 bg-white/30" />
-            <span>Lisk L2</span>
+          <div className="flex items-center justify-center gap-3 text-[11px] tracking-wide opacity-50 mb-4">
+            <span>Trust Directory</span>
+            <span className="w-1 h-1 bg-amber/60 rounded-full" />
+            <span>Onchain verified</span>
           </div>
           <h1 className="text-4xl font-bold tracking-tighter mb-3 font-display text-gradient-gold">
             Verified Barbers
           </h1>
           <p className="text-sm opacity-60 max-w-xl mx-auto leading-relaxed">
-            Barbers ranked by onchain attestation history. Trust scores are
+            Barbers ranked by verified attestation history. Trust scores are
             computed from verified cuts, specialty coverage, consistency, and
             recency.
           </p>
@@ -218,7 +218,7 @@ function BarbersContent() {
           <div className="flex flex-col items-center gap-4 py-16">
             <Loader2 className="w-10 h-10 animate-spin opacity-50" />
             <p className="text-xs tracking-wide opacity-50">
-              Fetching trust scores...
+              Loading trust scores...
             </p>
           </div>
         )}
@@ -313,19 +313,19 @@ function BarbersContent() {
                       Trust score
                     </div>
 
-                    <div className="space-y-1 text-[10px] tracking-wider uppercase opacity-50">
+                    <div className="space-y-1 text-[10px] tracking-wide opacity-50">
                       <div className="flex items-center justify-end gap-1.5">
                         <CheckCircle2 className="w-2.5 h-2.5" />
-                        {entry.verifiedCuts} CUTS
+                        {entry.verifiedCuts} cuts
                       </div>
                       <div className="flex items-center justify-end gap-1.5">
                         <Star className="w-2.5 h-2.5" />
                         {entry.averageRating > 0
                           ? entry.averageRating.toFixed(1)
                           : "—"}{" "}
-                        RATING
+                        rating
                       </div>
-                      <div>{entry.uniqueClients} CLIENTS</div>
+                      <div>{entry.uniqueClients} clients</div>
                     </div>
                   </div>
                 </div>
@@ -345,9 +345,9 @@ function BarbersContent() {
 
         {/* Info */}
         {!loading && !error && barbers.length > 0 && (
-          <div className="mt-12 text-center text-[10px] tracking-wider text-white/40 space-y-1">
-            <p>TRUST_SCORES_COMPUTED_FROM_ONCHAIN_ATTESTATION_HISTORY</p>
-            <p>CLICK_ANY_BARBER_TO_VIEW_FULL_TRUST_PROFILE</p>
+          <div className="mt-12 text-center text-[11px] tracking-wide text-white/40 space-y-1 font-display italic">
+            <p>Trust scores computed from onchain attestation history</p>
+            <p>Click any barber to view their full trust profile</p>
           </div>
         )}
       </main>

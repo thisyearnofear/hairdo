@@ -531,8 +531,8 @@ export function StyleAdvisor() {
         {/* Upload Section */}
         <Reveal direction="left" className="relative">
           {/* Section label */}
-          <div className="absolute -top-7 left-0 text-[10px] tracking-wider uppercase opacity-50">
-            Step 1 — Your photo
+          <div className="absolute -top-7 left-0 text-[11px] tracking-wide opacity-50 font-display italic">
+            Your photo
           </div>
           {/* Corner Brackets — warm tone */}
           <div className="absolute -top-4 -left-4 w-8 h-8 border-l-2 border-t-2 border-amber/20" />
@@ -605,8 +605,8 @@ export function StyleAdvisor() {
         {/* Preferences Section */}
         <Reveal direction="right" className="flex flex-col justify-center gap-5 px-4 relative">
           {/* Section label */}
-          <div className="absolute -top-7 left-4 text-[10px] tracking-wider uppercase opacity-50">
-            Step 2 — Your preferences
+          <div className="absolute -top-7 left-4 text-[11px] tracking-wide opacity-50 font-display italic">
+            Your preferences
           </div>
           <div className="space-y-4">
             {/* Hair Type — with visual guide toggle */}
@@ -722,7 +722,7 @@ export function StyleAdvisor() {
               </label>
               <Select value={lifestyle} onValueChange={setLifestyle}>
                 <SelectTrigger className="h-11 bg-black/40 border-white/10 text-sm tracking-wide hover:border-white/30 transition-colors">
-                  <SelectValue placeholder="SELECT_LIFESTYLE" />
+                  <SelectValue placeholder="Choose your lifestyle" />
                 </SelectTrigger>
                 <SelectContent className="bg-black/95 border-white/10 backdrop-blur-xl">
                   {LIFESTYLES.map((item) => (
@@ -779,7 +779,7 @@ export function StyleAdvisor() {
           {/* Status Indicator */}
           <div className="flex items-center justify-center gap-3 text-[10px] tracking-wider uppercase opacity-30">
             <div className="w-2 h-2 rounded-full bg-sage animate-pulse" />
-            <span>Advisor ready</span>
+            <span>Ready when you are</span>
           </div>
         </Reveal>
       </div>
@@ -789,10 +789,10 @@ export function StyleAdvisor() {
         <div ref={resultsRef} className="mt-16 max-w-6xl mx-auto scroll-mt-8">
           <Reveal direction="up" className="flex items-center justify-between mb-8">
             <h2 className="text-2xl tracking-tight opacity-80 font-display text-gradient-gold">
-              Recommended styles
+              Your recommendations
             </h2>
             <span className="text-xs tracking-wide opacity-40 tabular-nums">
-              {recommendations.length} results
+              {recommendations.length} styles
             </span>
           </Reveal>
 
@@ -841,8 +841,8 @@ export function StyleAdvisor() {
                         {rec.score}
                         <span className="text-xs opacity-50">/100</span>
                       </div>
-                      <div className="text-[10px] tracking-wide uppercase opacity-40">
-                        Match
+                      <div className="text-[10px] tracking-wide opacity-40">
+                        match
                       </div>
                     </div>
                     <RadarChart data={radarData} size={80} />
@@ -857,7 +857,7 @@ export function StyleAdvisor() {
                 {/* Match reasons */}
                 {rec.matchReasons.length > 0 && (
                   <div className="mb-3">
-                    <p className="text-[10px] tracking-wide uppercase opacity-50 mb-1">
+                    <p className="text-[11px] tracking-wide opacity-50 mb-1.5 font-display italic">
                       Why it fits
                     </p>
                     <ul className="space-y-1">
@@ -877,7 +877,7 @@ export function StyleAdvisor() {
                 {/* Mismatch reasons */}
                 {rec.mismatchReasons.length > 0 && (
                   <div className="mb-3">
-                    <p className="text-[10px] tracking-wide uppercase opacity-50 mb-1">
+                    <p className="text-[11px] tracking-wide opacity-50 mb-1.5 font-display italic">
                       Tradeoffs
                     </p>
                     <ul className="space-y-1">
@@ -1001,7 +1001,7 @@ export function StyleAdvisor() {
                       <span className="text-[9px] tracking-wider uppercase opacity-50">Free</span>
                     </div>
                     <p className="text-[10px] opacity-50 leading-relaxed">
-                      HairCLIP — fast, research-grade preview
+                      Fast preview · rough approximation
                     </p>
                   </button>
                   <button
@@ -1017,7 +1017,7 @@ export function StyleAdvisor() {
                       <span className="text-[9px] tracking-wider uppercase text-amber/60">Premium</span>
                     </div>
                     <p className="text-[10px] opacity-50 leading-relaxed">
-                      SDXL LoRA — trained on Black hair, photorealistic
+                      Photorealistic · trained on Black hair
                     </p>
                   </button>
                 </div>
@@ -1067,9 +1067,9 @@ export function StyleAdvisor() {
           {/* Onchain premium hint (easter egg) */}
           {showOnchainHint && !isConnected && (
             <div className="mt-8 text-center">
-              <p className="text-xs tracking-wide opacity-30 hover:opacity-60 transition-opacity cursor-pointer">
-                {"⚡"} Want to attest your style onchain? Lisk L2 —{" "}
-                <span className="underline">connect wallet in header</span>
+              <p className="text-xs tracking-wide opacity-30 hover:opacity-60 transition-opacity cursor-pointer font-display italic">
+                Want to verify your cut onchain?{" "}
+                <span className="underline">Connect your wallet</span>
               </p>
             </div>
           )}

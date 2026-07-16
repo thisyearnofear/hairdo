@@ -6,6 +6,7 @@ import Image from "next/image"
 import { Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { generateImageFilename, downloadImage } from "@/lib/image"
+import { StyleIllustration } from "@/components/ui/style-illustration"
 
 interface OutputProps {
   output: {
@@ -28,7 +29,7 @@ export function Output({ output }: OutputProps) {
 
   const handleDownload = async () => {
     if (!output.output) return
-    
+
     setIsDownloading(true)
     try {
       const filename = generateImageFilename(
@@ -45,34 +46,39 @@ export function Output({ output }: OutputProps) {
   }
 
   return (
-    <Card className="rounded-2xl shadow-[0_10px_35px_-5px_rgba(0,0,0,0.06)]">
-      <CardContent className="p-4 text-center">
+    <Card className="rounded-2xl border-gradient-warm glass-warm overflow-hidden">
+      <CardContent className="p-6 text-center">
         {isSuccess && (
           <>
-            <h3 className="text-2xl font-normal capitalize mb-2">
-              {output.hairstyle}, {output.shade} {output.color}
-            </h3>
-            {output.tier && (
-              <p className="text-[10px] tracking-wider uppercase opacity-40 mb-4">
-                {output.tier === "refined" ? "Refined (SDXL)" : "Basic (HairCLIP)"}
+            <div className="mb-4">
+              <h3 className="text-2xl font-normal font-display capitalize text-gradient-warm mb-1">
+                {output.hairstyle}
+              </h3>
+              <p className="text-sm opacity-50">
+                {output.shade} {output.color}
               </p>
-            )}
-            
+              {output.tier && (
+                <span className="inline-block mt-2 text-[9px] tracking-wide opacity-30">
+                  {output.tier === "refined" ? "Refined quality" : "Basic preview"}
+                </span>
+              )}
+            </div>
+
             {output.output && (
               <>
                 {/* Toggle button for comparison view */}
                 {output.sourceImage && (
                   <button
                     onClick={() => setShowComparison(!showComparison)}
-                    className="text-xs tracking-widest uppercase opacity-60 hover:opacity-100 transition-opacity mb-4"
+                    className="text-xs tracking-wide opacity-50 hover:opacity-80 transition-opacity mb-4 font-display italic"
                   >
-                    {showComparison ? '← RESULT_ONLY' : 'COMPARISON →'}
+                    {showComparison ? '← Result only' : 'Compare before / after →'}
                   </button>
                 )}
 
                 {/* Before/After Comparison Slider */}
                 {showComparison && output.sourceImage ? (
-                  <div className="mt-4 relative w-full aspect-square overflow-hidden rounded-lg group cursor-col-resize">
+                  <div className="mt-2 relative w-full aspect-square overflow-hidden rounded-lg group cursor-col-resize border border-white/10">
                     {/* Before image */}
                     <div className="absolute inset-0">
                       <Image
@@ -109,21 +115,21 @@ export function Output({ output }: OutputProps) {
 
                     {/* Visual slider line */}
                     <div
-                      className="absolute top-0 bottom-0 w-1 bg-white/60 pointer-events-none transition-all duration-75"
+                      className="absolute top-0 bottom-0 w-0.5 bg-amber/60 pointer-events-none transition-all duration-75"
                       style={{ left: `${sliderPosition}%` }}
                     />
 
                     {/* Labels */}
-                    <div className="absolute top-4 left-4 text-xs tracking-widest uppercase bg-black/50 px-2 py-1 rounded">
-                      BEFORE
+                    <div className="absolute top-3 left-3 text-[10px] tracking-wide bg-black/60 px-2 py-1 rounded opacity-70">
+                      Before
                     </div>
-                    <div className="absolute top-4 right-4 text-xs tracking-widest uppercase bg-black/50 px-2 py-1 rounded">
-                      AFTER
+                    <div className="absolute top-3 right-3 text-[10px] tracking-wide bg-amber/20 px-2 py-1 rounded text-amber/90">
+                      After
                     </div>
                   </div>
                 ) : (
                   /* Result only view */
-                  <div className="mt-4 relative w-full aspect-square">
+                  <div className="mt-2 relative w-full aspect-square rounded-lg overflow-hidden border border-white/10">
                     <Image
                       src={output.output}
                       alt="Generated hairstyle"
@@ -139,10 +145,10 @@ export function Output({ output }: OutputProps) {
                   disabled={isDownloading}
                   variant="secondary"
                   size="sm"
-                  className="w-full mt-4 text-xs tracking-widest uppercase"
+                  className="w-full mt-4 text-xs tracking-wide"
                 >
                   <Download className="w-3 h-3 mr-2" />
-                  {isDownloading ? 'DOWNLOADING...' : 'DOWNLOAD_RESULT'}
+                  {isDownloading ? 'Saving...' : 'Save result'}
                 </Button>
               </>
             )}
@@ -150,9 +156,14 @@ export function Output({ output }: OutputProps) {
         )}
 
         {isFail && (
-          <h3 className="text-2xl font-normal">
-            Something failed. Try again.
-          </h3>
+          <div className="py-8">
+            <p className="text-lg font-display opacity-60 mb-2">
+              Something went wrong
+            </p>
+            <p className="text-xs opacity-40">
+              The AI couldn&apos;t generate this look. Try again or pick another style.
+            </p>
+          </div>
         )}
 
         {!isSuccess && !isFail && (
@@ -163,157 +174,119 @@ export function Output({ output }: OutputProps) {
   )
 }
 
+/**
+ * Loading animation — warm, calm, barbershop-inspired.
+ * Replaces the old emoji-heavy purple/pink spinner with a
+ * warm amber pulse and rotating barbershop-style messages.
+ */
 function LoadingAnimation({ output }: { output: OutputProps['output'] }) {
   const [messageIndex, setMessageIndex] = useState(0)
-  const [colorIndex, setColorIndex] = useState(0)
-  
+
   const startingMessages = [
-    "🧠 Waking up the AI...",
-    "🔮 Consulting the hair gods...",
-    "🎯 Calibrating style sensors...",
-    "🌟 Loading magic pixels...",
-    "⚡ Charging creativity cores...",
-    "🎪 Preparing the transformation...",
+    "Preparing the chair...",
+    "Setting up the tools...",
+    "Getting ready...",
   ]
-  
+
   const processingMessages = [
-    `✂️ Virtually snipping away...`,
-    `💈 Your digital barber is working...`,
-    `🎨 Mixing ${output.shade} ${output.color}...`,
-    `💫 Sprinkling style dust...`,
-    `🔥 Making you look fire...`,
-    `👑 Crafting your crown...`,
-    `✨ Adding the finishing touches...`,
-    `🎭 Revealing your new vibe...`,
-    `🚀 Almost there, stay cool...`,
-    `💎 Polishing perfection...`,
+    `Crafting your ${output.hairstyle || 'new look'}...`,
+    `Mixing ${output.shade || ''} ${output.color || ''}...`,
+    "Your digital barber is working...",
+    "Adding the finishing touches...",
+    "Almost there...",
   ]
-  
+
   const messages = output.status === 'starting' ? startingMessages : processingMessages
-  
-  const colors = [
-    { ring: 'border-purple-500', glow: 'bg-purple-500', shadow: 'shadow-purple-500/50' },
-    { ring: 'border-blue-500', glow: 'bg-blue-500', shadow: 'shadow-blue-500/50' },
-    { ring: 'border-pink-500', glow: 'bg-pink-500', shadow: 'shadow-pink-500/50' },
-    { ring: 'border-emerald-500', glow: 'bg-emerald-500', shadow: 'shadow-emerald-500/50' },
-    { ring: 'border-amber-500', glow: 'bg-amber-500', shadow: 'shadow-amber-500/50' },
-    { ring: 'border-rose-500', glow: 'bg-rose-500', shadow: 'shadow-rose-500/50' },
-  ]
-  
-  // Rotate messages every 3 seconds
+
   useEffect(() => {
     const interval = setInterval(() => {
       setMessageIndex((prev) => (prev + 1) % messages.length)
-    }, 3000)
+    }, 3500)
     return () => clearInterval(interval)
   }, [messages.length])
-  
-  // Rotate colors every 2 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setColorIndex((prev) => (prev + 1) % colors.length)
-    }, 2000)
-    return () => clearInterval(interval)
-  }, [colors.length])
-  
-  const currentColor = colors[colorIndex]
-  
+
   return (
-    <div className="py-12 relative overflow-hidden">
-      {/* Animated background gradient */}
-      <div className="absolute inset-0 opacity-10">
-        <div className={`absolute top-0 left-0 w-32 h-32 ${currentColor.glow} rounded-full blur-3xl animate-pulse`} />
-        <div className={`absolute bottom-0 right-0 w-32 h-32 ${currentColor.glow} rounded-full blur-3xl animate-pulse delay-1000`} />
+    <div className="py-16 relative overflow-hidden">
+      {/* Warm ambient glow */}
+      <div className="absolute inset-0 opacity-15 pointer-events-none">
+        <div
+          className="absolute top-1/4 left-1/3 w-32 h-32 rounded-full animate-pulse"
+          style={{
+            background: "radial-gradient(circle, hsl(38 70% 55%) 0%, transparent 70%)",
+            filter: "blur(40px)",
+          }}
+        />
+        <div
+          className="absolute bottom-1/4 right-1/3 w-32 h-32 rounded-full animate-pulse"
+          style={{
+            background: "radial-gradient(circle, hsl(18 55% 42%) 0%, transparent 70%)",
+            filter: "blur(40px)",
+            animationDelay: "1s",
+          }}
+        />
       </div>
-      
-      {/* Main loading spinner */}
+
       <div className="relative">
-        <div className="relative w-32 h-32 mx-auto mb-8">
-          {/* Outer rotating hexagon effect */}
-          <div className={`absolute inset-0 border-4 ${currentColor.ring} opacity-20 rounded-full transition-all duration-500`} />
-          
-          {/* Middle spinning ring */}
-          <div 
-            className={`absolute inset-2 border-4 ${currentColor.ring} border-t-transparent rounded-full animate-spin transition-all duration-500`}
-            style={{ animationDuration: '1.5s' }}
+        {/* Barber pole-inspired spinner — warm amber rings */}
+        <div className="relative w-24 h-24 mx-auto mb-8">
+          {/* Outer ring */}
+          <div className="absolute inset-0 border-2 border-amber/20 rounded-full" />
+
+          {/* Spinning ring */}
+          <div
+            className="absolute inset-2 border-2 border-amber/40 border-t-transparent rounded-full animate-spin"
+            style={{ animationDuration: '2s' }}
           />
-          
-          {/* Inner counter-spinning ring */}
-          <div 
-            className={`absolute inset-6 border-[3px] ${currentColor.ring} opacity-60 border-b-transparent rounded-full transition-all duration-500`}
-            style={{ animation: 'spin 2s linear infinite reverse' }}
-          />
-          
-          {/* Center pulsing glow */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className={`w-8 h-8 ${currentColor.glow} rounded-full animate-ping transition-all duration-500`} />
-            <div className={`absolute w-8 h-8 ${currentColor.glow} rounded-full blur-xs transition-all duration-500 ${currentColor.shadow}`} />
-          </div>
-          
-          {/* Orbiting dots */}
-          <div className="absolute inset-0 animate-spin" style={{ animationDuration: '3s' }}>
-            <div className={`absolute top-0 left-1/2 -ml-1.5 w-3 h-3 ${currentColor.glow} rounded-full transition-all duration-500`} />
-          </div>
-          <div className="absolute inset-0 animate-spin" style={{ animationDuration: '4s', animationDirection: 'reverse' }}>
-            <div className={`absolute bottom-0 left-1/2 -ml-1.5 w-3 h-3 ${currentColor.glow} rounded-full transition-all duration-500`} />
+
+          {/* Inner pulse — hairstyle illustration in center */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-40">
+            <StyleIllustration category="fade" size={40} className="text-amber/60" />
           </div>
         </div>
-        
-        {/* Animated title */}
-        <h3 className="text-3xl font-bold mb-6 animate-pulse bg-linear-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
-          {output.status === 'starting' ? '🎬 Getting Ready...' : '✨ Creating Magic...'}
+
+        {/* Status title — warm, calm */}
+        <h3 className="text-xl font-display italic opacity-70 mb-6">
+          {output.status === 'starting' ? 'Getting ready' : 'Working on it'}
         </h3>
-        
-        {/* Rotating message with fade effect */}
-        <div className="relative h-8 mb-6">
-          <p 
+
+        {/* Rotating message — fade transition */}
+        <div className="relative h-6 mb-8">
+          <p
             key={messageIndex}
-            className="absolute inset-0 text-lg font-medium animate-[fadeIn_0.5s_ease-in-out] text-center"
+            className="absolute inset-0 text-sm opacity-50 animate-[fadeIn_0.5s_ease-in-out] text-center font-display"
           >
             {messages[messageIndex]}
           </p>
         </div>
-        
-        {/* Progress bar with gradient */}
-        <div className="max-w-xs mx-auto space-y-4">
-          <div className="relative h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
-            <div 
-              className={`absolute inset-y-0 left-0 ${currentColor.glow} rounded-full transition-all duration-1000 animate-[shimmer_2s_ease-in-out_infinite]`}
-              style={{ width: '45%' }}
+
+        {/* Progress bar — warm amber */}
+        <div className="max-w-xs mx-auto space-y-3">
+          <div className="relative h-1 bg-white/5 rounded-full overflow-hidden">
+            <div
+              className="absolute inset-y-0 left-0 rounded-full transition-all duration-1000 animate-[shimmer_2s_ease-in-out_infinite]"
+              style={{
+                width: '50%',
+                background: "linear-gradient(90deg, hsl(38 70% 55%), hsl(18 55% 42%))",
+              }}
             />
-            <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent animate-[slide_2s_ease-in-out_infinite]" />
           </div>
-          
-          {/* Time estimate */}
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span className="font-mono">⏱️ ETA: 2-3 min</span>
-            <span className="animate-pulse">● LIVE</span>
+
+          {/* Time estimate — subtle */}
+          <div className="flex items-center justify-between text-[10px] tracking-wide opacity-30">
+            <span>Usually takes 1-3 min</span>
+            <span className="animate-pulse">Live</span>
           </div>
-        </div>
-        
-        {/* Fun facts carousel */}
-        <div className="mt-8 max-w-md mx-auto">
-          <p className="text-xs text-muted-foreground italic">
-            {output.status === 'starting' 
-              ? "💡 Fun fact: Our AI has styled over 1M virtual looks!"
-              : `🎨 Crafting your perfect ${output.hairstyle} with ${output.shade} ${output.color}`
-            }
-          </p>
         </div>
       </div>
-      
+
       <style jsx>{`
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
+          from { opacity: 0; transform: translateY(-6px); }
+          to { opacity: 0.5; transform: translateY(0); }
         }
         @keyframes shimmer {
           0%, 100% { opacity: 1; }
-          50% { opacity: 0.7; }
-        }
-        @keyframes slide {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(400%); }
+          50% { opacity: 0.6; }
         }
       `}</style>
     </div>

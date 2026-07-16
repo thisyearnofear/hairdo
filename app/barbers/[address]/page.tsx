@@ -150,10 +150,10 @@ export default function BarberProfilePage({
 
         {/* Technical Header */}
         <div className="mb-12 text-center">
-          <div className="flex items-center justify-center gap-6 text-[10px] tracking-wider uppercase opacity-50 mb-4">
-            <span>Barber Trust Profile</span>
-            <span className="w-px h-3 bg-white/30" />
-            <span>Lisk L2</span>
+          <div className="flex items-center justify-center gap-3 text-[11px] tracking-wide opacity-50 mb-4">
+            <span>Trust Profile</span>
+            <span className="w-1 h-1 bg-amber/60 rounded-full" />
+            <span>Onchain verified</span>
           </div>
         </div>
 
@@ -162,7 +162,7 @@ export default function BarberProfilePage({
           <div className="flex flex-col items-center gap-4 py-16">
             <Loader2 className="w-10 h-10 animate-spin opacity-50" />
             <p className="text-xs tracking-wide opacity-50">
-              Fetching trust profile...
+              Loading trust profile...
             </p>
           </div>
         )}
@@ -371,7 +371,7 @@ export default function BarberProfilePage({
               {profile.recommendedFor.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-white/5">
                   <p className="text-[10px] tracking-wide uppercase opacity-50 mb-2">
-                    Onchain proven styles
+                    Verified styles
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {profile.recommendedFor.map((styleId) => (

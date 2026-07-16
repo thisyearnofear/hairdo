@@ -91,15 +91,15 @@ export default function AttestationPage({
 
         {/* Technical Header */}
         <Reveal direction="up" className="mb-12 text-center">
-          <div className="flex items-center justify-center gap-6 text-[10px] tracking-wider uppercase opacity-50 mb-4">
-            <span>Attestation Viewer</span>
-            <span className="w-px h-3 bg-white/30" />
-            <span>Lisk L2</span>
+          <div className="flex items-center justify-center gap-3 text-[11px] tracking-wide opacity-50 mb-4">
+            <span>Attestation</span>
+            <span className="w-1 h-1 bg-amber/60 rounded-full" />
+            <span>Onchain verified</span>
           </div>
           <h1 className="text-3xl font-bold tracking-tighter mb-2 font-display text-gradient-gold">
             Attestation
           </h1>
-          <p className="text-[10px] tracking-wider opacity-50 break-all">
+          <p className="text-[10px] tracking-wide opacity-50 break-all">
             {tokenId}
           </p>
           <div className="max-w-xs mx-auto space-y-1.5 mt-6">
@@ -113,7 +113,7 @@ export default function AttestationPage({
           <div className="flex flex-col items-center gap-4 py-16">
             <Loader2 className="w-10 h-10 animate-spin opacity-50" />
             <p className="text-xs tracking-wide opacity-50">
-              Fetching attestation...
+              Loading attestation...
             </p>
           </div>
         )}
@@ -243,7 +243,7 @@ export default function AttestationPage({
               </div>
               <div className="flex justify-between text-xs">
                 <span className="opacity-50">Network</span>
-                <span className="opacity-70">Lisk L2 (1135)</span>
+                <span className="opacity-70">Lisk (chain 1135)</span>
               </div>
             </div>
             </Reveal>
@@ -267,12 +267,9 @@ export default function AttestationPage({
             </Button>
 
             {/* Info */}
-            <div className="text-center text-[10px] tracking-wide text-white/40 space-y-1 mt-4">
+            <div className="text-center text-[11px] tracking-wide text-white/40 space-y-1 mt-4 font-display italic">
               <p>This attestation is public and verifiable by anyone</p>
-              <p>
-                Verify independently: check isTokenUsed({shortenHash(tokenId)}) on
-                the Lisk contract
-              </p>
+              <p>Verify independently on the Lisk blockchain explorer</p>
             </div>
             </Reveal>
           </div>
