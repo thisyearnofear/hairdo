@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Inter, Fraunces } from "next/font/google"
 import Script from "next/script"
 import { Web3Provider } from "@/components/Web3Provider"
+import { Atmosphere } from "@/components/ui/atmosphere"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
@@ -46,13 +47,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${fraunces.variable}`}>
         <Web3Provider>
-          <div
-            className="min-h-screen bg-[#0a0807]"
-            style={{
-              background: 'radial-gradient(circle at 50% 0%, rgba(217, 164, 76, 0.08) 0%, rgba(180, 80, 40, 0.04) 30%, #0a0807 60%)'
-            }}
-          >
-            {children}
+          <div className="relative min-h-screen">
+            {/* Atmosphere — living warm background world */}
+            <Atmosphere />
+            {/* Content sits above atmosphere */}
+            <div className="relative z-10">
+              {children}
+            </div>
           </div>
         </Web3Provider>
         

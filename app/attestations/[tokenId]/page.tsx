@@ -6,6 +6,7 @@ import { Footer } from "@/components/Footer"
 import { CheckCircle2, XCircle, ExternalLink, Loader2, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { Reveal } from "@/components/ui/reveal"
 
 interface Attestation {
   tokenId: string
@@ -89,19 +90,20 @@ export default function AttestationPage({
         </Link>
 
         {/* Technical Header */}
-        <div className="mb-12 text-center">
+        <Reveal direction="up" className="mb-12 text-center">
           <div className="flex items-center justify-center gap-6 text-[10px] tracking-wider uppercase opacity-50 mb-4">
             <span>Attestation Viewer</span>
             <span className="w-px h-3 bg-white/30" />
             <span>Lisk L2</span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tighter mb-2 font-display">
+          <h1 className="text-3xl font-bold tracking-tighter mb-2 font-display text-gradient-gold">
             Attestation
           </h1>
           <p className="text-[10px] tracking-wider opacity-50 break-all">
             {tokenId}
           </p>
-        </div>
+          <div className="max-w-xs mx-auto barbershop-divider mt-6" />
+        </Reveal>
 
         {/* Loading state */}
         {loading && (
@@ -131,8 +133,9 @@ export default function AttestationPage({
         {attestation && !loading && (
           <div className="space-y-6">
             {/* Verification banner */}
+            <Reveal direction="up">
             <div
-              className={`border p-4 rounded-lg flex items-center gap-3 ${
+              className={`border p-4 rounded-lg flex items-center gap-3 border-gradient-warm glass-warm ${
                 attestation.txVerified
                   ? "border-green-500/20 bg-green-500/5"
                   : "border-yellow-500/20 bg-yellow-500/5"
@@ -160,9 +163,11 @@ export default function AttestationPage({
                 </p>
               </div>
             </div>
+            </Reveal>
 
             {/* Style details */}
-            <div className="border border-white/10 bg-black/20 p-6 rounded-lg space-y-4">
+            <Reveal direction="up" delay={100}>
+            <div className="border border-white/10 bg-black/20 p-6 rounded-lg space-y-4 border-gradient-warm glass-warm">
               <div>
                 <p className="text-[10px] tracking-wide uppercase opacity-50 mb-1">
                   Style
@@ -216,9 +221,11 @@ export default function AttestationPage({
                 </div>
               )}
             </div>
+            </Reveal>
 
             {/* Contract details */}
-            <div className="border border-white/10 bg-black/20 p-4 rounded-lg space-y-2">
+            <Reveal direction="up" delay={150}>
+            <div className="border border-white/10 bg-black/20 p-4 rounded-lg space-y-2 border-gradient-warm glass-warm">
               <p className="text-[10px] tracking-wide uppercase opacity-50 mb-2">
                 Onchain details
               </p>
@@ -236,13 +243,15 @@ export default function AttestationPage({
                 <span className="opacity-70">Lisk L2 (1135)</span>
               </div>
             </div>
+            </Reveal>
 
             {/* Explorer link */}
+            <Reveal direction="up" delay={200}>
             <Button
               asChild
               variant="outline"
               size="lg"
-              className="w-full text-xs tracking-wide"
+              className="w-full text-xs tracking-wide border-gradient-warm"
             >
               <a
                 href={`https://blockscout.lisk.com/address/${attestation.userAddress}`}
@@ -255,13 +264,14 @@ export default function AttestationPage({
             </Button>
 
             {/* Info */}
-            <div className="text-center text-[10px] tracking-wide text-white/40 space-y-1">
+            <div className="text-center text-[10px] tracking-wide text-white/40 space-y-1 mt-4">
               <p>This attestation is public and verifiable by anyone</p>
               <p>
                 Verify independently: check isTokenUsed({shortenHash(tokenId)}) on
                 the Lisk contract
               </p>
             </div>
+            </Reveal>
           </div>
         )}
       </main>

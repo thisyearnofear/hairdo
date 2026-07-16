@@ -14,6 +14,7 @@ import {
   X,
 } from "lucide-react"
 import Link from "next/link"
+import { Reveal } from "@/components/ui/reveal"
 
 interface BarberSummary {
   barber: {
@@ -130,13 +131,13 @@ function BarbersContent() {
         </Link>
 
         {/* Technical Header */}
-        <div className="mb-12 text-center">
+        <Reveal direction="up" className="mb-12 text-center">
           <div className="flex items-center justify-center gap-6 text-[10px] tracking-wider uppercase opacity-50 mb-4">
             <span>Barber Trust Directory</span>
             <span className="w-px h-3 bg-white/30" />
             <span>Lisk L2</span>
           </div>
-          <h1 className="text-4xl font-bold tracking-tighter mb-3 font-display">
+          <h1 className="text-4xl font-bold tracking-tighter mb-3 font-display text-gradient-gold">
             Verified Barbers
           </h1>
           <p className="text-sm opacity-60 max-w-xl mx-auto leading-relaxed">
@@ -144,7 +145,8 @@ function BarbersContent() {
             computed from verified cuts, specialty coverage, consistency, and
             recency.
           </p>
-        </div>
+          <div className="max-w-xs mx-auto barbershop-divider mt-6" />
+        </Reveal>
 
         {/* Style filter banner */}
         {styleFilter && styleCategory && (
@@ -231,11 +233,10 @@ function BarbersContent() {
         {!loading && !error && (
           <div className="space-y-4">
             {filtered.map((entry, index) => (
+              <Reveal key={entry.barber.id} direction="up" delay={index * 60}>
               <Link
-                key={entry.barber.id}
                 href={`/barbers/${entry.barber.address}`}
-                className={`block border ${scoreBorder(entry.trustScore)} bg-black/20 p-5 rounded-lg hover:bg-black/30 transition-[background-color,border-color] duration-200 group press-scale animate-enter-up`}
-                style={{ animationDelay: `${index * 45}ms` }}
+                className={`block border ${scoreBorder(entry.trustScore)} bg-black/20 p-5 rounded-lg hover:bg-black/30 transition-[background-color,border-color,box-shadow] duration-300 group press-scale border-gradient-warm glass-warm hover:shadow-warm`}
               >
                 <div className="flex items-start justify-between gap-4">
                   {/* Left: Barber info */}
@@ -326,6 +327,7 @@ function BarbersContent() {
                   </div>
                 </div>
               </Link>
+              </Reveal>
             ))}
 
             {filtered.length === 0 && (

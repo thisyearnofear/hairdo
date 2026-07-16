@@ -30,6 +30,13 @@
   --color-terracotta: hsl(18 55% 42%);
   --color-sage: hsl(140 20% 45%);
 
+  /* Rich warm palette — espresso, caramel, gold, burnt orange, deep plum */
+  --color-espresso: hsl(25 30% 8%);
+  --color-caramel: hsl(32 50% 45%);
+  --color-gold: hsl(45 75% 52%);
+  --color-burnt-orange: hsl(22 65% 42%);
+  --color-plum: hsl(320 35% 28%);
+
   --font-sans: var(--font-sans), system-ui, sans-serif;
   --font-display: var(--font-display), Georgia, serif;
 
@@ -279,6 +286,134 @@
 .image-outline {
   outline: 1px solid rgba(255, 255, 255, 0.1);
   outline-offset: -1px;
+}
+
+/* ============================================
+   Atmosphere — drift animations for ambient blobs
+   ============================================ */
+@keyframes drift-1 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(40px, 30px) scale(1.1); }
+}
+@keyframes drift-2 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-30px, 40px) scale(1.05); }
+}
+@keyframes drift-3 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(20px, -30px) scale(1.12); }
+}
+@keyframes drift-4 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(35px, -20px) scale(1.08); }
+}
+
+/* ============================================
+   Gradient text — warm, dramatic typography fills
+   ============================================ */
+@utility text-gradient-warm {
+  background: linear-gradient(135deg, hsl(45 80% 55%) 0%, hsl(32 60% 48%) 40%, hsl(18 55% 42%) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+@utility text-gradient-gold {
+  background: linear-gradient(135deg, hsl(48 85% 60%) 0%, hsl(38 70% 52%) 50%, hsl(28 55% 45%) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+@utility text-gradient-sunset {
+  background: linear-gradient(135deg, hsl(38 80% 55%) 0%, hsl(22 65% 48%) 50%, hsl(340 35% 38%) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ============================================
+   Gradient border — warm glow border on cards
+   ============================================ */
+@utility border-gradient-warm {
+  position: relative;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+.border-gradient-warm::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, hsl(38 70% 55% / 0.3), hsl(18 55% 42% / 0.15), transparent 60%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ============================================
+   Warm glow shadows — colored depth
+   ============================================ */
+@utility shadow-warm {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 4px 16px rgba(180, 80, 40, 0.08),
+    0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+@utility shadow-gold-glow {
+  box-shadow:
+    0 0 0 1px rgba(255, 200, 100, 0.08),
+    0 0 24px rgba(217, 164, 76, 0.15),
+    0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   Cultural pattern — barbershop stripe divider
+   ============================================ */
+@utility barbershop-divider {
+  height: 3px;
+  background: repeating-linear-gradient(
+    90deg,
+    hsl(38 70% 55%) 0px,
+    hsl(38 70% 55%) 8px,
+    hsl(18 55% 42%) 8px,
+    hsl(18 55% 42%) 16px,
+    hsl(40 15% 96%) 16px,
+    hsl(40 15% 96%) 24px
+  );
+  opacity: 0.15;
+  border-radius: 2px;
+}
+
+/* ============================================
+   Glass — warm frosted glass for cards
+   ============================================ */
+@utility glass-warm {
+  background: hsl(25 15% 6% / 0.6);
+  backdrop-filter: blur(12px) saturate(1.2);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
+}
+
+/* ============================================
+   Rich accent text colors
+   ============================================ */
+@utility text-gold {
+  color: hsl(45 75% 58%);
+}
+@utility text-caramel {
+  color: hsl(32 55% 52%);
+}
+@utility text-burnt-orange {
+  color: hsl(22 60% 50%);
+}
+@utility text-plum {
+  color: hsl(320 40% 55%);
 }
 
 /* Reduced motion — respect user preference */

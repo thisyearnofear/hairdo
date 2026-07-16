@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { Reveal } from "@/components/ui/reveal"
 
 interface BarberAttestation {
   tokenId: string
@@ -183,10 +184,11 @@ export default function BarberProfilePage({
         {profile && !loading && (
           <div className="space-y-6">
             {/* Trust Score Banner */}
-            <div className={`border p-6 rounded-lg ${scoreBg(profile.trustScore)} animate-enter-up`}>
+            <Reveal direction="up">
+            <div className={`border p-6 rounded-lg ${scoreBg(profile.trustScore)} border-gradient-warm glass-warm shadow-warm`}>
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h1 className="text-2xl font-bold tracking-tight font-display">
+                  <h1 className="text-2xl font-bold tracking-tight font-display text-gradient-gold">
                     {profile.barber.name}
                   </h1>
                   <div className="flex items-center gap-3 mt-2 text-xs opacity-60">
@@ -201,7 +203,7 @@ export default function BarberProfilePage({
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className={`text-4xl font-bold tabular-nums font-display ${scoreColor(profile.trustScore)}`}>
+                  <div className={`text-4xl font-bold tabular-nums font-display text-gradient-warm ${scoreColor(profile.trustScore)}`}>
                     {profile.trustScore}
                   </div>
                   <div className="text-[10px] tracking-wide uppercase opacity-50">
@@ -235,8 +237,10 @@ export default function BarberProfilePage({
                 </div>
               )}
             </div>
+            </Reveal>
 
             {/* Stats Grid */}
+            <Reveal direction="up" delay={100}>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
                 { icon: <CheckCircle2 className="w-5 h-5 mx-auto mb-2 text-green-400/60" />, value: profile.verifiedCuts, label: "Verified cuts" },
@@ -257,9 +261,11 @@ export default function BarberProfilePage({
                 </div>
               ))}
             </div>
+            </Reveal>
 
             {/* Score Breakdown */}
-            <div className="border border-white/10 bg-black/20 p-6 rounded-lg">
+            <Reveal direction="up" delay={150}>
+            <div className="border border-white/10 bg-black/20 p-6 rounded-lg border-gradient-warm glass-warm">
               <h2 className="text-xs tracking-wide uppercase opacity-60 mb-4">
                 Score breakdown
               </h2>
@@ -343,9 +349,11 @@ export default function BarberProfilePage({
                 </p>
               )}
             </div>
+            </Reveal>
 
             {/* Specialties */}
-            <div className="border border-white/10 bg-black/20 p-6 rounded-lg">
+            <Reveal direction="up" delay={200}>
+            <div className="border border-white/10 bg-black/20 p-6 rounded-lg border-gradient-warm glass-warm">
               <h2 className="text-xs tracking-wide uppercase opacity-60 mb-4">
                 Specialties
               </h2>
@@ -378,9 +386,11 @@ export default function BarberProfilePage({
                 </div>
               )}
             </div>
+            </Reveal>
 
             {/* Pricing */}
-            <div className="border border-white/10 bg-black/20 p-6 rounded-lg">
+            <Reveal direction="up" delay={250}>
+            <div className="border border-white/10 bg-black/20 p-6 rounded-lg border-gradient-warm glass-warm">
               <h2 className="text-xs tracking-wide uppercase opacity-60 mb-4">
                 Pricing
               </h2>
@@ -403,10 +413,12 @@ export default function BarberProfilePage({
                 </div>
               </div>
             </div>
+            </Reveal>
 
             {/* Social Proof */}
             {profile.barber.socialProof.length > 0 && (
-              <div className="border border-white/10 bg-black/20 p-6 rounded-lg">
+              <Reveal direction="up" delay={300}>
+              <div className="border border-white/10 bg-black/20 p-6 rounded-lg border-gradient-warm glass-warm">
                 <h2 className="text-xs tracking-wide uppercase opacity-60 mb-4">
                   Social proof
                 </h2>
@@ -422,10 +434,12 @@ export default function BarberProfilePage({
                   ))}
                 </ul>
               </div>
+              </Reveal>
             )}
 
             {/* Attestation History */}
-            <div className="border border-white/10 bg-black/20 p-6 rounded-lg">
+            <Reveal direction="up" delay={350}>
+            <div className="border border-white/10 bg-black/20 p-6 rounded-lg border-gradient-warm glass-warm">
               <h2 className="text-xs tracking-wide uppercase opacity-60 mb-4">
                 Attestation history ({profile.barber.attestationHistory.length})
               </h2>
@@ -471,13 +485,15 @@ export default function BarberProfilePage({
                   ))}
               </div>
             </div>
+            </Reveal>
 
             {/* Explorer link */}
+            <Reveal direction="up" delay={400}>
             <Button
               asChild
               variant="outline"
               size="lg"
-              className="w-full text-xs tracking-wide"
+              className="w-full text-xs tracking-wide border-gradient-warm"
             >
               <a
                 href={`https://blockscout.lisk.com/address/${profile.barber.address}`}
@@ -490,10 +506,11 @@ export default function BarberProfilePage({
             </Button>
 
             {/* Info */}
-            <div className="text-center text-[10px] tracking-wide text-white/40 space-y-1">
+            <div className="text-center text-[10px] tracking-wide text-white/40 space-y-1 mt-4">
               <p>Trust score computed from onchain attestation history</p>
               <p>Scores update as new attestations are recorded</p>
             </div>
+            </Reveal>
           </div>
         )}
       </main>

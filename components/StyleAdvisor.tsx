@@ -20,6 +20,7 @@ import { StatBar } from "@/components/ui/tradeoff-bars"
 import { ProgressSteps } from "@/components/ui/progress-steps"
 import { HairTypeGuide } from "@/components/ui/hair-type-guide"
 import { StyleIllustration } from "@/components/ui/style-illustration"
+import { Reveal } from "@/components/ui/reveal"
 import { play } from "@/lib/sound"
 import {
   processImageFile,
@@ -493,16 +494,16 @@ export function StyleAdvisor() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
         {/* Upload Section */}
-        <div className="relative">
-          {/* Corner Brackets */}
-          <div className="absolute -top-4 -left-4 w-8 h-8 border-l-2 border-t-2 border-white/20" />
-          <div className="absolute -top-4 -right-4 w-8 h-8 border-r-2 border-t-2 border-white/20" />
-          <div className="absolute -bottom-4 -left-4 w-8 h-8 border-l-2 border-b-2 border-white/20" />
-          <div className="absolute -bottom-4 -right-4 w-8 h-8 border-r-2 border-b-2 border-white/20" />
+        <Reveal direction="left" className="relative">
+          {/* Corner Brackets — warm tone */}
+          <div className="absolute -top-4 -left-4 w-8 h-8 border-l-2 border-t-2 border-amber/20" />
+          <div className="absolute -top-4 -right-4 w-8 h-8 border-r-2 border-t-2 border-amber/20" />
+          <div className="absolute -bottom-4 -left-4 w-8 h-8 border-l-2 border-b-2 border-amber/20" />
+          <div className="absolute -bottom-4 -right-4 w-8 h-8 border-r-2 border-b-2 border-amber/20" />
 
           <div
             onClick={onClickUpload}
-            className="relative aspect-square bg-black/40 border border-white/10 cursor-pointer overflow-hidden group hover:border-white/30 transition-[border-color] duration-200 rounded-lg press-scale"
+            className="relative aspect-square bg-black/40 border border-white/10 cursor-pointer overflow-hidden group hover:border-amber/30 transition-[border-color] duration-200 rounded-lg press-scale border-gradient-warm"
           >
             {/* Grid Overlay */}
             <div
@@ -560,10 +561,10 @@ export function StyleAdvisor() {
               </div>
             )}
           </div>
-        </div>
+        </Reveal>
 
         {/* Preferences Section */}
-        <div className="flex flex-col justify-center gap-5 px-4">
+        <Reveal direction="right" className="flex flex-col justify-center gap-5 px-4">
           <div className="space-y-4">
             {/* Hair Type — with visual guide toggle */}
             <div className="space-y-2">
@@ -737,20 +738,20 @@ export function StyleAdvisor() {
             <div className="w-2 h-2 rounded-full bg-sage animate-pulse" />
             <span>Advisor ready</span>
           </div>
-        </div>
+        </Reveal>
       </div>
 
       {/* Recommendations */}
       {recommendations.length > 0 && (
         <div className="mt-16 max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-8 animate-enter-up">
-            <h2 className="text-2xl tracking-tight opacity-80 font-display">
+          <Reveal direction="up" className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl tracking-tight opacity-80 font-display text-gradient-gold">
               Recommended styles
             </h2>
             <span className="text-xs tracking-wide opacity-40 tabular-nums">
               {recommendations.length} results
             </span>
-          </div>
+          </Reveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {recommendations.map((rec, index) => {
@@ -765,15 +766,15 @@ export function StyleAdvisor() {
               ]
 
               return (
-              <div
+              <Reveal
                 key={rec.style.id}
-                className={`border p-5 rounded-lg transition-[border-color,background-color] duration-200 cursor-pointer press-scale animate-enter-up ${
+                direction="up"
+                delay={index * 60}
+                className={`border p-5 rounded-lg transition-[border-color,background-color,box-shadow] duration-300 cursor-pointer press-scale border-gradient-warm glass-warm ${
                   selectedStyleId === rec.style.id
-                    ? "border-white/40 bg-white/5 shadow-glow"
-                    : "border-white/10 hover:border-white/25 bg-black/20 hover:bg-black/30"
+                    ? "border-amber/40 bg-amber/5 shadow-gold-glow"
+                    : "border-white/10 hover:border-amber/25 hover:shadow-warm"
                 }`}
-                style={{ animationDelay: `${index * 45}ms` }}
-                onClick={() => setSelectedStyleId(rec.style.id)}
               >
                 {/* Header with illustration + score + radar */}
                 <div className="flex items-start justify-between mb-3">
@@ -790,7 +791,7 @@ export function StyleAdvisor() {
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
                     <div className="text-right">
-                      <div className="text-2xl font-bold tabular-nums opacity-80 animate-count-up font-display" style={{ animationDelay: `${index * 45 + 100}ms` }}>
+                      <div className="text-2xl font-bold tabular-nums animate-count-up font-display text-gradient-warm" style={{ animationDelay: `${index * 45 + 100}ms` }}>
                         {rec.score}
                         <span className="text-xs opacity-50">/100</span>
                       </div>
@@ -915,19 +916,21 @@ export function StyleAdvisor() {
                 {/* Find barbers link — Phase 4 integration, filtered by style */}
                 <Link
                   href={`/barbers?style=${rec.style.id}`}
-                  className="flex items-center justify-center gap-1.5 mt-3 text-[10px] tracking-widest uppercase opacity-40 hover:opacity-70 transition-opacity"
+                  className="flex items-center justify-center gap-1.5 mt-3 text-[10px] tracking-wide uppercase opacity-40 hover:opacity-70 transition-opacity"
                 >
                   <Scissors className="w-3 h-3" />
                   Find barbers for this style
                 </Link>
-              </div>
+              </Reveal>
               )
             })}
           </div>
 
           {/* Shade & Color controls for visualization */}
           {image && (
-            <div className="mt-8 grid grid-cols-2 gap-4 max-w-md mx-auto">
+            <>
+            <div className="max-w-xs mx-auto barbershop-divider mt-8 mb-8" />
+            <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
               <div className="space-y-2">
                 <label className="text-xs tracking-wide font-medium opacity-60">
                   Shade
@@ -963,6 +966,7 @@ export function StyleAdvisor() {
                 </Select>
               </div>
             </div>
+            </>
           )}
 
           {/* Onchain premium hint (easter egg) */}
@@ -1066,7 +1070,9 @@ export function StyleAdvisor() {
       {/* Results */}
       <div className="mt-8 space-y-4 max-w-6xl mx-auto">
         {list.map((item, index) => (
-          <Output key={`item-${index}`} output={item} />
+          <Reveal key={`item-${index}`} direction="scale" delay={index * 100}>
+            <Output output={item} />
+          </Reveal>
         ))}
       </div>
 
