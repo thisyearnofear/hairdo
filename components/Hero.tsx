@@ -14,17 +14,17 @@ export function Hero() {
         />
       </div>
 
-      {/* Meta Info Top */}
+      {/* Meta Info Top — staggered entrance */}
       <div className="relative z-10 mb-12 flex justify-center gap-8 text-[10px] tracking-wider uppercase opacity-60">
-        <span>STYLE_INTELLIGENCE</span>
-        <span>LISK_L2</span>
-        <span>v2.0</span>
+        <span className="animate-enter-fade" style={{ animationDelay: "0ms" }}>STYLE_INTELLIGENCE</span>
+        <span className="animate-enter-fade" style={{ animationDelay: "60ms" }}>LISK_L2</span>
+        <span className="animate-enter-fade" style={{ animationDelay: "120ms" }}>v2.0</span>
       </div>
 
-      {/* Main Title */}
+      {/* Main Title — scale entrance */}
       <div className="relative z-10 mb-8">
         <h1
-          className="text-[clamp(3rem,12vw,8rem)] font-bold leading-none tracking-tighter mb-4"
+          className="text-[clamp(3rem,12vw,8rem)] font-bold leading-none tracking-tighter mb-4 animate-enter-scale"
           style={{
             fontFamily: "var(--font-sans)",
             letterSpacing: "-0.05em",
@@ -32,7 +32,7 @@ export function Hero() {
         >
           HAIRDO
         </h1>
-        <div className="flex items-center justify-center gap-4 text-sm tracking-widest uppercase opacity-80">
+        <div className="flex items-center justify-center gap-4 text-sm tracking-widest uppercase opacity-80 animate-enter-up" style={{ animationDelay: "100ms" }}>
           <span>DISCOVER</span>
           <span className="w-1 h-1 bg-current rounded-full" />
           <span>VISUALIZE</span>
@@ -41,9 +41,9 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Subtitle */}
+      {/* Subtitle — fade up */}
       <div className="relative z-10 max-w-2xl mx-auto mb-8">
-        <p className="text-sm tracking-wide opacity-70 leading-relaxed">
+        <p className="text-sm tracking-wide opacity-70 leading-relaxed animate-enter-up" style={{ animationDelay: "200ms" }}>
           An agentic style advisor for Black men. Upload a photo, describe your
           lifestyle, and get ranked recommendations with real tradeoffs —
           maintenance, cost, comfort, climate fit.
@@ -52,7 +52,7 @@ export function Hero() {
 
       {/* Technical Descriptor */}
       <div className="relative z-10 max-w-2xl mx-auto mb-16">
-        <p className="text-xs tracking-wider uppercase opacity-50 leading-relaxed">
+        <p className="text-xs tracking-wider uppercase opacity-50 leading-relaxed animate-enter-fade" style={{ animationDelay: "300ms" }}>
           34_STYLES // TRADEOFF_DATABASE // REPLICATE_ENGINE // LISK_1135
         </p>
       </div>

@@ -168,7 +168,8 @@ export default function BarbersPage() {
               <Link
                 key={entry.barber.id}
                 href={`/barbers/${entry.barber.address}`}
-                className={`block border ${scoreBorder(entry.trustScore)} bg-black/20 p-5 rounded hover:bg-black/30 transition-all group`}
+                className={`block border ${scoreBorder(entry.trustScore)} bg-black/20 p-5 rounded-lg hover:bg-black/30 transition-[background-color,border-color] duration-200 group press-scale animate-enter-up`}
+                style={{ animationDelay: `${index * 45}ms` }}
               >
                 <div className="flex items-start justify-between gap-4">
                   {/* Left: Barber info */}
@@ -231,7 +232,7 @@ export default function BarbersPage() {
 
                   {/* Right: Trust score + stats */}
                   <div className="flex-shrink-0 text-right">
-                    <div className={`text-3xl font-bold ${scoreColor(entry.trustScore)}`}>
+                    <div className={`text-3xl font-bold tabular-nums ${scoreColor(entry.trustScore)}`}>
                       {entry.trustScore}
                     </div>
                     <div className="text-[9px] tracking-widest uppercase opacity-40 mb-3">

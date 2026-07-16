@@ -183,7 +183,7 @@ export default function BarberProfilePage({
         {profile && !loading && (
           <div className="space-y-6">
             {/* Trust Score Banner */}
-            <div className={`border p-6 rounded ${scoreBg(profile.trustScore)}`}>
+            <div className={`border p-6 rounded-lg ${scoreBg(profile.trustScore)} animate-enter-up`}>
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h1 className="text-2xl font-bold tracking-tight">
@@ -201,7 +201,7 @@ export default function BarberProfilePage({
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className={`text-4xl font-bold ${scoreColor(profile.trustScore)}`}>
+                  <div className={`text-4xl font-bold tabular-nums ${scoreColor(profile.trustScore)}`}>
                     {profile.trustScore}
                   </div>
                   <div className="text-[10px] tracking-widest uppercase opacity-50">
@@ -238,38 +238,24 @@ export default function BarberProfilePage({
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div className="border border-white/10 bg-black/20 p-4 rounded text-center">
-                <CheckCircle2 className="w-5 h-5 mx-auto mb-2 text-green-400/60" />
-                <div className="text-xl font-bold">{profile.verifiedCuts}</div>
-                <div className="text-[10px] tracking-widest uppercase opacity-50 mt-1">
-                  VERIFIED_CUTS
+              {[
+                { icon: <CheckCircle2 className="w-5 h-5 mx-auto mb-2 text-green-400/60" />, value: profile.verifiedCuts, label: "VERIFIED_CUTS" },
+                { icon: <Award className="w-5 h-5 mx-auto mb-2 text-yellow-400/60" />, value: profile.uniqueStyles, label: "UNIQUE_STYLES" },
+                { icon: <TrendingUp className="w-5 h-5 mx-auto mb-2 text-blue-400/60" />, value: profile.uniqueClients, label: "UNIQUE_CLIENTS" },
+                { icon: <Star className="w-5 h-5 mx-auto mb-2 text-purple-400/60" />, value: profile.breakdown.averageRating > 0 ? profile.breakdown.averageRating.toFixed(1) : "—", label: "AVG_RATING" },
+              ].map((stat, i) => (
+                <div
+                  key={i}
+                  className="border border-white/10 bg-black/20 p-4 rounded-lg text-center animate-enter-up"
+                  style={{ animationDelay: `${i * 45 + 60}ms` }}
+                >
+                  {stat.icon}
+                  <div className="text-xl font-bold tabular-nums">{stat.value}</div>
+                  <div className="text-[10px] tracking-widest uppercase opacity-50 mt-1">
+                    {stat.label}
+                  </div>
                 </div>
-              </div>
-              <div className="border border-white/10 bg-black/20 p-4 rounded text-center">
-                <Award className="w-5 h-5 mx-auto mb-2 text-yellow-400/60" />
-                <div className="text-xl font-bold">{profile.uniqueStyles}</div>
-                <div className="text-[10px] tracking-widest uppercase opacity-50 mt-1">
-                  UNIQUE_STYLES
-                </div>
-              </div>
-              <div className="border border-white/10 bg-black/20 p-4 rounded text-center">
-                <TrendingUp className="w-5 h-5 mx-auto mb-2 text-blue-400/60" />
-                <div className="text-xl font-bold">{profile.uniqueClients}</div>
-                <div className="text-[10px] tracking-widest uppercase opacity-50 mt-1">
-                  UNIQUE_CLIENTS
-                </div>
-              </div>
-              <div className="border border-white/10 bg-black/20 p-4 rounded text-center">
-                <Star className="w-5 h-5 mx-auto mb-2 text-purple-400/60" />
-                <div className="text-xl font-bold">
-                  {profile.breakdown.averageRating > 0
-                    ? profile.breakdown.averageRating.toFixed(1)
-                    : "—"}
-                </div>
-                <div className="text-[10px] tracking-widest uppercase opacity-50 mt-1">
-                  AVG_RATING
-                </div>
-              </div>
+              ))}
             </div>
 
             {/* Score Breakdown */}
@@ -288,7 +274,7 @@ export default function BarberProfilePage({
                   </div>
                   <div className="h-2 bg-white/5 rounded overflow-hidden">
                     <div
-                      className="h-full bg-green-500/60 rounded transition-all"
+                      className="h-full bg-green-500/60 rounded animate-bar-grow"
                       style={{
                         width: `${(profile.breakdown.verifiedCutsScore / 35) * 100}%`,
                       }}
@@ -306,7 +292,7 @@ export default function BarberProfilePage({
                   </div>
                   <div className="h-2 bg-white/5 rounded overflow-hidden">
                     <div
-                      className="h-full bg-yellow-500/60 rounded transition-all"
+                      className="h-full bg-yellow-500/60 rounded animate-bar-grow"
                       style={{
                         width: `${(profile.breakdown.specialtyCoverageScore / 25) * 100}%`,
                       }}
@@ -324,7 +310,7 @@ export default function BarberProfilePage({
                   </div>
                   <div className="h-2 bg-white/5 rounded overflow-hidden">
                     <div
-                      className="h-full bg-blue-500/60 rounded transition-all"
+                      className="h-full bg-blue-500/60 rounded animate-bar-grow"
                       style={{
                         width: `${(profile.breakdown.consistencyScore / 20) * 100}%`,
                       }}
@@ -342,7 +328,7 @@ export default function BarberProfilePage({
                   </div>
                   <div className="h-2 bg-white/5 rounded overflow-hidden">
                     <div
-                      className="h-full bg-purple-500/60 rounded transition-all"
+                      className="h-full bg-purple-500/60 rounded animate-bar-grow"
                       style={{
                         width: `${(profile.breakdown.recencyScore / 20) * 100}%`,
                       }}

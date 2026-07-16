@@ -15,6 +15,10 @@ import Link from "next/link"
 import { AttestationHandler, type AttestationResult } from "./AttestationHandler"
 import { useConnection } from "wagmi"
 import { lisk } from "@/lib/chains"
+import { RadarChart } from "@/components/ui/radar-chart"
+import { StatBar } from "@/components/ui/tradeoff-bars"
+import { ProgressSteps } from "@/components/ui/progress-steps"
+import { play } from "@/lib/sound"
 import {
   processImageFile,
   validateImage,
@@ -160,6 +164,15 @@ export function StyleAdvisor() {
     [list]
   )
 
+  // Flow progress: 0=upload, 1=prefs, 2=recs, 3=visualize, 4=attest
+  const currentStep = useMemo(() => {
+    if (attestationResult) return 4
+    if (list.length > 0) return 3
+    if (recommendations.length > 0) return 2
+    if (image) return 1
+    return 0
+  }, [image, recommendations, list, attestationResult])
+
   // Read prediction status from API
   const readPrediction = useCallback(async (id: string) => {
     try {
@@ -200,10 +213,12 @@ export function StyleAdvisor() {
 
   const onClickUpload = () => {
     if (loadingFile || loadingSubmit) return
+    play("press")
     fileInputRef.current?.click()
   }
 
   const startCamera = async () => {
+    play("press")
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user" },
@@ -274,6 +289,7 @@ export function StyleAdvisor() {
           setStream(null)
         }
         setError(null)
+        play("chime")
       }
       reader.readAsDataURL(resizedBlob)
     } catch (err) {
@@ -307,6 +323,7 @@ export function StyleAdvisor() {
 
       const processedImage = await processImageFile(file)
       setImage(processedImage)
+      play("chime")
     } catch (err) {
       const message =
         err instanceof Error
@@ -324,6 +341,7 @@ export function StyleAdvisor() {
     setError(null)
     setLoadingRecs(true)
     setRecommendations([])
+    play("press")
 
     try {
       const prefs: Record<string, unknown> = {
@@ -348,9 +366,11 @@ export function StyleAdvisor() {
 
       const data = await response.json()
       setRecommendations(data.recommendations)
+      play("chime")
     } catch (e) {
       console.error("Recommendation error:", e)
       setError("Failed to get recommendations. Please try again.")
+      play("error")
     } finally {
       setLoadingRecs(false)
     }
@@ -361,6 +381,7 @@ export function StyleAdvisor() {
   const visualizeStyle = async (rec: Recommendation) => {
     setError(null)
     setSelectedStyleId(rec.style.id)
+    play("press")
 
     if (!image) {
       setError("Please upload a photo first to visualize a style.")
@@ -396,9 +417,11 @@ export function StyleAdvisor() {
       }
       setList((prev) => [newPrediction, ...prev])
       addPrediction(newPrediction)
+      play("success")
     } catch (e) {
       console.error("Visualization error:", e)
       setError("Failed to generate visualization. Please try again.")
+      play("error")
     } finally {
       setLoadingSubmit(false)
     }
@@ -410,10 +433,12 @@ export function StyleAdvisor() {
     setAttestingStyle(rec)
     setShowAttestation(true)
     setAttestationResult(null)
+    play("press")
   }
 
   const handleAttestationSuccess = (result: AttestationResult) => {
     setAttestationResult(result)
+    play("success")
   }
 
   // --- Render ---
@@ -428,15 +453,9 @@ export function StyleAdvisor() {
         className="hidden"
       />
 
-      {/* Technical Header */}
-      <div className="mb-12 text-center">
-        <div className="flex items-center justify-center gap-6 text-[10px] tracking-widest uppercase opacity-60 mb-4">
-          <span>STYLE_ADVISOR</span>
-          <span className="w-px h-3 bg-white/40" />
-          <span>PREFERENCES</span>
-          <span className="w-px h-3 bg-white/40" />
-          <span>VISUALIZE</span>
-        </div>
+      {/* Flow Progress Steps */}
+      <div className="mb-12">
+        <ProgressSteps currentStep={currentStep} />
       </div>
 
       {/* Camera Modal */}
@@ -478,7 +497,7 @@ export function StyleAdvisor() {
 
           <div
             onClick={onClickUpload}
-            className="relative aspect-square bg-black/40 border border-white/10 cursor-pointer overflow-hidden group hover:border-white/30 transition-all duration-300"
+            className="relative aspect-square bg-black/40 border border-white/10 cursor-pointer overflow-hidden group hover:border-white/30 transition-[border-color] duration-200 rounded-lg press-scale"
           >
             {/* Grid Overlay */}
             <div
@@ -699,42 +718,57 @@ export function StyleAdvisor() {
       {/* Recommendations */}
       {recommendations.length > 0 && (
         <div className="mt-16 max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-8 animate-enter-up">
             <h2 className="text-xl tracking-widest uppercase opacity-80">
               RECOMMENDED_STYLES
             </h2>
-            <span className="text-[10px] tracking-wider uppercase opacity-40">
+            <span className="text-[10px] tracking-wider uppercase opacity-40 tabular-nums">
               {recommendations.length} RESULTS
             </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {recommendations.map((rec) => (
+            {recommendations.map((rec, index) => {
+              // Compute radar data from style attributes
+              const radarData = [
+                { label: "MATCH", value: rec.score },
+                { label: "COMFORT", value: 100 - (rec.style.comfort.itchiness + rec.style.comfort.heatRetention) * 10 },
+                { label: "CLIMATE", value: rec.style.climate[climate as keyof typeof rec.style.climate] as number * 20 },
+                { label: "COST", value: Math.max(0, 100 - rec.style.cost.perVisit * 2) },
+                { label: "MAINT.", value: Math.max(0, 100 - rec.style.maintenance.barberFrequencyDays * 3) },
+                { label: "POPULAR", value: rec.style.popularity },
+              ]
+
+              return (
               <div
                 key={rec.style.id}
-                className={`border p-5 transition-all duration-300 cursor-pointer ${
+                className={`border p-5 rounded-lg transition-[border-color,background-color] duration-200 cursor-pointer press-scale animate-enter-up ${
                   selectedStyleId === rec.style.id
-                    ? "border-white/40 bg-white/5"
-                    : "border-white/10 hover:border-white/25 bg-black/20"
+                    ? "border-white/40 bg-white/5 shadow-glow"
+                    : "border-white/10 hover:border-white/25 bg-black/20 hover:bg-black/30"
                 }`}
+                style={{ animationDelay: `${index * 45}ms` }}
                 onClick={() => setSelectedStyleId(rec.style.id)}
               >
-                {/* Header */}
+                {/* Header with score + radar */}
                 <div className="flex items-start justify-between mb-3">
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <h3 className="text-lg font-medium">{rec.style.name}</h3>
                     <p className="text-[10px] tracking-widest uppercase opacity-50 mt-1">
-                      {rec.style.category} {"//"} MATCH: {rec.score}%
+                      {rec.style.category}
                     </p>
                   </div>
-                  <div className="flex flex-col items-end">
-                    <div className="text-2xl font-bold opacity-80">
-                      {rec.score}
-                      <span className="text-xs opacity-50">/100</span>
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <div className="text-right">
+                      <div className="text-2xl font-bold tabular-nums opacity-80 animate-count-up" style={{ animationDelay: `${index * 45 + 100}ms` }}>
+                        {rec.score}
+                        <span className="text-xs opacity-50">/100</span>
+                      </div>
+                      <div className="text-[10px] tracking-wider uppercase opacity-40">
+                        MATCH
+                      </div>
                     </div>
-                    <div className="text-[10px] tracking-wider uppercase opacity-40">
-                      POPULARITY: {rec.style.popularity}
-                    </div>
+                    <RadarChart data={radarData} size={80} />
                   </div>
                 </div>
 
@@ -783,33 +817,32 @@ export function StyleAdvisor() {
                   </div>
                 )}
 
-                {/* Tradeoff metadata grid */}
-                <div className="grid grid-cols-2 gap-2 mt-4 text-[10px] tracking-wider uppercase">
-                  <div className="bg-black/30 p-2 border border-white/5">
-                    <span className="opacity-40 block">MAINTENANCE</span>
-                    <span className="opacity-70 normal-case tracking-normal text-xs">
-                      {rec.style.maintenance.barberFrequency}
-                    </span>
-                  </div>
-                  <div className="bg-black/30 p-2 border border-white/5">
-                    <span className="opacity-40 block">COST</span>
-                    <span className="opacity-70 normal-case tracking-normal text-xs">
-                      ${rec.style.cost.perVisit}/visit
-                    </span>
-                  </div>
-                  <div className="bg-black/30 p-2 border border-white/5">
-                    <span className="opacity-40 block">COMFORT</span>
-                    <span className="opacity-70 normal-case tracking-normal text-xs">
-                      Itch: {rec.style.comfort.itchiness}/5 · Heat:{" "}
-                      {rec.style.comfort.heatRetention}/5
-                    </span>
-                  </div>
-                  <div className="bg-black/30 p-2 border border-white/5">
-                    <span className="opacity-40 block">SKILL</span>
-                    <span className="opacity-70 normal-case tracking-normal text-xs">
-                      {rec.style.skillRequired}
-                    </span>
-                  </div>
+                {/* Tradeoff visual bars */}
+                <div className="grid grid-cols-2 gap-2 mt-4">
+                  <StatBar
+                    label="MAINTENANCE"
+                    value={rec.style.maintenance.barberFrequency}
+                    barPct={Math.max(20, 100 - rec.style.maintenance.barberFrequencyDays * 3)}
+                    color="blue"
+                  />
+                  <StatBar
+                    label="COST"
+                    value={`$${rec.style.cost.perVisit}/visit`}
+                    barPct={Math.max(15, 100 - rec.style.cost.perVisit * 2)}
+                    color="green"
+                  />
+                  <StatBar
+                    label="COMFORT"
+                    value={`Itch ${rec.style.comfort.itchiness}/5 · Heat ${rec.style.comfort.heatRetention}/5`}
+                    barPct={100 - (rec.style.comfort.itchiness + rec.style.comfort.heatRetention) * 10}
+                    color="purple"
+                  />
+                  <StatBar
+                    label="SKILL"
+                    value={rec.style.skillRequired}
+                    barPct={rec.style.skillRequired === "Any barber" ? 90 : rec.style.skillRequired === "Experienced" ? 60 : 30}
+                    color="orange"
+                  />
                 </div>
 
                 {/* Visualize button */}
@@ -858,7 +891,8 @@ export function StyleAdvisor() {
                   FIND_VERIFIED_BARBERS
                 </Link>
               </div>
-            ))}
+              )
+            })}
           </div>
 
           {/* Shade & Color controls for visualization */}
@@ -913,7 +947,7 @@ export function StyleAdvisor() {
 
           {/* Attestation success display */}
           {attestationResult && (
-            <div className="mt-8 max-w-md mx-auto bg-green-500/5 border border-green-500/20 p-4 rounded text-center">
+            <div className="mt-8 max-w-md mx-auto bg-green-500/5 border border-green-500/20 p-4 rounded-lg text-center animate-enter-scale shadow-glow">
               <p className="text-[10px] tracking-widest uppercase text-green-400 mb-2">
                 ATTESTATION_RECORDED
               </p>
@@ -966,9 +1000,34 @@ export function StyleAdvisor() {
 
       {/* Loading state for recommendations */}
       {loadingRecs && (
-        <div className="mt-16 text-center">
-          <div className="w-12 h-12 border-2 border-white/20 border-t-white rounded-full animate-spin mx-auto" />
-          <p className="mt-4 text-[10px] tracking-widest uppercase opacity-50">
+        <div className="mt-16 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[0, 1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="border border-white/10 bg-black/20 p-5 rounded-lg space-y-3"
+                style={{ animationDelay: `${i * 60}ms` }}
+              >
+                <div className="flex justify-between">
+                  <div className="space-y-2">
+                    <div className="h-4 w-32 shimmer rounded" />
+                    <div className="h-3 w-20 shimmer rounded" />
+                  </div>
+                  <div className="h-12 w-12 shimmer rounded-full" />
+                </div>
+                <div className="h-3 w-full shimmer rounded" />
+                <div className="h-3 w-3/4 shimmer rounded" />
+                <div className="grid grid-cols-2 gap-2 mt-4">
+                  <div className="h-12 shimmer rounded-md" />
+                  <div className="h-12 shimmer rounded-md" />
+                  <div className="h-12 shimmer rounded-md" />
+                  <div className="h-12 shimmer rounded-md" />
+                </div>
+                <div className="h-8 w-full shimmer rounded-md" />
+              </div>
+            ))}
+          </div>
+          <p className="mt-6 text-center text-[10px] tracking-widest uppercase opacity-50">
             ANALYZING_TRADEOFFS...
           </p>
         </div>
