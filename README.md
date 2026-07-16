@@ -3,7 +3,10 @@
 An agentic style advisor for Black men — upload a photo, describe your
 lifestyle and constraints, and get ranked style recommendations with real
 tradeoff metadata (maintenance, cost, comfort, climate fit). Try on any style
-with AI visualization. Optionally, attest your style choice onchain via Lisk.
+with AI visualization (two tiers: basic free, refined premium). Attest your
+style choice onchain as a Style Credential — a soulbound NFT that builds your
+verifiable hair history. A Hair Growth Agent monitors your attested cuts and
+proactively nudges you when it's time to rebook.
 
 **Full product plan: [docs/PRODUCT_PLAN.md](docs/PRODUCT_PLAN.md)**
 
@@ -12,36 +15,39 @@ with AI visualization. Optionally, attest your style choice onchain via Lisk.
 1. Upload a photo or take a selfie
 2. Set your preferences — hair type, climate, budget, maintenance tolerance
 3. Get ranked style recommendations with tradeoff metadata
-4. Try on any style with AI visualization (Replicate)
-5. (Optional) Attest your style choice onchain via Lisk — creates a verifiable record
-6. (Optional) Verify any attestation by tokenId at `/attestations/[tokenId]`
+4. Try on any style with AI visualization (two tiers: basic free, refined premium)
+5. Attest your style choice onchain — mints a Style Credential (soulbound NFT)
+6. The Hair Growth Agent tracks your attested cuts and nudges you to rebook
+7. Verify any attestation by tokenId at `/attestations/[tokenId]`
 
 ## Architecture
 
-- **Frontend**: Landing page + interactive demo (also serves as API test harness)
+- **Frontend**: Landing page + interactive demo + growth dashboard
   + attestation verification page at `/attestations/[tokenId]`
-- **Backend**: Style Intelligence ASP — API endpoints on Lisk
+  + barber directory at `/barbers`
+- **Backend**: Style Intelligence + Growth Agent — API endpoints
   - `api/recommend` — ranked style recommendations with tradeoffs (POST + GET)
-  - `api/visualize` — AI try-on via Replicate (POST)
-  - `api/attest` — records onchain attestation of style choice (POST)
+  - `api/visualize` — AI try-on via Replicate, two tiers (POST)
+  - `api/attest` — mints Style Credential SBT on Lisk (POST)
+  - `api/growth` — growth estimation + rebook nudges from attestation history (GET)
   - `api/attestations/[tokenId]` — public read endpoint for any attestation (GET)
   - `api/barber-score` — barber trust-score from verified onchain history (POST + GET)
   - `api/barbers/[address]` — lookup a barber's trust profile (GET)
 - **Data**: `data/styles.json` — curated tradeoff metadata for 34 Black
-  men's styles across 8 categories (the defensible moat)
+  men's styles across 8 categories (the knowledge base)
 - **Data**: `data/barbers.json` — barber trust database with onchain attestation
   history, specialty styles, and computed trust scores
-- **Onchain**: Lisk mainnet — attestation infrastructure via existing smart
-  contract + EAS-style offchain attestation schema
+- **Onchain**: Lisk mainnet — Style Credential protocol (soulbound NFTs)
+  + barber trust graph
 
 ## Tech Stack
 
 - Next.js 16 (App Router, Turbopack)
 - React 19 + TypeScript
 - Tailwind CSS v4 + shadcn/ui
-- Replicate (HairCLIP model for AI try-on)
+- Replicate (HairCLIP basic + SDXL LoRA refined for AI try-on)
 - Wagmi v3 + Viem (Web3)
-- Lisk L2 (Chain ID: 1135) — onchain attestations
+- Lisk L2 (Chain ID: 1135) — Style Credentials + trust graph
 - Upstash Redis (attestation storage + replay protection)
 - Vercel (deployment)
 
@@ -101,23 +107,34 @@ deployment environment variables.
 - **RPC**: https://rpc.api.lisk.com
 - **Explorer**: https://blockscout.lisk.com
 - **Currency**: ETH
+- **Payment Token**: LSK ERC-20 [0xac48...1A24](https://blockscout.lisk.com/token/0xac485391EB2d7D88253a7F1eF18C37f4242D1A24)
 
-### Smart Contract (attestation fee + onchain record)
+### Style Credential Protocol (building)
+
+The old `HairdoPayment.sol` was a proof-of-concept payment recorder. It's being
+replaced by `StyleCredential.sol` — a soulbound NFT contract that mints a
+non-transferable credential for each attested cut.
+
+**Old contract (legacy, being replaced):**
 - **Address**: [0x055cA743f0fFB9258ea7f8484794C293f32f2d4C](https://blockscout.lisk.com/address/0x055cA743f0fFB9258ea7f8484794C293f32f2d4C)
-- **Payment Token**: LSK ERC-20 Token [0xac48...1A24](https://blockscout.lisk.com/token/0xac485391EB2d7D88253a7F1eF18C37f4242D1A24)
 - **Verified on Sourcify**: [View on Sourcify](https://repo.sourcify.dev/1135/0x055cA743f0fFB9258ea7f8484794C293f32f2d4C/)
 
-The smart contract's `payForService(bytes32 tokenId)` creates an onchain record
-tied to a unique tokenId. The `isTokenUsed(bytes32 tokenId)` function provides
-onchain verification. The attestation flow:
+**New contract (in development):**
+- `StyleCredential.sol` — ERC-721 with transfers disabled (soulbound)
+- Each attested cut mints an NFT with metadata: styleId, barberAddress,
+  timestamp, hairType, photoHash
+- The user's wallet becomes their portable, verifiable hair history
 
-1. User pays the attestation fee on Lisk (1 LSK) via `payForService(tokenId)`
-2. Frontend passes the tokenId + style metadata to `api/attest`
-3. The API verifies the payment onchain via `isTokenUsed(tokenId)`
-4. If verified, the attestation metadata is stored in Upstash Redis
-5. Anyone can verify the attestation at `/attestations/[tokenId]`
+The attestation flow (new):
+1. User pays the attestation fee in LSK
+2. Contract mints a Style Credential SBT to the user's wallet
+3. NFT metadata (styleId, barber, timestamp, hairType, photoHash) is stored
+   onchain + in Redis for fast reads
+4. The Hair Growth Agent reads the user's credentials to estimate growth
+5. Anyone can verify a credential by reading the contract or visiting
+   `/attestations/[tokenId]`
 
-See `contracts/README.md` for contract details.
+See `contracts/` for contract source code.
 
 ## Barber Trust-Score ASP
 
@@ -150,5 +167,6 @@ Trust scores are computed from:
 - Photos are processed locally in your browser
 - No images are stored on our servers
 - Images are only sent to Replicate's API for processing
-- Onchain attestations store only a photo hash, never the image itself
+- Style Credentials store only a photo hash (SHA-256), never the image itself
 - Barber attestations store before/after photo hashes on IPFS, never the images
+- Your attestation history is tied to your wallet — you control it

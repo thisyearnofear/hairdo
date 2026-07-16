@@ -1,6 +1,7 @@
 import { Header } from "@/components/Header"
 import { Hero } from "@/components/Hero"
 import { StyleAdvisor } from "@/components/StyleAdvisor"
+import { GrowthNudge } from "@/components/GrowthNudge"
 import { Footer } from "@/components/Footer"
 
 export default function Home() {
@@ -9,6 +10,7 @@ export default function Home() {
       <Header />
       <Hero />
       <StyleAdvisor />
+      <GrowthNudge />
       <Footer />
     </div>
   )
