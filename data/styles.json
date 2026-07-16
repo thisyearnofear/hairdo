@@ -21,9 +21,22 @@
       "name": "Skin Fade",
       "category": "fade",
       "description": "Hair gradually fades to skin at the sides and back. Can be high, mid, or low. Top remains longer and can be styled various ways.",
-      "replicatePrompt": "skin fade hairstyle, clean fade to skin on sides and back, longer hair on top",
-      "hairTypes": ["3A", "3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong"],
+      "replicatePrompt": "fade hairstyle",
+      "hairTypes": [
+        "3A",
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong"
+      ],
       "maintenance": {
         "barberFrequency": "weekly",
         "barberFrequencyDays": 7,
@@ -54,16 +67,36 @@
       "culturalContext": "The most popular style in Black barbershops worldwide. Originated in military cuts, adapted and perfected in Black barbershop culture.",
       "popularity": 95,
       "versatility": 4,
-      "tags": ["fade", "low-maintenance-daily", "hot-climate", "popular", "versatile"]
+      "tags": [
+        "fade",
+        "low-maintenance-daily",
+        "hot-climate",
+        "popular",
+        "versatile"
+      ]
     },
     {
       "id": "low-fade",
       "name": "Low Fade",
       "category": "fade",
       "description": "Fade starts low, near the ears and nape. More conservative than a mid or high fade. Maintains more hair on the sides.",
-      "replicatePrompt": "low fade hairstyle, subtle fade starting low near the ears, longer hair on top and upper sides",
-      "hairTypes": ["3A", "3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "replicatePrompt": "fade hairstyle",
+      "hairTypes": [
+        "3A",
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong",
+        "heart"
+      ],
       "maintenance": {
         "barberFrequency": "biweekly",
         "barberFrequencyDays": 14,
@@ -94,16 +127,34 @@
       "culturalContext": "A more conservative fade option. Popular in corporate and professional settings.",
       "popularity": 85,
       "versatility": 5,
-      "tags": ["fade", "professional", "versatile", "low-maintenance"]
+      "tags": [
+        "fade",
+        "professional",
+        "versatile",
+        "low-maintenance"
+      ]
     },
     {
       "id": "mid-fade",
       "name": "Mid Fade",
       "category": "fade",
       "description": "Fade starts at the midpoint around the temples. Balanced between low and high fade. The most common fade height.",
-      "replicatePrompt": "mid fade hairstyle, fade starting at temple height, balanced look, longer hair on top",
-      "hairTypes": ["3A", "3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong"],
+      "replicatePrompt": "fade hairstyle",
+      "hairTypes": [
+        "3A",
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong"
+      ],
       "maintenance": {
         "barberFrequency": "biweekly",
         "barberFrequencyDays": 14,
@@ -134,16 +185,33 @@
       "culturalContext": "The default fade. The most requested style in Black barbershops.",
       "popularity": 90,
       "versatility": 5,
-      "tags": ["fade", "popular", "versatile", "standard"]
+      "tags": [
+        "fade",
+        "popular",
+        "versatile",
+        "standard"
+      ]
     },
     {
       "id": "high-fade",
       "name": "High Fade",
       "category": "fade",
       "description": "Fade starts high on the head, near the crown. Dramatic contrast between faded sides and longer top. Bold look.",
-      "replicatePrompt": "high fade hairstyle, dramatic fade starting high near the crown, strong contrast, longer hair on top",
-      "hairTypes": ["3A", "3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "square", "diamond", "oblong"],
+      "replicatePrompt": "fade hairstyle",
+      "hairTypes": [
+        "3A",
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "square",
+        "diamond",
+        "oblong"
+      ],
       "maintenance": {
         "barberFrequency": "weekly",
         "barberFrequencyDays": 7,
@@ -174,16 +242,33 @@
       "culturalContext": "Bolder than a mid or low fade. Popular in hip-hop and sports culture.",
       "popularity": 80,
       "versatility": 3,
-      "tags": ["fade", "bold", "hot-climate", "high-maintenance"]
+      "tags": [
+        "fade",
+        "bold",
+        "hot-climate",
+        "high-maintenance"
+      ]
     },
     {
       "id": "burst-fade",
       "name": "Burst Fade",
       "category": "fade",
       "description": "Fade bursts around the ears in a semi-circle, leaving hair longer at the nape. Distinctive look often paired with a mullet or textured top.",
-      "replicatePrompt": "burst fade hairstyle, semi-circular fade around the ears, hair longer at the nape, textured top",
-      "hairTypes": ["3A", "3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "round", "square", "diamond"],
+      "replicatePrompt": "fade hairstyle",
+      "hairTypes": [
+        "3A",
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond"
+      ],
       "maintenance": {
         "barberFrequency": "biweekly",
         "barberFrequencyDays": 14,
@@ -214,16 +299,35 @@
       "culturalContext": "Trendy style popularized on social media. Often paired with a mullet for a modern look.",
       "popularity": 75,
       "versatility": 3,
-      "tags": ["fade", "trendy", "social-media", "distinctive"]
+      "tags": [
+        "fade",
+        "trendy",
+        "social-media",
+        "distinctive"
+      ]
     },
     {
       "id": "taper-fade",
       "name": "Taper Fade",
       "category": "fade",
       "description": "A subtle taper at the hairline and sideburns. Not a full fade — hair remains on the sides, just neatly tapered at the edges.",
-      "replicatePrompt": "taper fade hairstyle, subtle taper at hairline and sideburns, neat edges, hair remains on sides",
-      "hairTypes": ["3A", "3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "replicatePrompt": "taper cut hairstyle",
+      "hairTypes": [
+        "3A",
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong",
+        "heart"
+      ],
       "maintenance": {
         "barberFrequency": "biweekly",
         "barberFrequencyDays": 14,
@@ -254,16 +358,34 @@
       "culturalContext": "The most conservative fade option. Popular across all age groups and settings.",
       "popularity": 88,
       "versatility": 5,
-      "tags": ["fade", "conservative", "professional", "low-maintenance", "versatile"]
+      "tags": [
+        "fade",
+        "conservative",
+        "professional",
+        "low-maintenance",
+        "versatile"
+      ]
     },
     {
       "id": "afro",
       "name": "Afro",
       "category": "natural",
       "description": "Natural hair worn in its full, rounded shape. Requires picking/brushing to maintain the round form. A statement of natural texture.",
-      "replicatePrompt": "afro hairstyle, full rounded natural hair, voluminous, picked out",
-      "hairTypes": ["3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong"],
+      "replicatePrompt": "afro hairstyle",
+      "hairTypes": [
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong"
+      ],
       "maintenance": {
         "barberFrequency": "monthly",
         "barberFrequencyDays": 30,
@@ -294,16 +416,35 @@
       "culturalContext": "Iconic symbol of Black pride and the natural hair movement. Originated in the 1960s-70s. A cultural statement, not just a hairstyle.",
       "popularity": 70,
       "versatility": 3,
-      "tags": ["natural", "cultural", "statement", "high-daily-maintenance", "cold-climate"]
+      "tags": [
+        "natural",
+        "cultural",
+        "statement",
+        "high-daily-maintenance",
+        "cold-climate"
+      ]
     },
     {
       "id": "short-afro",
       "name": "Short Afro / TWA",
       "category": "natural",
       "description": "Teeny Weeny Afro. A short, compact natural. Low commitment, great starting point for going natural.",
-      "replicatePrompt": "short afro hairstyle, compact natural hair, short length, neat",
-      "hairTypes": ["3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "replicatePrompt": "afro hairstyle",
+      "hairTypes": [
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong",
+        "heart"
+      ],
       "maintenance": {
         "barberFrequency": "monthly",
         "barberFrequencyDays": 30,
@@ -334,16 +475,39 @@
       "culturalContext": "Often the first step in a natural hair journey. Popular among men transitioning from chemically processed hair.",
       "popularity": 65,
       "versatility": 4,
-      "tags": ["natural", "low-maintenance", "versatile", "beginner-friendly"]
+      "tags": [
+        "natural",
+        "low-maintenance",
+        "versatile",
+        "beginner-friendly"
+      ]
     },
     {
       "id": "buzz-cut",
       "name": "Buzz Cut",
       "category": "short",
       "description": "Uniform short cut all over. Can be done with different guard sizes. The ultimate low-maintenance cut.",
-      "replicatePrompt": "buzz cut hairstyle, uniform short hair all over, clean and simple",
-      "hairTypes": ["1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "square", "diamond", "oblong"],
+      "replicatePrompt": "short hair hairstyle",
+      "hairTypes": [
+        "1A",
+        "1B",
+        "1C",
+        "2A",
+        "2B",
+        "2C",
+        "3A",
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "square",
+        "diamond",
+        "oblong"
+      ],
       "maintenance": {
         "barberFrequency": "monthly",
         "barberFrequencyDays": 30,
@@ -374,16 +538,39 @@
       "culturalContext": "Universal style across all cultures. Popular in military, sports, and practical lifestyles.",
       "popularity": 70,
       "versatility": 2,
-      "tags": ["short", "zero-maintenance", "hot-climate", "practical", "budget"]
+      "tags": [
+        "short",
+        "zero-maintenance",
+        "hot-climate",
+        "practical",
+        "budget"
+      ]
     },
     {
       "id": "crew-cut",
       "name": "Crew Cut",
       "category": "short",
       "description": "Short on the sides and back, slightly longer on top with a gradual taper. Classic, clean-cut look.",
-      "replicatePrompt": "crew cut hairstyle, short on sides and back, slightly longer on top, gradual taper, classic",
-      "hairTypes": ["1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C", "4A"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong"],
+      "replicatePrompt": "crew cut hairstyle",
+      "hairTypes": [
+        "1A",
+        "1B",
+        "1C",
+        "2A",
+        "2B",
+        "2C",
+        "3A",
+        "3B",
+        "3C",
+        "4A"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong"
+      ],
       "maintenance": {
         "barberFrequency": "monthly",
         "barberFrequencyDays": 30,
@@ -410,21 +597,43 @@
         "description": "Good for all climates. Slightly less coverage in cold."
       },
       "skillRequired": "standard",
-      "skillDescription": "Any barber can do a crew cut. One of the most standard cuts."
-      ,
+      "skillDescription": "Any barber can do a crew cut. One of the most standard cuts.",
       "culturalContext": "Classic American cut. Popular in professional and academic settings.",
       "popularity": 60,
       "versatility": 3,
-      "tags": ["short", "classic", "professional", "low-maintenance", "budget"]
+      "tags": [
+        "short",
+        "classic",
+        "professional",
+        "low-maintenance",
+        "budget"
+      ]
     },
     {
       "id": "caesar-cut",
       "name": "Caesar Cut",
       "category": "short",
       "description": "Short cut with the top hair brushed forward in a fringe. Named after Julius Caesar. Even length all around with forward fringe.",
-      "replicatePrompt": "caesar cut hairstyle, short even length, hair brushed forward in a fringe, classic",
-      "hairTypes": ["1A", "1B", "1C", "2A", "2B", "3A", "3B", "3C", "4A", "4B"],
-      "faceShapes": ["oval", "square", "diamond", "oblong", "heart"],
+      "replicatePrompt": "caesar cut hairstyle",
+      "hairTypes": [
+        "1A",
+        "1B",
+        "1C",
+        "2A",
+        "2B",
+        "3A",
+        "3B",
+        "3C",
+        "4A",
+        "4B"
+      ],
+      "faceShapes": [
+        "oval",
+        "square",
+        "diamond",
+        "oblong",
+        "heart"
+      ],
       "maintenance": {
         "barberFrequency": "monthly",
         "barberFrequencyDays": 30,
@@ -455,16 +664,34 @@
       "culturalContext": "Popularized in the 90s. Named after Julius Caesar. Has had periodic revivals.",
       "popularity": 45,
       "versatility": 3,
-      "tags": ["short", "classic", "fringe", "low-maintenance", "budget"]
+      "tags": [
+        "short",
+        "classic",
+        "fringe",
+        "low-maintenance",
+        "budget"
+      ]
     },
     {
       "id": "cornrows",
       "name": "Cornrows",
       "category": "braids",
       "description": "Hair braided close to the scalp in rows. Can be straight back, geometric patterns, or designs. Lasts 2-4 weeks.",
-      "replicatePrompt": "cornrows hairstyle, hair braided close to the scalp in rows, neat parallel braids",
-      "hairTypes": ["3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong"],
+      "replicatePrompt": "cornrows hairstyle",
+      "hairTypes": [
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong"
+      ],
       "maintenance": {
         "barberFrequency": "biweekly",
         "barberFrequencyDays": 21,
@@ -495,16 +722,35 @@
       "culturalContext": "Ancient African tradition dating back thousands of years. Patterns and styles carry cultural significance. Deeply rooted in Black heritage.",
       "popularity": 75,
       "versatility": 3,
-      "tags": ["braids", "cultural", "protective", "medium-maintenance", "specialist"]
+      "tags": [
+        "braids",
+        "cultural",
+        "protective",
+        "medium-maintenance",
+        "specialist"
+      ]
     },
     {
       "id": "box-braids",
       "name": "Box Braids",
       "category": "braids",
       "description": "Individual braids sectioned into square boxes. Can be various lengths. Often uses extensions for added length.",
-      "replicatePrompt": "box braids hairstyle, individual braids sectioned into squares, medium length, neat",
-      "hairTypes": ["3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "replicatePrompt": "braid hairstyle",
+      "hairTypes": [
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong",
+        "heart"
+      ],
       "maintenance": {
         "barberFrequency": "monthly",
         "barberFrequencyDays": 42,
@@ -535,16 +781,36 @@
       "culturalContext": "Popularized in the 90s by hip-hop culture. Roots in African braiding traditions. A protective style that gives natural hair a break.",
       "popularity": 70,
       "versatility": 3,
-      "tags": ["braids", "protective", "cultural", "high-cost", "long-lasting", "specialist"]
+      "tags": [
+        "braids",
+        "protective",
+        "cultural",
+        "high-cost",
+        "long-lasting",
+        "specialist"
+      ]
     },
     {
       "id": "dreadlocks",
       "name": "Dreadlocks / Locs",
       "category": "locs",
       "description": "Hair that has been allowed to mat and lock into rope-like strands. Can be started via various methods and worn short or long.",
-      "replicatePrompt": "dreadlocks hairstyle, hair locked into rope-like strands, medium length, neat locs",
-      "hairTypes": ["3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "replicatePrompt": "dreadlocks hairstyle",
+      "hairTypes": [
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong",
+        "heart"
+      ],
       "maintenance": {
         "barberFrequency": "monthly",
         "barberFrequencyDays": 30,
@@ -575,16 +841,35 @@
       "culturalContext": "Deep spiritual and cultural significance in Rastafarian and African traditions. Also worn as a fashion statement. Represents commitment and patience.",
       "popularity": 70,
       "versatility": 4,
-      "tags": ["locs", "cultural", "commitment", "medium-maintenance", "specialist"]
+      "tags": [
+        "locs",
+        "cultural",
+        "commitment",
+        "medium-maintenance",
+        "specialist"
+      ]
     },
     {
       "id": "short-locs",
       "name": "Short Locs / Starter Locs",
       "category": "locs",
       "description": "Locs in the early stages, typically shorter than 6 inches. Can be started with coils, two-strand twists, or free-form.",
-      "replicatePrompt": "short locs hairstyle, starter dreadlocks, short coiled locs, neat",
-      "hairTypes": ["3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "replicatePrompt": "dreadlocks hairstyle",
+      "hairTypes": [
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong",
+        "heart"
+      ],
       "maintenance": {
         "barberFrequency": "monthly",
         "barberFrequencyDays": 30,
@@ -615,16 +900,35 @@
       "culturalContext": "The beginning of a loc journey. Represents a commitment to a multi-year hair process.",
       "popularity": 60,
       "versatility": 3,
-      "tags": ["locs", "starter", "commitment", "medium-maintenance", "specialist"]
+      "tags": [
+        "locs",
+        "starter",
+        "commitment",
+        "medium-maintenance",
+        "specialist"
+      ]
     },
     {
       "id": "twists",
       "name": "Two-Strand Twists",
       "category": "natural",
       "description": "Hair twisted into two-strand sections. Can be worn as a style or used as a protective measure. Lasts 1-2 weeks.",
-      "replicatePrompt": "two-strand twists hairstyle, hair twisted into neat sections, medium length, defined twists",
-      "hairTypes": ["3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "replicatePrompt": "braid hairstyle",
+      "hairTypes": [
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong",
+        "heart"
+      ],
       "maintenance": {
         "barberFrequency": "biweekly",
         "barberFrequencyDays": 14,
@@ -655,16 +959,33 @@
       "culturalContext": "A versatile natural style. Can be unraveled for a twist-out (curly defined look). Popular in the natural hair community.",
       "popularity": 65,
       "versatility": 4,
-      "tags": ["natural", "protective", "versatile", "medium-maintenance"]
+      "tags": [
+        "natural",
+        "protective",
+        "versatile",
+        "medium-maintenance"
+      ]
     },
     {
       "id": "fade-with-curls",
       "name": "Fade with Curly Top",
       "category": "fade",
       "description": "Skin or taper fade on the sides with natural curls left longer on top. Best of both worlds — clean sides, textured top.",
-      "replicatePrompt": "fade with curly top hairstyle, clean fade on sides, natural curls on top, textured",
-      "hairTypes": ["3A", "3B", "3C", "4A", "4B"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong"],
+      "replicatePrompt": "fade hairstyle",
+      "hairTypes": [
+        "3A",
+        "3B",
+        "3C",
+        "4A",
+        "4B"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong"
+      ],
       "maintenance": {
         "barberFrequency": "biweekly",
         "barberFrequencyDays": 14,
@@ -695,16 +1016,37 @@
       "culturalContext": "One of the most popular modern Black men's styles. Combines the crispness of a fade with natural texture.",
       "popularity": 92,
       "versatility": 5,
-      "tags": ["fade", "curly", "natural-texture", "popular", "versatile"]
+      "tags": [
+        "fade",
+        "curly",
+        "natural-texture",
+        "popular",
+        "versatile"
+      ]
     },
     {
       "id": "textured-crop",
       "name": "Textured Crop",
       "category": "short",
       "description": "Short, textured hair cut forward on the forehead. Modern, European-influenced style that works with curly/coily hair.",
-      "replicatePrompt": "textured crop hairstyle, short textured hair cut forward, modern fringe, neat",
-      "hairTypes": ["2A", "2B", "2C", "3A", "3B", "3C", "4A"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "replicatePrompt": "short hair hairstyle",
+      "hairTypes": [
+        "2A",
+        "2B",
+        "2C",
+        "3A",
+        "3B",
+        "3C",
+        "4A"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong",
+        "heart"
+      ],
       "maintenance": {
         "barberFrequency": "biweekly",
         "barberFrequencyDays": 21,
@@ -735,16 +1077,34 @@
       "culturalContext": "European-influenced style that's gained popularity among Black men with looser curl patterns. Modern and trendy.",
       "popularity": 55,
       "versatility": 4,
-      "tags": ["short", "modern", "trendy", "textured", "low-maintenance"]
+      "tags": [
+        "short",
+        "modern",
+        "trendy",
+        "textured",
+        "low-maintenance"
+      ]
     },
     {
       "id": "high-top-fade",
       "name": "High-Top Fade",
       "category": "fade",
       "description": "Flat-top or rounded top with high fade on sides. Iconic 90s hip-hop style. Makes a bold vertical statement.",
-      "replicatePrompt": "high-top fade hairstyle, tall flat or rounded top, high fade on sides, 90s style",
-      "hairTypes": ["3A", "3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "square", "diamond", "oblong"],
+      "replicatePrompt": "hi-top fade hairstyle",
+      "hairTypes": [
+        "3A",
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "square",
+        "diamond",
+        "oblong"
+      ],
       "maintenance": {
         "barberFrequency": "biweekly",
         "barberFrequencyDays": 14,
@@ -775,16 +1135,35 @@
       "culturalContext": "Iconic 90s hip-hop style (Kid 'n Play, Will Smith in Fresh Prince). Has had a revival in recent years.",
       "popularity": 50,
       "versatility": 2,
-      "tags": ["fade", "90s", "retro", "bold", "high-maintenance", "statement"]
+      "tags": [
+        "fade",
+        "90s",
+        "retro",
+        "bold",
+        "high-maintenance",
+        "statement"
+      ]
     },
     {
       "id": "mohawk-fade",
       "name": "Mohawk Fade",
       "category": "edgy",
       "description": "Strip of hair down the center with faded or shaved sides. Can be subtle (fauxhawk) or full. Bold, edgy look.",
-      "replicatePrompt": "mohawk fade hairstyle, strip of hair down center, faded sides, bold edgy look",
-      "hairTypes": ["3A", "3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "square", "diamond", "oblong"],
+      "replicatePrompt": "mohawk hairstyle",
+      "hairTypes": [
+        "3A",
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "square",
+        "diamond",
+        "oblong"
+      ],
       "maintenance": {
         "barberFrequency": "biweekly",
         "barberFrequencyDays": 14,
@@ -815,16 +1194,42 @@
       "culturalContext": "Punk rock origins, adapted in Black barbershop culture. Associated with individuality and rebellion.",
       "popularity": 40,
       "versatility": 2,
-      "tags": ["edgy", "bold", "statement", "hot-climate", "specialist"]
+      "tags": [
+        "edgy",
+        "bold",
+        "statement",
+        "hot-climate",
+        "specialist"
+      ]
     },
     {
       "id": "line-up",
       "name": "Line Up / Shape Up",
       "category": "detail",
       "description": "Not a standalone cut but a detailing technique — sharp, geometric hairline shaping. Can be added to any short style.",
-      "replicatePrompt": "line up hairstyle, sharp geometric hairline, clean shape up, precise edges",
-      "hairTypes": ["1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "replicatePrompt": "regular taper cut hairstyle",
+      "hairTypes": [
+        "1A",
+        "1B",
+        "1C",
+        "2A",
+        "2B",
+        "2C",
+        "3A",
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong",
+        "heart"
+      ],
       "maintenance": {
         "barberFrequency": "weekly",
         "barberFrequencyDays": 7,
@@ -854,16 +1259,35 @@
       "culturalContext": "The line-up is essential to Black barbershop culture. A fresh line-up is the difference between a good cut and a great one.",
       "popularity": 95,
       "versatility": 5,
-      "tags": ["detail", "essential", "sharp", "weekly", "signature"]
+      "tags": [
+        "detail",
+        "essential",
+        "sharp",
+        "weekly",
+        "signature"
+      ]
     },
     {
       "id": "waves",
       "name": "360 Waves",
       "category": "natural",
       "description": "Short hair trained into a wave pattern using brushing, durag compression, and pomade. Iconic Black men's style.",
-      "replicatePrompt": "360 waves hairstyle, short hair trained into wave pattern, deep waves, shiny",
-      "hairTypes": ["3A", "3B", "3C", "4A", "4B"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "replicatePrompt": "finger waves hairstyle",
+      "hairTypes": [
+        "3A",
+        "3B",
+        "3C",
+        "4A",
+        "4B"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong",
+        "heart"
+      ],
       "maintenance": {
         "barberFrequency": "biweekly",
         "barberFrequencyDays": 14,
@@ -894,16 +1318,35 @@
       "culturalContext": "Deeply rooted in Black culture. A rite of passage for many young Black men. The wave game is a point of pride and community.",
       "popularity": 80,
       "versatility": 2,
-      "tags": ["natural", "cultural", "high-daily-maintenance", "lifestyle", "commitment"]
+      "tags": [
+        "natural",
+        "cultural",
+        "high-daily-maintenance",
+        "lifestyle",
+        "commitment"
+      ]
     },
     {
       "id": "sponge-twists",
       "name": "Sponge Twists / Nubian Twists",
       "category": "natural",
       "description": "Short hair twisted into small coils using a twist sponge. Quick, easy, and enhances natural curl pattern.",
-      "replicatePrompt": "sponge twists hairstyle, short hair twisted into small coils, defined coil pattern, neat",
-      "hairTypes": ["3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "replicatePrompt": "short hair hairstyle",
+      "hairTypes": [
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong",
+        "heart"
+      ],
       "maintenance": {
         "barberFrequency": "monthly",
         "barberFrequencyDays": 30,
@@ -934,16 +1377,40 @@
       "culturalContext": "Popular low-maintenance natural style. Common among young Black men and those new to natural hair.",
       "popularity": 60,
       "versatility": 3,
-      "tags": ["natural", "low-cost", "easy", "beginner-friendly", "hot-climate"]
+      "tags": [
+        "natural",
+        "low-cost",
+        "easy",
+        "beginner-friendly",
+        "hot-climate"
+      ]
     },
     {
       "id": "bald",
       "name": "Clean Shave / Bald",
       "category": "short",
       "description": "Completely shaved head. The ultimate low-maintenance choice. Works for any hair type since there's no hair.",
-      "replicatePrompt": "bald hairstyle, clean shaved head, smooth, no hair",
-      "hairTypes": ["1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "square", "diamond", "oblong"],
+      "replicatePrompt": "short hair hairstyle",
+      "hairTypes": [
+        "1A",
+        "1B",
+        "1C",
+        "2A",
+        "2B",
+        "2C",
+        "3A",
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "square",
+        "diamond",
+        "oblong"
+      ],
       "maintenance": {
         "barberFrequency": "weekly",
         "barberFrequencyDays": 7,
@@ -974,16 +1441,36 @@
       "culturalContext": "A confident choice. Popular among men with thinning hair who choose to embrace baldness rather than fight it.",
       "popularity": 55,
       "versatility": 1,
-      "tags": ["short", "zero-maintenance", "budget", "hot-climate", "practical"]
+      "tags": [
+        "short",
+        "zero-maintenance",
+        "budget",
+        "hot-climate",
+        "practical"
+      ]
     },
     {
       "id": "fauxhawk",
       "name": "Faux Hawk",
       "category": "edgy",
       "description": "A subtle mohawk — hair is longer on top in the center and shorter on the sides, but not shaved. More professional than a full mohawk.",
-      "replicatePrompt": "fauxhawk hairstyle, longer hair in center, shorter on sides, subtle mohawk, modern",
-      "hairTypes": ["2A", "2B", "2C", "3A", "3B", "3C", "4A", "4B"],
-      "faceShapes": ["oval", "square", "diamond", "oblong"],
+      "replicatePrompt": "fauxhawk hairstyle",
+      "hairTypes": [
+        "2A",
+        "2B",
+        "2C",
+        "3A",
+        "3B",
+        "3C",
+        "4A",
+        "4B"
+      ],
+      "faceShapes": [
+        "oval",
+        "square",
+        "diamond",
+        "oblong"
+      ],
       "maintenance": {
         "barberFrequency": "biweekly",
         "barberFrequencyDays": 21,
@@ -1014,16 +1501,33 @@
       "culturalContext": "A more wearable version of the mohawk. Popular in creative and fashion-forward circles.",
       "popularity": 45,
       "versatility": 3,
-      "tags": ["edgy", "modern", "versatile", "medium-maintenance"]
+      "tags": [
+        "edgy",
+        "modern",
+        "versatile",
+        "medium-maintenance"
+      ]
     },
     {
       "id": "curly-fade",
       "name": "Curly Fade with Volume",
       "category": "fade",
       "description": "Fade on sides with voluminous natural curls on top. The curls are left longer for maximum volume and definition.",
-      "replicatePrompt": "curly fade with volume hairstyle, clean fade on sides, voluminous natural curls on top, defined",
-      "hairTypes": ["3A", "3B", "3C", "4A"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "replicatePrompt": "fade hairstyle",
+      "hairTypes": [
+        "3A",
+        "3B",
+        "3C",
+        "4A"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong",
+        "heart"
+      ],
       "maintenance": {
         "barberFrequency": "biweekly",
         "barberFrequencyDays": 14,
@@ -1054,16 +1558,36 @@
       "culturalContext": "Popular modern style that embraces natural texture. Seen across sports and entertainment.",
       "popularity": 85,
       "versatility": 4,
-      "tags": ["fade", "curly", "volume", "natural-texture", "popular"]
+      "tags": [
+        "fade",
+        "curly",
+        "volume",
+        "natural-texture",
+        "popular"
+      ]
     },
     {
       "id": "slick-back",
       "name": "Slick Back with Fade",
       "category": "medium",
       "description": "Longer hair on top slicked back with product, faded on the sides. Polished, mature look.",
-      "replicatePrompt": "slick back with fade hairstyle, longer hair on top slicked back, clean fade on sides, polished",
-      "hairTypes": ["1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B"],
-      "faceShapes": ["oval", "square", "diamond", "oblong"],
+      "replicatePrompt": "slicked-back hairstyle",
+      "hairTypes": [
+        "1A",
+        "1B",
+        "1C",
+        "2A",
+        "2B",
+        "2C",
+        "3A",
+        "3B"
+      ],
+      "faceShapes": [
+        "oval",
+        "square",
+        "diamond",
+        "oblong"
+      ],
       "maintenance": {
         "barberFrequency": "biweekly",
         "barberFrequencyDays": 21,
@@ -1094,16 +1618,37 @@
       "culturalContext": "Classic, mature look. Associated with sophistication and old-school elegance.",
       "popularity": 50,
       "versatility": 3,
-      "tags": ["medium", "classic", "polished", "professional", "product-dependent"]
+      "tags": [
+        "medium",
+        "classic",
+        "polished",
+        "professional",
+        "product-dependent"
+      ]
     },
     {
       "id": "undercut",
       "name": "Undercut",
       "category": "medium",
       "description": "Long hair on top with disconnected short sides. The contrast is sharp — no fade, just a clean disconnect.",
-      "replicatePrompt": "undercut hairstyle, long hair on top, disconnected short sides, sharp contrast, modern",
-      "hairTypes": ["1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C"],
-      "faceShapes": ["oval", "square", "diamond", "oblong"],
+      "replicatePrompt": "undercut hairstyle",
+      "hairTypes": [
+        "1A",
+        "1B",
+        "1C",
+        "2A",
+        "2B",
+        "2C",
+        "3A",
+        "3B",
+        "3C"
+      ],
+      "faceShapes": [
+        "oval",
+        "square",
+        "diamond",
+        "oblong"
+      ],
       "maintenance": {
         "barberFrequency": "biweekly",
         "barberFrequencyDays": 21,
@@ -1130,21 +1675,37 @@
         "description": "Good for dry climates. The long top can be warm in hot weather and frizz in humidity."
       },
       "skillRequired": "standard",
-      "skillDescription": "Most barbers can do an undercut. The disconnect is straightforward."
-      ,
+      "skillDescription": "Most barbers can do an undercut. The disconnect is straightforward.",
       "culturalContext": "Popularized in the 2010s. Has a rockabilly and punk heritage. Modern revival made it mainstream.",
       "popularity": 55,
       "versatility": 3,
-      "tags": ["medium", "modern", "disconnected", "bold"]
+      "tags": [
+        "medium",
+        "modern",
+        "disconnected",
+        "bold"
+      ]
     },
     {
       "id": "jheri-curl",
       "name": "Jheri Curl (Modern)",
       "category": "natural",
       "description": "Chemically processed curls with a glossy, moisturized look. The modern version uses texturizers for a looser curl pattern.",
-      "replicatePrompt": "jheri curl hairstyle, glossy moisturized curls, loose curl pattern, wet look",
-      "hairTypes": ["3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong"],
+      "replicatePrompt": "jheri curl hairstyle",
+      "hairTypes": [
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong"
+      ],
       "maintenance": {
         "barberFrequency": "monthly",
         "barberFrequencyDays": 30,
@@ -1175,16 +1736,34 @@
       "culturalContext": "Iconic 80s style (Michael Jackson, Eddie Murphy). The modern version is more subtle. A nostalgic choice with cultural significance.",
       "popularity": 25,
       "versatility": 2,
-      "tags": ["natural", "retro", "chemical", "product-heavy", "nostalgic"]
+      "tags": [
+        "natural",
+        "retro",
+        "chemical",
+        "product-heavy",
+        "nostalgic"
+      ]
     },
     {
       "id": "freeform-locs",
       "name": "Freeform Locs",
       "category": "locs",
       "description": "Locs that form naturally without manipulation or retwisting. Embraces the organic locking process. Each head is unique.",
-      "replicatePrompt": "freeform locs hairstyle, naturally forming dreadlocks, organic unmanipulated locs, varied sizes",
-      "hairTypes": ["3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "replicatePrompt": "dreadlocks hairstyle",
+      "hairTypes": [
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong",
+        "heart"
+      ],
       "maintenance": {
         "barberFrequency": "quarterly",
         "barberFrequencyDays": 90,
@@ -1215,16 +1794,43 @@
       "culturalContext": "Associated with the Rastafarian movement and natural hair philosophy. Represents letting go of control and embracing natural processes.",
       "popularity": 45,
       "versatility": 2,
-      "tags": ["locs", "natural", "low-maintenance", "cultural", "spiritual", "commitment"]
+      "tags": [
+        "locs",
+        "natural",
+        "low-maintenance",
+        "cultural",
+        "spiritual",
+        "commitment"
+      ]
     },
     {
       "id": "temp-fade",
       "name": "Temp Fade / Temple Fade",
       "category": "fade",
       "description": "Fade concentrated at the temples only. Keeps hair on the sides and back. Subtle and clean — often paired with a line-up.",
-      "replicatePrompt": "temp fade hairstyle, fade at temples only, hair remains on sides and back, subtle clean look",
-      "hairTypes": ["1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "replicatePrompt": "fade hairstyle",
+      "hairTypes": [
+        "1A",
+        "1B",
+        "1C",
+        "2A",
+        "2B",
+        "2C",
+        "3A",
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong",
+        "heart"
+      ],
       "maintenance": {
         "barberFrequency": "biweekly",
         "barberFrequencyDays": 14,
@@ -1255,16 +1861,42 @@
       "culturalContext": "Classic, understated cut. Popular among older Black men and those who prefer a conservative look.",
       "popularity": 65,
       "versatility": 4,
-      "tags": ["fade", "conservative", "professional", "low-maintenance", "versatile"]
+      "tags": [
+        "fade",
+        "conservative",
+        "professional",
+        "low-maintenance",
+        "versatile"
+      ]
     },
     {
       "id": "shadow-fade",
       "name": "Shadow Fade",
       "category": "fade",
       "description": "Fade that doesn't go to skin — leaves a shadow of hair (guard 0.5-1). Softer than a skin fade but still crisp.",
-      "replicatePrompt": "shadow fade hairstyle, fade leaving short hair shadow not to skin, soft but crisp, neat",
-      "hairTypes": ["1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "replicatePrompt": "fade hairstyle",
+      "hairTypes": [
+        "1A",
+        "1B",
+        "1C",
+        "2A",
+        "2B",
+        "2C",
+        "3A",
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong",
+        "heart"
+      ],
       "maintenance": {
         "barberFrequency": "biweekly",
         "barberFrequencyDays": 14,
@@ -1295,16 +1927,35 @@
       "culturalContext": "A softer alternative to the skin fade. Popular among men who want a clean look without exposing the scalp.",
       "popularity": 70,
       "versatility": 5,
-      "tags": ["fade", "soft", "versatile", "professional", "low-maintenance"]
+      "tags": [
+        "fade",
+        "soft",
+        "versatile",
+        "professional",
+        "low-maintenance"
+      ]
     },
     {
       "id": "twist-out",
       "name": "Twist Out",
       "category": "natural",
       "description": "Hair that was twisted and then unraveled to create a defined, curly look. A styling technique rather than a cut.",
-      "replicatePrompt": "twist out hairstyle, defined curls from unraveled twists, voluminous natural texture, curly",
-      "hairTypes": ["3B", "3C", "4A", "4B", "4C"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "replicatePrompt": "afro hairstyle",
+      "hairTypes": [
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong",
+        "heart"
+      ],
       "maintenance": {
         "barberFrequency": "monthly",
         "barberFrequencyDays": 30,
@@ -1335,16 +1986,40 @@
       "culturalContext": "A staple of the natural hair movement. Celebrates and defines natural curl patterns.",
       "popularity": 55,
       "versatility": 3,
-      "tags": ["natural", "curly", "defined", "high-daily-maintenance", "fragile"]
+      "tags": [
+        "natural",
+        "curly",
+        "defined",
+        "high-daily-maintenance",
+        "fragile"
+      ]
     },
     {
       "id": "low-taper-textured-top",
       "name": "Low Taper with Textured Top",
       "category": "fade",
       "description": "Subtle low taper at the edges with a textured, messy top. The most popular modern men's cut of 2024-2025.",
-      "replicatePrompt": "low taper with textured top hairstyle, subtle taper at edges, messy textured top, modern",
-      "hairTypes": ["1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C", "4A"],
-      "faceShapes": ["oval", "round", "square", "diamond", "oblong", "heart"],
+      "replicatePrompt": "taper cut hairstyle",
+      "hairTypes": [
+        "1A",
+        "1B",
+        "1C",
+        "2A",
+        "2B",
+        "2C",
+        "3A",
+        "3B",
+        "3C",
+        "4A"
+      ],
+      "faceShapes": [
+        "oval",
+        "round",
+        "square",
+        "diamond",
+        "oblong",
+        "heart"
+      ],
       "maintenance": {
         "barberFrequency": "biweekly",
         "barberFrequencyDays": 21,
@@ -1375,7 +2050,14 @@
       "culturalContext": "The defining men's cut of the 2020s. Popularized by TikTok and celebrity barbers. Crosses racial and cultural boundaries.",
       "popularity": 95,
       "versatility": 5,
-      "tags": ["fade", "modern", "trendy", "versatile", "popular", "low-maintenance"]
+      "tags": [
+        "fade",
+        "modern",
+        "trendy",
+        "versatile",
+        "popular",
+        "low-maintenance"
+      ]
     }
   ]
 }

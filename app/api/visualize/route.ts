@@ -88,8 +88,8 @@ export async function POST(request: NextRequest) {
         clientError = "Replicate API token is invalid or expired";
       } else if (response.status === 429) {
         clientError = "Rate limited by Replicate — please wait a moment and try again";
-      } else if (response.status === 400) {
-        clientError = "Invalid input — the image may be too large or in the wrong format";
+      } else if (response.status === 400 || response.status === 422) {
+        clientError = "Invalid input — the hairstyle prompt or image was rejected by the AI model";
       }
       return NextResponse.json(
         { error: clientError, details: errorText.slice(0, 500) },
