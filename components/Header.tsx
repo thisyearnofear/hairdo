@@ -23,13 +23,13 @@ export function Header() {
         height={42}
         className="flex-shrink-0"
       />
-      <h1 className="text-2xl font-normal ml-0 md:ml-4">HAIRDO</h1>
+      <h1 className="text-2xl font-normal ml-0 md:ml-4 font-display tracking-tight">HAIRDO</h1>
       <nav className="hidden md:flex items-center gap-6 ml-8">
         <Link
           href="/barbers"
-          className="text-[10px] tracking-widest uppercase opacity-50 hover:opacity-80 transition-opacity"
+          className="text-xs tracking-wide font-medium opacity-50 hover:opacity-80 transition-opacity"
         >
-          BARBERS
+          Barbers
         </Link>
       </nav>
       <div className="flex-1" />

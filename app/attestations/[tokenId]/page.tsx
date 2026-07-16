@@ -82,23 +82,23 @@ export default function AttestationPage({
         {/* Back link */}
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-[10px] tracking-widest uppercase opacity-50 hover:opacity-80 transition-opacity mb-8"
+          className="inline-flex items-center gap-2 text-xs tracking-wide opacity-50 hover:opacity-80 transition-opacity mb-8"
         >
           <ArrowLeft className="w-3 h-3" />
-          BACK_TO_ADVISOR
+          Back to advisor
         </Link>
 
         {/* Technical Header */}
         <div className="mb-12 text-center">
-          <div className="flex items-center justify-center gap-6 text-[10px] tracking-widest uppercase opacity-60 mb-4">
-            <span>ATTESTATION_VIEWER</span>
-            <span className="w-px h-3 bg-white/40" />
-            <span>LISK_L2</span>
+          <div className="flex items-center justify-center gap-6 text-[10px] tracking-wider uppercase opacity-50 mb-4">
+            <span>Attestation Viewer</span>
+            <span className="w-px h-3 bg-white/30" />
+            <span>Lisk L2</span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tighter mb-2">
-            ATTESTATION
+          <h1 className="text-3xl font-bold tracking-tighter mb-2 font-display">
+            Attestation
           </h1>
-          <p className="text-[10px] tracking-wider uppercase opacity-50 break-all">
+          <p className="text-[10px] tracking-wider opacity-50 break-all">
             {tokenId}
           </p>
         </div>
@@ -107,21 +107,21 @@ export default function AttestationPage({
         {loading && (
           <div className="flex flex-col items-center gap-4 py-16">
             <Loader2 className="w-10 h-10 animate-spin opacity-50" />
-            <p className="text-[10px] tracking-widest uppercase opacity-50">
-              FETCHING_ATTESTATION...
+            <p className="text-xs tracking-wide opacity-50">
+              Fetching attestation...
             </p>
           </div>
         )}
 
         {/* Error state */}
         {error && !loading && (
-          <div className="border border-red-500/20 bg-red-500/5 p-8 rounded text-center">
+          <div className="border border-red-500/20 bg-red-500/5 p-8 rounded-lg text-center">
             <XCircle className="w-10 h-10 text-red-500 mx-auto mb-4" />
-            <h2 className="text-sm tracking-widest uppercase text-red-400 mb-2">
-              ATTESTATION_NOT_FOUND
+            <h2 className="text-sm tracking-wide text-red-400 mb-2">
+              Attestation not found
             </h2>
             <p className="text-xs opacity-60 mb-4">{error}</p>
-            <p className="text-[10px] tracking-wider uppercase opacity-40">
+            <p className="text-xs opacity-40">
               The tokenId may be invalid or no attestation has been recorded for it.
             </p>
           </div>
@@ -132,7 +132,7 @@ export default function AttestationPage({
           <div className="space-y-6">
             {/* Verification banner */}
             <div
-              className={`border p-4 rounded flex items-center gap-3 ${
+              className={`border p-4 rounded-lg flex items-center gap-3 ${
                 attestation.txVerified
                   ? "border-green-500/20 bg-green-500/5"
                   : "border-yellow-500/20 bg-yellow-500/5"
@@ -145,13 +145,13 @@ export default function AttestationPage({
               )}
               <div>
                 <p
-                  className={`text-xs tracking-widest uppercase ${
+                  className={`text-xs tracking-wide uppercase ${
                     attestation.txVerified ? "text-green-400" : "text-yellow-400"
                   }`}
                 >
                   {attestation.txVerified
-                    ? "VERIFIED_ONCHAIN"
-                    : "UNVERIFIED"}
+                    ? "Verified onchain"
+                    : "Unverified"}
                 </p>
                 <p className="text-[10px] opacity-50 mt-1">
                   {attestation.txVerified
@@ -162,21 +162,21 @@ export default function AttestationPage({
             </div>
 
             {/* Style details */}
-            <div className="border border-white/10 bg-black/20 p-6 rounded space-y-4">
+            <div className="border border-white/10 bg-black/20 p-6 rounded-lg space-y-4">
               <div>
-                <p className="text-[10px] tracking-widest uppercase opacity-50 mb-1">
-                  STYLE
+                <p className="text-[10px] tracking-wide uppercase opacity-50 mb-1">
+                  Style
                 </p>
-                <p className="text-xl">{attestation.styleName}</p>
-                <p className="text-[10px] tracking-widest uppercase opacity-40 mt-1">
+                <p className="text-xl font-display">{attestation.styleName}</p>
+                <p className="text-[10px] tracking-wide uppercase opacity-40 mt-1">
                   {attestation.styleCategory}
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
                 <div>
-                  <p className="text-[10px] tracking-widest uppercase opacity-50 mb-1">
-                    ATTESTED_BY
+                  <p className="text-[10px] tracking-wide uppercase opacity-50 mb-1">
+                    Attested by
                   </p>
                   <p className="text-xs font-mono break-all">
                     {attestation.userAddress.substring(0, 10)}...
@@ -187,8 +187,8 @@ export default function AttestationPage({
                 </div>
 
                 <div>
-                  <p className="text-[10px] tracking-widest uppercase opacity-50 mb-1">
-                    TIMESTAMP
+                  <p className="text-[10px] tracking-wide uppercase opacity-50 mb-1">
+                    Timestamp
                   </p>
                   <p className="text-xs">{formatDate(attestation.timestamp)} UTC</p>
                 </div>
@@ -196,8 +196,8 @@ export default function AttestationPage({
 
               {attestation.photoHash && (
                 <div className="pt-4 border-t border-white/5">
-                  <p className="text-[10px] tracking-widest uppercase opacity-50 mb-1">
-                    PHOTO_HASH (SHA-256)
+                  <p className="text-[10px] tracking-wide uppercase opacity-50 mb-1">
+                    Photo hash (SHA-256)
                   </p>
                   <p className="text-xs font-mono break-all opacity-70">
                     {shortenHash(attestation.photoHash)}
@@ -207,8 +207,8 @@ export default function AttestationPage({
 
               {attestation.attestationHash && (
                 <div className="pt-4 border-t border-white/5">
-                  <p className="text-[10px] tracking-widest uppercase opacity-50 mb-1">
-                    ATTESTATION_HASH
+                  <p className="text-[10px] tracking-wide uppercase opacity-50 mb-1">
+                    Attestation hash
                   </p>
                   <p className="text-xs font-mono break-all opacity-70">
                     {shortenHash(attestation.attestationHash)}
@@ -218,9 +218,9 @@ export default function AttestationPage({
             </div>
 
             {/* Contract details */}
-            <div className="border border-white/10 bg-black/20 p-4 rounded space-y-2">
-              <p className="text-[10px] tracking-widest uppercase opacity-50 mb-2">
-                ONCHAIN_DETAILS
+            <div className="border border-white/10 bg-black/20 p-4 rounded-lg space-y-2">
+              <p className="text-[10px] tracking-wide uppercase opacity-50 mb-2">
+                Onchain details
               </p>
               <div className="flex justify-between text-xs">
                 <span className="opacity-50">Contract</span>
@@ -242,7 +242,7 @@ export default function AttestationPage({
               asChild
               variant="outline"
               size="lg"
-              className="w-full text-xs tracking-widest uppercase"
+              className="w-full text-xs tracking-wide"
             >
               <a
                 href={`https://blockscout.lisk.com/address/${attestation.userAddress}`}
@@ -250,16 +250,16 @@ export default function AttestationPage({
                 rel="noopener noreferrer"
               >
                 <ExternalLink className="w-3 h-3 mr-2" />
-                VIEW_ON_BLOCKSCOUT
+                View on Blockscout
               </a>
             </Button>
 
             {/* Info */}
-            <div className="text-center text-[10px] tracking-wider text-white/40 space-y-1">
-              <p>THIS_ATTESTATION_IS_PUBLIC_AND_VERIFIABLE_BY_ANYONE</p>
+            <div className="text-center text-[10px] tracking-wide text-white/40 space-y-1">
+              <p>This attestation is public and verifiable by anyone</p>
               <p>
-                VERIFY_INDEPENDENTLY: CHECK isTokenUsed({shortenHash(tokenId)}) ON
-                THE LISK CONTRACT
+                Verify independently: check isTokenUsed({shortenHash(tokenId)}) on
+                the Lisk contract
               </p>
             </div>
           </div>

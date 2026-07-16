@@ -1,13 +1,19 @@
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Inter, Fraunces } from "next/font/google"
 import Script from "next/script"
 import { Web3Provider } from "@/components/Web3Provider"
 import "./globals.css"
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-display",
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+})
 
 const title = "HAIRDO"
-const description = "Get a new hairstyle in seconds, for free."
+const description = "An agentic style advisor for Black men — discover, visualize, and attest your style."
 const image = "https://hairdo.vercel.app/cover.jpg"
 
 export const metadata: Metadata = {
@@ -38,12 +44,12 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.variable} ${fraunces.variable}`}>
         <Web3Provider>
-          <div 
-            className="min-h-screen bg-[#070707]"
+          <div
+            className="min-h-screen bg-[#0a0807]"
             style={{
-              background: 'radial-gradient(circle at 50% 0%, rgba(0, 112, 227, 0.15) 0%, #070707 50%)'
+              background: 'radial-gradient(circle at 50% 0%, rgba(217, 164, 76, 0.08) 0%, rgba(180, 80, 40, 0.04) 30%, #0a0807 60%)'
             }}
           >
             {children}

@@ -4,26 +4,36 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-background: hsl(0 0% 2.7%);
-  --color-foreground: hsl(0 0% 98%);
-  --color-card: hsl(0 0% 5%);
-  --color-card-foreground: hsl(0 0% 98%);
-  --color-popover: hsl(0 0% 5%);
-  --color-popover-foreground: hsl(0 0% 98%);
-  --color-primary: hsl(0 0% 98%);
-  --color-primary-foreground: hsl(0 0% 2.7%);
+  --color-background: hsl(20 8% 3.5%);
+  --color-foreground: hsl(40 15% 96%);
+  --color-card: hsl(20 6% 5%);
+  --color-card-foreground: hsl(40 15% 96%);
+  --color-popover: hsl(20 6% 5%);
+  --color-popover-foreground: hsl(40 15% 96%);
+  --color-primary: hsl(40 15% 96%);
+  --color-primary-foreground: hsl(20 8% 3.5%);
   --color-secondary: hsl(207 100% 44.5%);
-  --color-secondary-foreground: hsl(0 0% 98%);
-  --color-muted: hsl(0 0% 15%);
-  --color-muted-foreground: hsl(0 0% 60%);
-  --color-accent: hsl(0 0% 15%);
-  --color-accent-foreground: hsl(0 0% 98%);
+  --color-secondary-foreground: hsl(40 15% 96%);
+  --color-muted: hsl(20 5% 14%);
+  --color-muted-foreground: hsl(30 8% 58%);
+  --color-accent: hsl(20 5% 14%);
+  --color-accent-foreground: hsl(40 15% 96%);
   --color-destructive: hsl(0 84.2% 60.2%);
-  --color-destructive-foreground: hsl(0 0% 98%);
-  --color-border: hsl(0 0% 15%);
-  --color-input: hsl(0 0% 15%);
-  --color-ring: hsl(0 0% 83.1%);
-  --radius: 0.625rem;
+  --color-destructive-foreground: hsl(40 15% 96%);
+  --color-border: hsl(20 5% 14%);
+  --color-input: hsl(20 5% 14%);
+  --color-ring: hsl(38 60% 70%);
+
+  /* Warm accent palette — amber/gold for warmth, terracotta for depth */
+  --color-amber: hsl(38 70% 55%);
+  --color-amber-soft: hsl(38 50% 45%);
+  --color-terracotta: hsl(18 55% 42%);
+  --color-sage: hsl(140 20% 45%);
+
+  --font-sans: var(--font-sans), system-ui, sans-serif;
+  --font-display: var(--font-display), Georgia, serif;
+
+  --radius: 0.75rem;
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
@@ -35,20 +45,22 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans), system-ui, sans-serif;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  /* Tabular numbers for dynamically updating values (scores, counts) */
-  .tabular-nums {
-    font-variant-numeric: tabular-nums;
-  }
-  /* Text wrapping — balance for headings, pretty for body */
+  /* Display font for headings — warm editorial serif */
   h1, h2, h3 {
     text-wrap: balance;
+    font-family: var(--font-display), Georgia, serif;
   }
   p {
     text-wrap: pretty;
+  }
+  /* Tabular numbers for dynamically updating values (scores, counts) */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
   }
 }
 
@@ -58,6 +70,27 @@
 
 @utility text-model {
   @apply text-xs tracking-wider font-mono opacity-80;
+}
+
+/* Display serif — for headings that need warmth and personality */
+@utility font-display {
+  font-family: var(--font-display), Georgia, serif;
+}
+
+/* Soft label — sentence case for user-facing content (replaces all-caps for body) */
+@utility text-label {
+  @apply text-xs tracking-wide font-medium opacity-60;
+}
+
+/* Warm accent text colors */
+@utility text-amber {
+  color: hsl(38 70% 55%);
+}
+@utility text-terracotta {
+  color: hsl(18 55% 52%);
+}
+@utility text-sage {
+  color: hsl(140 20% 55%);
 }
 
 @utility container {
@@ -238,7 +271,7 @@
 .shadow-glow {
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.05),
-    0 0 20px rgba(0, 112, 227, 0.15),
+    0 0 20px rgba(217, 164, 76, 0.12),
     0 4px 12px rgba(0, 0, 0, 0.3);
 }
 

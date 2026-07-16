@@ -38,7 +38,7 @@ export function ConnectButton() {
                   disconnect()
                   setShowDisconnect(false)
                 }}
-                className="w-full text-left px-3 py-2 text-xs tracking-widest uppercase hover:bg-white/10 rounded text-red-400"
+                className="w-full text-left px-3 py-2 text-xs tracking-wide hover:bg-white/10 rounded text-red-400"
               >
                 Disconnect
               </button>
@@ -69,8 +69,8 @@ export function ConnectButton() {
           )}
         </Button>
 
-        <p className="text-[9px] tracking-widest uppercase opacity-30 mt-1 hidden md:block">
-          ONCHAIN_PREMIUM
+        <p className="text-[9px] tracking-wide uppercase opacity-30 mt-1 hidden md:block">
+          Onchain premium
         </p>
       </div>
 
@@ -84,7 +84,7 @@ export function ConnectButton() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-sm tracking-widest uppercase">Connect Wallet</h2>
+              <h2 className="text-sm tracking-wide font-display">Connect Wallet</h2>
               <button
                 onClick={() => setShowModal(false)}
                 className="text-white/60 hover:text-white/90"

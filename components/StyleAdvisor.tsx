@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Upload, Camera, AlertCircle, Sparkles, Zap, Link2, Scissors } from "lucide-react"
+import { Upload, Camera, AlertCircle, Sparkles, Zap, Link2, Scissors, ChevronDown, HelpCircle } from "lucide-react"
 import { Output } from "./Output"
 import Link from "next/link"
 import { AttestationHandler, type AttestationResult } from "./AttestationHandler"
@@ -18,6 +18,8 @@ import { lisk } from "@/lib/chains"
 import { RadarChart } from "@/components/ui/radar-chart"
 import { StatBar } from "@/components/ui/tradeoff-bars"
 import { ProgressSteps } from "@/components/ui/progress-steps"
+import { HairTypeGuide } from "@/components/ui/hair-type-guide"
+import { StyleIllustration } from "@/components/ui/style-illustration"
 import { play } from "@/lib/sound"
 import {
   processImageFile,
@@ -148,6 +150,9 @@ export function StyleAdvisor() {
 
   // Onchain premium (easter egg)
   const [showOnchainHint, setShowOnchainHint] = useState(false)
+
+  // Hair type guide
+  const [showHairGuide, setShowHairGuide] = useState(false)
 
   // Attestation modal
   const { isConnected, chainId } = useConnection()
@@ -515,8 +520,8 @@ export function StyleAdvisor() {
                   style={{ backgroundImage: `url(${image})` }}
                 />
                 <div className="absolute bottom-0 left-0 right-0 p-4 bg-linear-to-t from-black/80 to-transparent">
-                  <p className="text-[10px] tracking-wider uppercase opacity-70">
-                    IMAGE_LOADED
+                  <p className="text-xs tracking-wide opacity-70">
+                    Image loaded
                   </p>
                 </div>
               </>
@@ -524,8 +529,8 @@ export function StyleAdvisor() {
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="relative">
                   <div className="w-16 h-16 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                  <p className="mt-4 text-[10px] tracking-widest uppercase">
-                    LOADING
+                  <p className="mt-4 text-xs tracking-wide">
+                    Loading
                   </p>
                 </div>
               </div>
@@ -540,16 +545,16 @@ export function StyleAdvisor() {
                     className="flex flex-col items-center justify-center hover:text-white/90 transition-colors"
                   >
                     <Camera className="w-12 h-12 mb-2 group-hover:scale-110 transition-transform" />
-                    <p className="text-xs tracking-widest uppercase mb-1">SELFIE</p>
-                    <p className="text-[10px] tracking-wider opacity-50">TAKE_PHOTO</p>
+                    <p className="text-sm tracking-wide font-medium mb-1">Selfie</p>
+                    <p className="text-[10px] tracking-wide opacity-50">Take photo</p>
                   </button>
                   <button
                     onClick={onClickUpload}
                     className="flex flex-col items-center justify-center hover:text-white/90 transition-colors"
                   >
                     <Upload className="w-12 h-12 mb-2 group-hover:scale-110 transition-transform" />
-                    <p className="text-xs tracking-widest uppercase mb-1">UPLOAD</p>
-                    <p className="text-[10px] tracking-wider opacity-50">SELECT_FILE</p>
+                    <p className="text-sm tracking-wide font-medium mb-1">Upload</p>
+                    <p className="text-[10px] tracking-wide opacity-50">Select file</p>
                   </button>
                 </div>
               </div>
@@ -560,11 +565,22 @@ export function StyleAdvisor() {
         {/* Preferences Section */}
         <div className="flex flex-col justify-center gap-5 px-4">
           <div className="space-y-4">
-            {/* Hair Type */}
+            {/* Hair Type — with visual guide toggle */}
             <div className="space-y-2">
-              <label className="block text-[10px] tracking-widest uppercase opacity-60">
-                HAIR_TYPE
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="text-xs tracking-wide font-medium opacity-60">
+                  Hair type
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowHairGuide(!showHairGuide)}
+                  className="flex items-center gap-1 text-[10px] tracking-wide text-amber/70 hover:text-amber transition-colors"
+                >
+                  <HelpCircle className="w-3 h-3" />
+                  Not sure?
+                  <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showHairGuide ? "rotate-180" : ""}`} />
+                </button>
+              </div>
               <Select value={hairType} onValueChange={setHairType}>
                 <SelectTrigger className="h-11 bg-black/40 border-white/10 text-sm tracking-wide hover:border-white/30 transition-colors">
                   <SelectValue />
@@ -581,12 +597,21 @@ export function StyleAdvisor() {
                   ))}
                 </SelectContent>
               </Select>
+              {/* Visual hair type guide */}
+              {showHairGuide && (
+                <div className="animate-enter-up">
+                  <HairTypeGuide selected={hairType} onSelect={(v) => { setHairType(v); setShowHairGuide(false); play("toggle") }} />
+                  <p className="text-[10px] opacity-40 mt-1.5 text-center">
+                    Tap a pattern that matches your hair
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Climate */}
             <div className="space-y-2">
-              <label className="block text-[10px] tracking-widest uppercase opacity-60">
-                CLIMATE
+              <label className="text-xs tracking-wide font-medium opacity-60">
+                Climate
               </label>
               <Select value={climate} onValueChange={setClimate}>
                 <SelectTrigger className="h-11 bg-black/40 border-white/10 text-sm tracking-wide hover:border-white/30 transition-colors">
@@ -608,8 +633,8 @@ export function StyleAdvisor() {
 
             {/* Maintenance Tolerance */}
             <div className="space-y-2">
-              <label className="block text-[10px] tracking-widest uppercase opacity-60">
-                MAINTENANCE_TOLERANCE
+              <label className="text-xs tracking-wide font-medium opacity-60">
+                Maintenance tolerance
               </label>
               <Select
                 value={maintenanceTolerance}
@@ -634,8 +659,8 @@ export function StyleAdvisor() {
 
             {/* Budget (optional) */}
             <div className="space-y-2">
-              <label className="block text-[10px] tracking-widest uppercase opacity-60">
-                BUDGET_PER_VISIT (USD) — OPTIONAL
+              <label className="text-xs tracking-wide font-medium opacity-60">
+                Budget per visit (USD) — optional
               </label>
               <input
                 type="number"
@@ -648,8 +673,8 @@ export function StyleAdvisor() {
 
             {/* Lifestyle (optional) */}
             <div className="space-y-2">
-              <label className="block text-[10px] tracking-widest uppercase opacity-60">
-                LIFESTYLE — OPTIONAL
+              <label className="text-xs tracking-wide font-medium opacity-60">
+                Lifestyle — optional
               </label>
               <Select value={lifestyle} onValueChange={setLifestyle}>
                 <SelectTrigger className="h-11 bg-black/40 border-white/10 text-sm tracking-wide hover:border-white/30 transition-colors">
@@ -671,23 +696,23 @@ export function StyleAdvisor() {
 
             {/* Compatibility toggles */}
             <div className="flex gap-4">
-              <label className="flex items-center gap-2 text-[10px] tracking-widest uppercase opacity-60 cursor-pointer">
+              <label className="flex items-center gap-2 text-xs tracking-wide font-medium opacity-60 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={helmetFriendly}
-                  onChange={(e) => setHelmetFriendly(e.target.checked)}
-                  className="accent-white"
+                  onChange={(e) => { setHelmetFriendly(e.target.checked); play("toggle") }}
+                  className="accent-amber"
                 />
-                HELMET_FRIENDLY
+                Helmet friendly
               </label>
-              <label className="flex items-center gap-2 text-[10px] tracking-widest uppercase opacity-60 cursor-pointer">
+              <label className="flex items-center gap-2 text-xs tracking-wide font-medium opacity-60 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={headphoneFriendly}
-                  onChange={(e) => setHeadphoneFriendly(e.target.checked)}
-                  className="accent-white"
+                  onChange={(e) => { setHeadphoneFriendly(e.target.checked); play("toggle") }}
+                  className="accent-amber"
                 />
-                HEADPHONE_FRIENDLY
+                Headphone friendly
               </label>
             </div>
           </div>
@@ -698,19 +723,19 @@ export function StyleAdvisor() {
             disabled={loadingRecs}
             variant="secondary"
             size="lg"
-            className="w-full h-14 text-sm tracking-widest uppercase mt-2 relative overflow-hidden group"
+            className="w-full h-14 text-sm tracking-wide mt-2 relative overflow-hidden group"
           >
             <span className="relative z-10 flex items-center justify-center gap-2">
               <Sparkles className="w-4 h-4" />
-              {loadingRecs ? "ANALYZING..." : "GET_RECOMMENDATIONS"}
+              {loadingRecs ? "Analyzing..." : "Get recommendations"}
             </span>
             <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
           </Button>
 
           {/* Status Indicator */}
-          <div className="flex items-center justify-center gap-3 text-[10px] tracking-wider uppercase opacity-40">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <span>ADVISOR_READY</span>
+          <div className="flex items-center justify-center gap-3 text-[10px] tracking-wider uppercase opacity-30">
+            <div className="w-2 h-2 rounded-full bg-sage animate-pulse" />
+            <span>Advisor ready</span>
           </div>
         </div>
       </div>
@@ -719,11 +744,11 @@ export function StyleAdvisor() {
       {recommendations.length > 0 && (
         <div className="mt-16 max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-8 animate-enter-up">
-            <h2 className="text-xl tracking-widest uppercase opacity-80">
-              RECOMMENDED_STYLES
+            <h2 className="text-2xl tracking-tight opacity-80 font-display">
+              Recommended styles
             </h2>
-            <span className="text-[10px] tracking-wider uppercase opacity-40 tabular-nums">
-              {recommendations.length} RESULTS
+            <span className="text-xs tracking-wide opacity-40 tabular-nums">
+              {recommendations.length} results
             </span>
           </div>
 
@@ -750,22 +775,27 @@ export function StyleAdvisor() {
                 style={{ animationDelay: `${index * 45}ms` }}
                 onClick={() => setSelectedStyleId(rec.style.id)}
               >
-                {/* Header with score + radar */}
+                {/* Header with illustration + score + radar */}
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-medium">{rec.style.name}</h3>
-                    <p className="text-[10px] tracking-widest uppercase opacity-50 mt-1">
-                      {rec.style.category}
-                    </p>
+                    <div className="flex items-center gap-2.5">
+                      <StyleIllustration category={rec.style.category} size={36} className="text-amber/60 flex-shrink-0" />
+                      <div className="min-w-0">
+                        <h3 className="text-lg font-medium font-display">{rec.style.name}</h3>
+                        <p className="text-[10px] tracking-wide uppercase opacity-50 mt-0.5">
+                          {rec.style.category}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
                     <div className="text-right">
-                      <div className="text-2xl font-bold tabular-nums opacity-80 animate-count-up" style={{ animationDelay: `${index * 45 + 100}ms` }}>
+                      <div className="text-2xl font-bold tabular-nums opacity-80 animate-count-up font-display" style={{ animationDelay: `${index * 45 + 100}ms` }}>
                         {rec.score}
                         <span className="text-xs opacity-50">/100</span>
                       </div>
-                      <div className="text-[10px] tracking-wider uppercase opacity-40">
-                        MATCH
+                      <div className="text-[10px] tracking-wide uppercase opacity-40">
+                        Match
                       </div>
                     </div>
                     <RadarChart data={radarData} size={80} />
@@ -780,8 +810,8 @@ export function StyleAdvisor() {
                 {/* Match reasons */}
                 {rec.matchReasons.length > 0 && (
                   <div className="mb-3">
-                    <p className="text-[10px] tracking-widest uppercase opacity-50 mb-1">
-                      WHY_IT_FITS
+                    <p className="text-[10px] tracking-wide uppercase opacity-50 mb-1">
+                      Why it fits
                     </p>
                     <ul className="space-y-1">
                       {rec.matchReasons.slice(0, 3).map((reason, i) => (
@@ -800,8 +830,8 @@ export function StyleAdvisor() {
                 {/* Mismatch reasons */}
                 {rec.mismatchReasons.length > 0 && (
                   <div className="mb-3">
-                    <p className="text-[10px] tracking-widest uppercase opacity-50 mb-1">
-                      TRADEOFFS
+                    <p className="text-[10px] tracking-wide uppercase opacity-50 mb-1">
+                      Tradeoffs
                     </p>
                     <ul className="space-y-1">
                       {rec.mismatchReasons.slice(0, 2).map((reason, i) => (
@@ -820,25 +850,25 @@ export function StyleAdvisor() {
                 {/* Tradeoff visual bars */}
                 <div className="grid grid-cols-2 gap-2 mt-4">
                   <StatBar
-                    label="MAINTENANCE"
+                    label="Maintenance"
                     value={rec.style.maintenance.barberFrequency}
                     barPct={Math.max(20, 100 - rec.style.maintenance.barberFrequencyDays * 3)}
                     color="blue"
                   />
                   <StatBar
-                    label="COST"
+                    label="Cost"
                     value={`$${rec.style.cost.perVisit}/visit`}
                     barPct={Math.max(15, 100 - rec.style.cost.perVisit * 2)}
                     color="green"
                   />
                   <StatBar
-                    label="COMFORT"
+                    label="Comfort"
                     value={`Itch ${rec.style.comfort.itchiness}/5 · Heat ${rec.style.comfort.heatRetention}/5`}
                     barPct={100 - (rec.style.comfort.itchiness + rec.style.comfort.heatRetention) * 10}
                     color="purple"
                   />
                   <StatBar
-                    label="SKILL"
+                    label="Skill"
                     value={rec.style.skillRequired}
                     barPct={rec.style.skillRequired === "Any barber" ? 90 : rec.style.skillRequired === "Experienced" ? 60 : 30}
                     color="orange"
@@ -855,14 +885,14 @@ export function StyleAdvisor() {
                     disabled={!image || loadingSubmit}
                     variant="secondary"
                     size="sm"
-                    className="flex-1 text-xs tracking-widest uppercase"
+                    className="flex-1 text-xs tracking-wide"
                   >
                     <Zap className="w-3 h-3 mr-2" />
                     {image
                       ? loadingSubmit && selectedStyleId === rec.style.id
-                        ? "GENERATING..."
-                        : "VISUALIZE"
-                      : "UPLOAD_FIRST"}
+                        ? "Generating..."
+                        : "Visualize"
+                      : "Upload first"}
                   </Button>
 
                   {/* Onchain attestation — only visible when wallet connected */}
@@ -874,21 +904,21 @@ export function StyleAdvisor() {
                       }}
                       variant="outline"
                       size="sm"
-                      className="text-xs tracking-widest uppercase border-yellow-500/30 text-yellow-400/80 hover:bg-yellow-500/10"
+                      className="text-xs tracking-wide border-amber/30 text-amber/80 hover:bg-amber/10"
                     >
                       <Link2 className="w-3 h-3 mr-1" />
-                      ATTEST
+                      Attest
                     </Button>
                   )}
                 </div>
 
-                {/* Find barbers link — Phase 4 integration */}
+                {/* Find barbers link — Phase 4 integration, filtered by style */}
                 <Link
-                  href={`/barbers`}
+                  href={`/barbers?style=${rec.style.id}`}
                   className="flex items-center justify-center gap-1.5 mt-3 text-[10px] tracking-widest uppercase opacity-40 hover:opacity-70 transition-opacity"
                 >
                   <Scissors className="w-3 h-3" />
-                  FIND_VERIFIED_BARBERS
+                  Find barbers for this style
                 </Link>
               </div>
               )
@@ -899,8 +929,8 @@ export function StyleAdvisor() {
           {image && (
             <div className="mt-8 grid grid-cols-2 gap-4 max-w-md mx-auto">
               <div className="space-y-2">
-                <label className="block text-[10px] tracking-widest uppercase opacity-60">
-                  SHADE
+                <label className="text-xs tracking-wide font-medium opacity-60">
+                  Shade
                 </label>
                 <Select value={shade} onValueChange={setShade}>
                   <SelectTrigger className="h-10 bg-black/40 border-white/10 text-xs tracking-wide">
@@ -916,8 +946,8 @@ export function StyleAdvisor() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <label className="block text-[10px] tracking-widest uppercase opacity-60">
-                  COLOR
+                <label className="text-xs tracking-wide font-medium opacity-60">
+                  Color
                 </label>
                 <Select value={color} onValueChange={setColor}>
                   <SelectTrigger className="h-10 bg-black/40 border-white/10 text-xs tracking-wide">
@@ -938,9 +968,9 @@ export function StyleAdvisor() {
           {/* Onchain premium hint (easter egg) */}
           {showOnchainHint && !isConnected && (
             <div className="mt-8 text-center">
-              <p className="text-[10px] tracking-widest uppercase opacity-30 hover:opacity-60 transition-opacity cursor-pointer">
-                {"⚡"} WANT_TO_ATTEST_YOUR_STYLE_ONCHAIN? {"//"} LISK_L2 {"//"}{" "}
-                <span className="underline">CONNECT_WALLET_IN_HEADER</span>
+              <p className="text-xs tracking-wide opacity-30 hover:opacity-60 transition-opacity cursor-pointer">
+                {"⚡"} Want to attest your style onchain? Lisk L2 —{" "}
+                <span className="underline">connect wallet in header</span>
               </p>
             </div>
           )}
@@ -948,23 +978,23 @@ export function StyleAdvisor() {
           {/* Attestation success display */}
           {attestationResult && (
             <div className="mt-8 max-w-md mx-auto bg-green-500/5 border border-green-500/20 p-4 rounded-lg text-center animate-enter-scale shadow-glow">
-              <p className="text-[10px] tracking-widest uppercase text-green-400 mb-2">
-                ATTESTATION_RECORDED
+              <p className="text-xs tracking-wide uppercase text-green-400 mb-2">
+                Attestation recorded
               </p>
               <p className="text-sm text-white/80 mb-2">
                 {attestationResult.styleName} attested onchain
               </p>
               <p className="text-[10px] text-white/40 tracking-wider break-all">
-                TOKEN: {attestationResult.tokenId.substring(0, 20)}...
+                Token: {attestationResult.tokenId.substring(0, 20)}...
                 {attestationResult.tokenId.substring(58)}
               </p>
               <a
                 href={`https://blockscout.lisk.com/address/${attestationResult.userAddress}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[10px] tracking-widest uppercase text-green-400/60 hover:text-green-400 underline mt-2 inline-block"
+                className="text-xs tracking-wide text-green-400/60 hover:text-green-400 underline mt-2 inline-block"
               >
-                VIEW_ON_EXPLORER
+                View on explorer
               </a>
             </div>
           )}
@@ -1027,8 +1057,8 @@ export function StyleAdvisor() {
               </div>
             ))}
           </div>
-          <p className="mt-6 text-center text-[10px] tracking-widest uppercase opacity-50">
-            ANALYZING_TRADEOFFS...
+          <p className="mt-6 text-center text-xs tracking-wide opacity-50">
+            Analyzing tradeoffs...
           </p>
         </div>
       )}

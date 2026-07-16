@@ -140,19 +140,19 @@ export default function BarberProfilePage({
       <main className="pt-16 pb-24 max-w-3xl mx-auto">
         {/* Back link */}
         <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-[10px] tracking-widest uppercase opacity-50 hover:opacity-80 transition-opacity mb-8"
+          href="/barbers"
+          className="inline-flex items-center gap-2 text-xs tracking-wide opacity-50 hover:opacity-80 transition-opacity mb-8"
         >
           <ArrowLeft className="w-3 h-3" />
-          BACK_TO_ADVISOR
+          Back to barbers
         </Link>
 
         {/* Technical Header */}
         <div className="mb-12 text-center">
-          <div className="flex items-center justify-center gap-6 text-[10px] tracking-widest uppercase opacity-60 mb-4">
-            <span>BARBER_TRUST_PROFILE</span>
-            <span className="w-px h-3 bg-white/40" />
-            <span>LISK_L2</span>
+          <div className="flex items-center justify-center gap-6 text-[10px] tracking-wider uppercase opacity-50 mb-4">
+            <span>Barber Trust Profile</span>
+            <span className="w-px h-3 bg-white/30" />
+            <span>Lisk L2</span>
           </div>
         </div>
 
@@ -160,20 +160,20 @@ export default function BarberProfilePage({
         {loading && (
           <div className="flex flex-col items-center gap-4 py-16">
             <Loader2 className="w-10 h-10 animate-spin opacity-50" />
-            <p className="text-[10px] tracking-widest uppercase opacity-50">
-              FETCHING_TRUST_PROFILE...
+            <p className="text-xs tracking-wide opacity-50">
+              Fetching trust profile...
             </p>
           </div>
         )}
 
         {/* Error state */}
         {error && !loading && (
-          <div className="border border-red-500/20 bg-red-500/5 p-8 rounded text-center">
-            <h2 className="text-sm tracking-widest uppercase text-red-400 mb-2">
-              BARBER_NOT_FOUND
+          <div className="border border-red-500/20 bg-red-500/5 p-8 rounded-lg text-center">
+            <h2 className="text-sm tracking-wide text-red-400 mb-2">
+              Barber not found
             </h2>
             <p className="text-xs opacity-60 mb-4">{error}</p>
-            <p className="text-[10px] tracking-wider uppercase opacity-40">
+            <p className="text-xs opacity-40">
               No barber is registered with this wallet address.
             </p>
           </div>
@@ -186,7 +186,7 @@ export default function BarberProfilePage({
             <div className={`border p-6 rounded-lg ${scoreBg(profile.trustScore)} animate-enter-up`}>
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h1 className="text-2xl font-bold tracking-tight">
+                  <h1 className="text-2xl font-bold tracking-tight font-display">
                     {profile.barber.name}
                   </h1>
                   <div className="flex items-center gap-3 mt-2 text-xs opacity-60">
@@ -201,11 +201,11 @@ export default function BarberProfilePage({
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className={`text-4xl font-bold tabular-nums ${scoreColor(profile.trustScore)}`}>
+                  <div className={`text-4xl font-bold tabular-nums font-display ${scoreColor(profile.trustScore)}`}>
                     {profile.trustScore}
                   </div>
-                  <div className="text-[10px] tracking-widest uppercase opacity-50">
-                    TRUST_SCORE
+                  <div className="text-[10px] tracking-wide uppercase opacity-50">
+                    Trust score
                   </div>
                 </div>
               </div>
@@ -229,8 +229,8 @@ export default function BarberProfilePage({
               {profile.barber.licenseVerified && (
                 <div className="flex items-center gap-2 text-xs text-green-400/80">
                   <CheckCircle2 className="w-3 h-3" />
-                  <span className="tracking-wider uppercase text-[10px]">
-                    LICENSE_VERIFIED
+                  <span className="text-[10px] tracking-wide uppercase">
+                    License verified
                   </span>
                 </div>
               )}
@@ -239,10 +239,10 @@ export default function BarberProfilePage({
             {/* Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
-                { icon: <CheckCircle2 className="w-5 h-5 mx-auto mb-2 text-green-400/60" />, value: profile.verifiedCuts, label: "VERIFIED_CUTS" },
-                { icon: <Award className="w-5 h-5 mx-auto mb-2 text-yellow-400/60" />, value: profile.uniqueStyles, label: "UNIQUE_STYLES" },
-                { icon: <TrendingUp className="w-5 h-5 mx-auto mb-2 text-blue-400/60" />, value: profile.uniqueClients, label: "UNIQUE_CLIENTS" },
-                { icon: <Star className="w-5 h-5 mx-auto mb-2 text-purple-400/60" />, value: profile.breakdown.averageRating > 0 ? profile.breakdown.averageRating.toFixed(1) : "—", label: "AVG_RATING" },
+                { icon: <CheckCircle2 className="w-5 h-5 mx-auto mb-2 text-green-400/60" />, value: profile.verifiedCuts, label: "Verified cuts" },
+                { icon: <Award className="w-5 h-5 mx-auto mb-2 text-yellow-400/60" />, value: profile.uniqueStyles, label: "Unique styles" },
+                { icon: <TrendingUp className="w-5 h-5 mx-auto mb-2 text-blue-400/60" />, value: profile.uniqueClients, label: "Unique clients" },
+                { icon: <Star className="w-5 h-5 mx-auto mb-2 text-purple-400/60" />, value: profile.breakdown.averageRating > 0 ? profile.breakdown.averageRating.toFixed(1) : "—", label: "Avg rating" },
               ].map((stat, i) => (
                 <div
                   key={i}
@@ -250,8 +250,8 @@ export default function BarberProfilePage({
                   style={{ animationDelay: `${i * 45 + 60}ms` }}
                 >
                   {stat.icon}
-                  <div className="text-xl font-bold tabular-nums">{stat.value}</div>
-                  <div className="text-[10px] tracking-widest uppercase opacity-50 mt-1">
+                  <div className="text-xl font-bold tabular-nums font-display">{stat.value}</div>
+                  <div className="text-[10px] tracking-wide uppercase opacity-50 mt-1">
                     {stat.label}
                   </div>
                 </div>
@@ -259,9 +259,9 @@ export default function BarberProfilePage({
             </div>
 
             {/* Score Breakdown */}
-            <div className="border border-white/10 bg-black/20 p-6 rounded">
-              <h2 className="text-xs tracking-widest uppercase opacity-60 mb-4">
-                SCORE_BREAKDOWN
+            <div className="border border-white/10 bg-black/20 p-6 rounded-lg">
+              <h2 className="text-xs tracking-wide uppercase opacity-60 mb-4">
+                Score breakdown
               </h2>
               <div className="space-y-3">
                 {/* Verified Cuts */}
@@ -338,22 +338,22 @@ export default function BarberProfilePage({
               </div>
 
               {profile.daysSinceLastCut !== null && (
-                <p className="text-[10px] tracking-wider uppercase opacity-40 mt-4">
-                  LAST_ACTIVE: {profile.daysSinceLastCut} DAYS AGO
+                <p className="text-[10px] tracking-wide uppercase opacity-40 mt-4">
+                  Last active: {profile.daysSinceLastCut} days ago
                 </p>
               )}
             </div>
 
             {/* Specialties */}
-            <div className="border border-white/10 bg-black/20 p-6 rounded">
-              <h2 className="text-xs tracking-widest uppercase opacity-60 mb-4">
-                SPECIALTIES
+            <div className="border border-white/10 bg-black/20 p-6 rounded-lg">
+              <h2 className="text-xs tracking-wide uppercase opacity-60 mb-4">
+                Specialties
               </h2>
               <div className="flex flex-wrap gap-2">
                 {profile.barber.specialties.map((spec) => (
                   <span
                     key={spec}
-                    className="px-3 py-1 text-[10px] tracking-widest uppercase border border-white/10 bg-white/5 rounded"
+                    className="px-3 py-1 text-xs tracking-wide border border-white/10 bg-white/5 rounded"
                   >
                     {spec}
                   </span>
@@ -362,14 +362,14 @@ export default function BarberProfilePage({
 
               {profile.recommendedFor.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-white/5">
-                  <p className="text-[10px] tracking-widest uppercase opacity-50 mb-2">
-                    RECOMMENDED_FOR (ONCHAIN_PROVEN)
+                  <p className="text-[10px] tracking-wide uppercase opacity-50 mb-2">
+                    Onchain proven styles
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {profile.recommendedFor.map((styleId) => (
                       <span
                         key={styleId}
-                        className="px-3 py-1 text-[10px] tracking-widest uppercase border border-green-500/20 bg-green-500/5 text-green-400/70 rounded"
+                        className="px-3 py-1 text-xs tracking-wide border border-green-500/20 bg-green-500/5 text-green-400/70 rounded"
                       >
                         {styleId.replace(/-/g, " ")}
                       </span>
@@ -380,25 +380,25 @@ export default function BarberProfilePage({
             </div>
 
             {/* Pricing */}
-            <div className="border border-white/10 bg-black/20 p-6 rounded">
-              <h2 className="text-xs tracking-widest uppercase opacity-60 mb-4">
-                PRICING
+            <div className="border border-white/10 bg-black/20 p-6 rounded-lg">
+              <h2 className="text-xs tracking-wide uppercase opacity-60 mb-4">
+                Pricing
               </h2>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-2xl font-bold">
+                  <p className="text-2xl font-bold font-display">
                     ${profile.barber.basePrice}
                   </p>
-                  <p className="text-[10px] tracking-widest uppercase opacity-50">
-                    BASE_PRICE
+                  <p className="text-[10px] tracking-wide uppercase opacity-50">
+                    Base price
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm opacity-70">
                     ${profile.barber.priceRange[0]} – ${profile.barber.priceRange[1]}
                   </p>
-                  <p className="text-[10px] tracking-widest uppercase opacity-50">
-                    TYPICAL_RANGE
+                  <p className="text-[10px] tracking-wide uppercase opacity-50">
+                    Typical range
                   </p>
                 </div>
               </div>
@@ -406,9 +406,9 @@ export default function BarberProfilePage({
 
             {/* Social Proof */}
             {profile.barber.socialProof.length > 0 && (
-              <div className="border border-white/10 bg-black/20 p-6 rounded">
-                <h2 className="text-xs tracking-widest uppercase opacity-60 mb-4">
-                  SOCIAL_PROOF
+              <div className="border border-white/10 bg-black/20 p-6 rounded-lg">
+                <h2 className="text-xs tracking-wide uppercase opacity-60 mb-4">
+                  Social proof
                 </h2>
                 <ul className="space-y-2">
                   {profile.barber.socialProof.map((proof, i) => (
@@ -425,9 +425,9 @@ export default function BarberProfilePage({
             )}
 
             {/* Attestation History */}
-            <div className="border border-white/10 bg-black/20 p-6 rounded">
-              <h2 className="text-xs tracking-widest uppercase opacity-60 mb-4">
-                ATTESTATION_HISTORY ({profile.barber.attestationHistory.length})
+            <div className="border border-white/10 bg-black/20 p-6 rounded-lg">
+              <h2 className="text-xs tracking-wide uppercase opacity-60 mb-4">
+                Attestation history ({profile.barber.attestationHistory.length})
               </h2>
               <div className="space-y-2">
                 {profile.barber.attestationHistory
@@ -462,9 +462,9 @@ export default function BarberProfilePage({
                         </div>
                         <Link
                           href={`/attestations/${att.tokenId}`}
-                          className="text-[10px] tracking-widest uppercase opacity-40 hover:opacity-80 transition-opacity"
+                          className="text-[10px] tracking-wide uppercase opacity-40 hover:opacity-80 transition-opacity"
                         >
-                          VIEW
+                          View
                         </Link>
                       </div>
                     </div>
@@ -477,7 +477,7 @@ export default function BarberProfilePage({
               asChild
               variant="outline"
               size="lg"
-              className="w-full text-xs tracking-widest uppercase"
+              className="w-full text-xs tracking-wide"
             >
               <a
                 href={`https://blockscout.lisk.com/address/${profile.barber.address}`}
@@ -485,14 +485,14 @@ export default function BarberProfilePage({
                 rel="noopener noreferrer"
               >
                 <ExternalLink className="w-3 h-3 mr-2" />
-                VIEW_ON_BLOCKSCOUT
+                View on Blockscout
               </a>
             </Button>
 
             {/* Info */}
-            <div className="text-center text-[10px] tracking-wider text-white/40 space-y-1">
-              <p>TRUST_SCORE_COMPUTED_FROM_ONCHAIN_ATTESTATION_HISTORY</p>
-              <p>SCORES_UPDATE_AS_NEW_ATTESTATIONS_ARE_RECORDED</p>
+            <div className="text-center text-[10px] tracking-wide text-white/40 space-y-1">
+              <p>Trust score computed from onchain attestation history</p>
+              <p>Scores update as new attestations are recorded</p>
             </div>
           </div>
         )}

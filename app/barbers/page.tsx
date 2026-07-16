@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
+import { useSearchParams } from "next/navigation"
 import { Header } from "@/components/Header"
 import { Footer } from "@/components/Footer"
 import {
@@ -10,6 +11,7 @@ import {
   MapPin,
   Scissors,
   ArrowLeft,
+  X,
 } from "lucide-react"
 import Link from "next/link"
 
@@ -37,16 +39,43 @@ interface BarberSummary {
 }
 
 export default function BarbersPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen" />}>
+      <BarbersContent />
+    </Suspense>
+  )
+}
+
+function BarbersContent() {
+  const searchParams = useSearchParams()
+  const styleFilter = searchParams.get("style") || ""
+
   const [barbers, setBarbers] = useState<BarberSummary[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [filterCity, setFilterCity] = useState<string>("")
+  const [styleCategory, setStyleCategory] = useState<string>("")
 
   useEffect(() => {
     Promise.resolve().then(() => {
       setLoading(true)
       setError(null)
     })
+
+    // If we have a style filter, fetch the style to get its category
+    if (styleFilter) {
+      fetch("/api/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hairType: "4C", climate: "temperate", maintenanceTolerance: "medium", limit: 50 }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          const style = data.recommendations?.find((r: { style: { id: string; category: string } }) => r.style.id === styleFilter)
+          if (style) setStyleCategory(style.style.category)
+        })
+        .catch(() => {})
+    }
 
     fetch("/api/barber-score")
       .then(async (res) => {
@@ -61,12 +90,16 @@ export default function BarbersPage() {
         setError(err.message || "Failed to fetch barbers")
         setLoading(false)
       })
-  }, [])
+  }, [styleFilter])
 
   const cities = [...new Set(barbers.map((b) => b.barber.city))].sort()
-  const filtered = filterCity
-    ? barbers.filter((b) => b.barber.city === filterCity)
-    : barbers
+
+  // Filter by city AND style category if set
+  const filtered = barbers.filter((b) => {
+    const cityMatch = !filterCity || b.barber.city === filterCity
+    const styleMatch = !styleCategory || b.barber.specialties.includes(styleCategory)
+    return cityMatch && styleMatch
+  })
 
   const scoreColor = (score: number) => {
     if (score >= 75) return "text-green-400"
@@ -90,50 +123,83 @@ export default function BarbersPage() {
         {/* Back link */}
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-[10px] tracking-widest uppercase opacity-50 hover:opacity-80 transition-opacity mb-8"
+          className="inline-flex items-center gap-2 text-xs tracking-wide opacity-50 hover:opacity-80 transition-opacity mb-8"
         >
           <ArrowLeft className="w-3 h-3" />
-          BACK_TO_ADVISOR
+          Back to advisor
         </Link>
 
         {/* Technical Header */}
         <div className="mb-12 text-center">
-          <div className="flex items-center justify-center gap-6 text-[10px] tracking-widest uppercase opacity-60 mb-4">
-            <span>BARBER_TRUST_DIRECTORY</span>
-            <span className="w-px h-3 bg-white/40" />
-            <span>LISK_L2</span>
+          <div className="flex items-center justify-center gap-6 text-[10px] tracking-wider uppercase opacity-50 mb-4">
+            <span>Barber Trust Directory</span>
+            <span className="w-px h-3 bg-white/30" />
+            <span>Lisk L2</span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tighter mb-2">
-            VERIFIED_BARBERS
+          <h1 className="text-4xl font-bold tracking-tighter mb-3 font-display">
+            Verified Barbers
           </h1>
-          <p className="text-sm opacity-60 max-w-xl mx-auto">
+          <p className="text-sm opacity-60 max-w-xl mx-auto leading-relaxed">
             Barbers ranked by onchain attestation history. Trust scores are
             computed from verified cuts, specialty coverage, consistency, and
             recency.
           </p>
         </div>
 
+        {/* Style filter banner */}
+        {styleFilter && styleCategory && (
+          <div className="mb-8 flex items-center justify-center">
+            <div className="inline-flex items-center gap-3 px-4 py-2 bg-amber/10 border border-amber/30 rounded-lg">
+              <Scissors className="w-4 h-4 text-amber" />
+              <span className="text-sm text-amber">
+                Filtered by specialty: <strong className="font-medium">{styleCategory}</strong>
+              </span>
+              <Link
+                href="/barbers"
+                className="ml-2 opacity-60 hover:opacity-100 transition-opacity"
+              >
+                <X className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* No results for style filter */}
+        {!loading && !error && filtered.length === 0 && styleCategory && (
+          <div className="text-center py-12 border border-white/10 bg-black/20 rounded-lg mb-8">
+            <p className="text-sm opacity-60 mb-2">
+              No barbers found specializing in <strong className="text-amber">{styleCategory}</strong> styles.
+            </p>
+            <Link
+              href="/barbers"
+              className="text-xs text-amber underline hover:text-amber/80 transition-colors"
+            >
+              View all barbers
+            </Link>
+          </div>
+        )}
+
         {/* City filter */}
         {cities.length > 0 && (
           <div className="flex items-center gap-2 mb-8 justify-center flex-wrap">
             <button
               onClick={() => setFilterCity("")}
-              className={`px-3 py-1 text-[10px] tracking-widest uppercase border rounded transition-all ${
+              className={`px-3 py-1.5 text-xs tracking-wide border rounded-lg transition-all press-scale ${
                 !filterCity
-                  ? "border-white/30 bg-white/10 text-white/90"
-                  : "border-white/10 text-white/50 hover:text-white/70"
+                  ? "border-amber/30 bg-amber/10 text-amber"
+                  : "border-white/10 text-white/50 hover:text-white/70 hover:border-white/20"
               }`}
             >
-              ALL_CITIES
+              All cities
             </button>
             {cities.map((city) => (
               <button
                 key={city}
                 onClick={() => setFilterCity(city)}
-                className={`px-3 py-1 text-[10px] tracking-widest uppercase border rounded transition-all ${
+                className={`px-3 py-1.5 text-xs tracking-wide border rounded-lg transition-all press-scale ${
                   filterCity === city
-                    ? "border-white/30 bg-white/10 text-white/90"
-                    : "border-white/10 text-white/50 hover:text-white/70"
+                    ? "border-amber/30 bg-amber/10 text-amber"
+                    : "border-white/10 text-white/50 hover:text-white/70 hover:border-white/20"
                 }`}
               >
                 {city}
@@ -146,16 +212,16 @@ export default function BarbersPage() {
         {loading && (
           <div className="flex flex-col items-center gap-4 py-16">
             <Loader2 className="w-10 h-10 animate-spin opacity-50" />
-            <p className="text-[10px] tracking-widest uppercase opacity-50">
-              FETCHING_TRUST_SCORES...
+            <p className="text-xs tracking-wide opacity-50">
+              Fetching trust scores...
             </p>
           </div>
         )}
 
         {/* Error state */}
         {error && !loading && (
-          <div className="border border-red-500/20 bg-red-500/5 p-8 rounded text-center">
-            <p className="text-xs text-red-400 tracking-wide uppercase">
+          <div className="border border-red-500/20 bg-red-500/5 p-8 rounded-lg text-center">
+            <p className="text-sm text-red-400 tracking-wide">
               {error}
             </p>
           </div>
@@ -203,7 +269,11 @@ export default function BarbersPage() {
                       {entry.barber.specialties.map((spec) => (
                         <span
                           key={spec}
-                          className="px-2 py-0.5 text-[9px] tracking-widest uppercase border border-white/10 bg-white/5 rounded"
+                          className={`px-2 py-0.5 text-[10px] tracking-wide border rounded ${
+                            styleCategory === spec
+                              ? "border-amber/40 bg-amber/10 text-amber"
+                              : "border-white/10 bg-white/5 opacity-60"
+                          }`}
                         >
                           {spec}
                         </span>
@@ -216,14 +286,14 @@ export default function BarbersPage() {
                         {entry.recommendedFor.slice(0, 5).map((styleId) => (
                           <span
                             key={styleId}
-                            className="px-2 py-0.5 text-[9px] tracking-widest uppercase border border-green-500/20 bg-green-500/5 text-green-400/60 rounded"
+                            className="px-2 py-0.5 text-[10px] tracking-wide border border-green-500/20 bg-green-500/5 text-green-400/60 rounded"
                           >
                             {"✓"} {styleId.replace(/-/g, " ")}
                           </span>
                         ))}
                         {entry.recommendedFor.length > 5 && (
-                          <span className="px-2 py-0.5 text-[9px] tracking-widest uppercase opacity-40">
-                            +{entry.recommendedFor.length - 5} MORE
+                          <span className="px-2 py-0.5 text-[10px] tracking-wide opacity-40">
+                            +{entry.recommendedFor.length - 5} more
                           </span>
                         )}
                       </div>
@@ -232,11 +302,11 @@ export default function BarbersPage() {
 
                   {/* Right: Trust score + stats */}
                   <div className="flex-shrink-0 text-right">
-                    <div className={`text-3xl font-bold tabular-nums ${scoreColor(entry.trustScore)}`}>
+                    <div className={`text-3xl font-bold tabular-nums font-display ${scoreColor(entry.trustScore)}`}>
                       {entry.trustScore}
                     </div>
-                    <div className="text-[9px] tracking-widest uppercase opacity-40 mb-3">
-                      TRUST_SCORE
+                    <div className="text-[10px] tracking-wide opacity-40 mb-3">
+                      Trust score
                     </div>
 
                     <div className="space-y-1 text-[10px] tracking-wider uppercase opacity-50">
