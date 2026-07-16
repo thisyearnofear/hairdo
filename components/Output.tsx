@@ -15,6 +15,7 @@ interface OutputProps {
     shade?: string
     color?: string
     sourceImage?: string
+    tier?: string
   }
 }
 
@@ -48,9 +49,14 @@ export function Output({ output }: OutputProps) {
       <CardContent className="p-4 text-center">
         {isSuccess && (
           <>
-            <h3 className="text-2xl font-normal capitalize mb-4">
+            <h3 className="text-2xl font-normal capitalize mb-2">
               {output.hairstyle}, {output.shade} {output.color}
             </h3>
+            {output.tier && (
+              <p className="text-[10px] tracking-wider uppercase opacity-40 mb-4">
+                {output.tier === "refined" ? "Refined (SDXL)" : "Basic (HairCLIP)"}
+              </p>
+            )}
             
             {output.output && (
               <>

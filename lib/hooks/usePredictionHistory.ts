@@ -13,6 +13,7 @@ export interface StoredPrediction {
   hairstyle: string;
   shade: string;
   color: string;
+  tier?: string; // "basic" | "refined"
   timestamp: number; // milliseconds for sorting
 }
 

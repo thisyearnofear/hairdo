@@ -147,6 +147,7 @@ export function StyleAdvisor() {
   // Visualization
   const [shade, setShade] = useState("regular")
   const [color, setColor] = useState("black")
+  const [modelTier, setModelTier] = useState<"basic" | "refined">("basic")
   const [loadingSubmit, setLoadingSubmit] = useState(false)
   const [list, setList] = useState<Prediction[]>([])
 
@@ -409,6 +410,7 @@ export function StyleAdvisor() {
         body: JSON.stringify({
           image,
           styleId: rec.style.id,
+          tier: modelTier,
           shade,
           color,
         }),
@@ -423,6 +425,7 @@ export function StyleAdvisor() {
         hairstyle: rec.style.name,
         shade,
         color,
+        tier: modelTier,
         sourceImage: image || undefined,
         // eslint-disable-next-line react-hooks/purity -- Date.now() in event handler, not render
         timestamp: Date.now(),
@@ -820,8 +823,10 @@ export function StyleAdvisor() {
                 {/* Header with illustration + score + radar */}
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2.5">
-                      <StyleIllustration category={rec.style.category} size={36} className="text-amber/60 flex-shrink-0" />
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-amber/5 border border-amber/15 flex items-center justify-center">
+                        <StyleIllustration category={rec.style.category} size={48} className="text-amber/70" />
+                      </div>
                       <div className="min-w-0">
                         <h3 className="text-lg font-medium font-display">{rec.style.name}</h3>
                         <p className="text-[10px] tracking-wide uppercase opacity-50 mt-0.5">
@@ -933,7 +938,9 @@ export function StyleAdvisor() {
                     {image
                       ? loadingSubmit && selectedStyleId === rec.style.id
                         ? "Generating on your photo..."
-                        : "See it on me"
+                        : modelTier === "refined"
+                          ? "See it on me (Refined)"
+                          : "See it on me"
                       : "Upload a selfie first"}
                   </Button>
 
@@ -967,47 +974,91 @@ export function StyleAdvisor() {
             })}
           </div>
 
-          {/* Shade & Color controls for visualization */}
+          {/* Shade, Color & Model tier controls for visualization */}
           {image && (
             <>
             <div className="max-w-xs mx-auto space-y-1.5 mt-8 mb-8">
               <div className="barbershop-divider" />
               <div className="cornrow-pattern" />
             </div>
-            <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+            <div className="max-w-2xl mx-auto space-y-4">
+              {/* Model tier selector */}
               <div className="space-y-2">
                 <label className="text-xs tracking-wide font-medium opacity-60">
-                  Shade
+                  Visualization quality
                 </label>
-                <Select value={shade} onValueChange={setShade}>
-                  <SelectTrigger className="h-10 bg-black/40 border-white/10 text-xs tracking-wide">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-black/95 border-white/10">
-                    {shadeItems.map((item) => (
-                      <SelectItem key={item.value} value={item.value}>
-                        {item.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => setModelTier("basic")}
+                    className={`p-3 rounded-lg border text-left transition-all duration-150 press-scale ${
+                      modelTier === "basic"
+                        ? "bg-amber/10 border-amber/30"
+                        : "bg-black/30 border-white/10 hover:border-white/20"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-medium tracking-wide">Basic</span>
+                      <span className="text-[9px] tracking-wider uppercase opacity-50">Free</span>
+                    </div>
+                    <p className="text-[10px] opacity-50 leading-relaxed">
+                      HairCLIP — fast, research-grade preview
+                    </p>
+                  </button>
+                  <button
+                    onClick={() => setModelTier("refined")}
+                    className={`p-3 rounded-lg border text-left transition-all duration-150 press-scale ${
+                      modelTier === "refined"
+                        ? "bg-amber/10 border-amber/30"
+                        : "bg-black/30 border-white/10 hover:border-white/20"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-medium tracking-wide">Refined</span>
+                      <span className="text-[9px] tracking-wider uppercase text-amber/60">Premium</span>
+                    </div>
+                    <p className="text-[10px] opacity-50 leading-relaxed">
+                      SDXL LoRA — trained on Black hair, photorealistic
+                    </p>
+                  </button>
+                </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-xs tracking-wide font-medium opacity-60">
-                  Color
-                </label>
-                <Select value={color} onValueChange={setColor}>
-                  <SelectTrigger className="h-10 bg-black/40 border-white/10 text-xs tracking-wide">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-black/95 border-white/10">
-                    {colorItems.map((item) => (
-                      <SelectItem key={item.value} value={item.value}>
-                        {item.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+
+              {/* Shade & Color */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs tracking-wide font-medium opacity-60">
+                    Shade
+                  </label>
+                  <Select value={shade} onValueChange={setShade}>
+                    <SelectTrigger className="h-10 bg-black/40 border-white/10 text-xs tracking-wide">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-black/95 border-white/10">
+                      {shadeItems.map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs tracking-wide font-medium opacity-60">
+                    Color
+                  </label>
+                  <Select value={color} onValueChange={setColor}>
+                    <SelectTrigger className="h-10 bg-black/40 border-white/10 text-xs tracking-wide">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-black/95 border-white/10">
+                      {colorItems.map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
             </>
