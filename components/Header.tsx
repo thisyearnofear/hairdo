@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ConnectButton } from "@/components/ConnectButton"
 
@@ -23,6 +24,14 @@ export function Header() {
         className="flex-shrink-0"
       />
       <h1 className="text-2xl font-normal ml-0 md:ml-4">HAIRDO</h1>
+      <nav className="hidden md:flex items-center gap-6 ml-8">
+        <Link
+          href="/barbers"
+          className="text-[10px] tracking-widest uppercase opacity-50 hover:opacity-80 transition-opacity"
+        >
+          BARBERS
+        </Link>
+      </nav>
       <div className="flex-1" />
       <div className="flex items-center gap-2">
         {/* Onchain premium — subtle, opt-in */}

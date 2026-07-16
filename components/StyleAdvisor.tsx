@@ -9,8 +9,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Upload, Camera, AlertCircle, Sparkles, Zap, Link2 } from "lucide-react"
+import { Upload, Camera, AlertCircle, Sparkles, Zap, Link2, Scissors } from "lucide-react"
 import { Output } from "./Output"
+import Link from "next/link"
 import { AttestationHandler, type AttestationResult } from "./AttestationHandler"
 import { useConnection } from "wagmi"
 import { lisk } from "@/lib/chains"
@@ -847,6 +848,15 @@ export function StyleAdvisor() {
                     </Button>
                   )}
                 </div>
+
+                {/* Find barbers link — Phase 4 integration */}
+                <Link
+                  href={`/barbers`}
+                  className="flex items-center justify-center gap-1.5 mt-3 text-[10px] tracking-widest uppercase opacity-40 hover:opacity-70 transition-opacity"
+                >
+                  <Scissors className="w-3 h-3" />
+                  FIND_VERIFIED_BARBERS
+                </Link>
               </div>
             ))}
           </div>

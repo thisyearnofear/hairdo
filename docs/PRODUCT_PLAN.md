@@ -106,30 +106,40 @@ exist.
 
 ## Build Order
 
-### Phase 1: Style Intelligence ASP (immediate)
-1. Build the style database (`data/styles.json`) — 30-40 styles with tradeoffs
-2. Build the style matcher (`lib/style-matcher.ts`) — reasoning logic
-3. Strip the web3 payment gate from the main flow (keep the infrastructure)
-4. Build `api/recommend` — free during development, x402-paid on Lisk for production
-5. Build `api/visualize` — Replicate integration (reuse existing model)
-6. Transform the frontend — landing page + interactive demo
+### Phase 1: Style Intelligence ASP ✅ COMPLETE
+1. ✅ Build the style database (`data/styles.json`) — 34 styles with tradeoffs
+2. ✅ Build the style matcher (`lib/style-matcher.ts`) — reasoning logic
+3. ✅ Strip the web3 payment gate from the main flow (keep the infrastructure)
+4. ✅ Build `api/recommend` — free during development, x402-paid on Lisk for production
+5. ✅ Build `api/visualize` — Replicate integration (reuse existing model)
+6. ✅ Transform the frontend — landing page + interactive demo
 
-### Phase 2: Onchain Premium (after ASP is live)
-7. Refactor `PaymentHandler` and smart contract for attestation flow
-8. Build `api/attest` — x402-paid, issues onchain attestation on Lisk
-9. Surface the onchain option as a subtle premium in the UI
-10. Update docs and landing page to mention the onchain feature
+### Phase 2: Onchain Premium ✅ COMPLETE
+7. ✅ Refactor `PaymentHandler` → `AttestationHandler` for attestation flow
+8. ✅ Build `api/attest` — verifies onchain payment, records attestation metadata
+9. ✅ Surface the onchain option as a subtle premium in the UI
+10. ✅ Update docs and landing page to mention the onchain feature
+11. ✅ Build attestation verification page (`/attestations/[tokenId]`)
 
-### Phase 3: Barber Attestation Layer (grant-funded)
-11. Deploy EAS-style attestation contracts on Lisk mainnet
-12. Build barber-facing flow: issue attestation after a cut
-13. Pilot with one barbershop — real attestations happening
-14. Apply for Lisk DAO Builder Grant with pilot data
+### Phase 3: Barber Trust-Score ASP ✅ COMPLETE (data layer)
+12. ✅ Build barber trust database (`data/barbers.json`) — 5 sample barbers
+13. ✅ Build trust scoring engine (`lib/barber-trust.ts`) — 4-factor scoring
+14. ✅ Build `api/barber-score` — trust score lookup + style-filtered search
+15. ✅ Build `api/barbers/[address]` — full barber trust profile
+16. ✅ Build barber trust profile page (`/barbers/[address]`)
+17. ⬜ Deploy EAS-style attestation contracts on Lisk mainnet (future)
+18. ⬜ Build barber-facing flow: issue attestation after a cut (future)
+19. ⬜ Pilot with one barbershop — real attestations happening (future)
+20. ⬜ Apply for Lisk DAO Builder Grant with pilot data (future)
 
-### Phase 4: Integration (v2)
-15. ASP reads Lisk attestation data for barber recommendations
-16. Style Matchmaker A2A (escrow) — "find me a barber who does X within Y
-    budget in Z city" with onchain escrow
+### Phase 4: Integration ✅ COMPLETE (initial)
+21. ✅ ASP surfaces barber recommendations — `FIND_VERIFIED_BARBERS` link on
+    each style recommendation card
+22. ✅ Barber browse page (`/barbers`) — all barbers ranked by trust score,
+    filterable by city
+23. ✅ Barber directory link in header navigation
+24. ⬜ Style Matchmaker A2A (escrow) — "find me a barber who does X within Y
+    budget in Z city" with onchain escrow (future)
 
 ## What Stays From the Current Codebase
 
