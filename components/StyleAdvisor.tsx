@@ -158,7 +158,7 @@ export function StyleAdvisor() {
   const [showHairGuide, setShowHairGuide] = useState(false)
 
   // Attestation modal
-  const { isConnected, chainId } = useConnection()
+  const { isConnected, chainId, address } = useConnection()
   const [showAttestation, setShowAttestation] = useState(false)
   const [attestingStyle, setAttestingStyle] = useState<Recommendation | null>(null)
   const [attestationResult, setAttestationResult] = useState<AttestationResult | null>(null)
@@ -363,6 +363,7 @@ export function StyleAdvisor() {
 
       if (budgetPerVisit) prefs.budgetPerVisit = Number(budgetPerVisit)
       if (lifestyle) prefs.lifestyle = lifestyle
+      if (address) prefs.userAddress = address
 
       const response = await fetch("/api/recommend", {
         method: "POST",

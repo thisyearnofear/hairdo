@@ -1,10 +1,48 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   recommendStyles,
+  recommendStylesWithHistory,
   type UserPreferences,
+  type AttestationEntry,
 } from "@/lib/style-matcher";
 
 export const runtime = "nodejs";
+
+// In-memory attestation store (shared with /api/attest route)
+declare global {
+  var attestations: Map<string, unknown> | undefined;
+}
+
+// Fetch a user's attestation history from the in-memory store.
+// In production with Redis, this would scan Redis keys.
+function getUserAttestations(userAddress: string): AttestationEntry[] {
+  if (!global.attestations) return [];
+
+  const entries: AttestationEntry[] = [];
+  for (const [, value] of global.attestations) {
+    const att = value as {
+      styleId: string;
+      styleName: string;
+      userAddress: string;
+      timestamp: number;
+    };
+    if (
+      att &&
+      att.userAddress &&
+      att.userAddress.toLowerCase() === userAddress.toLowerCase()
+    ) {
+      entries.push({
+        styleId: att.styleId,
+        styleName: att.styleName,
+        timestamp: att.timestamp,
+      });
+    }
+  }
+
+  // Sort by timestamp descending (most recent first)
+  entries.sort((a, b) => b.timestamp - a.timestamp);
+  return entries;
+}
 
 /**
  * POST /api/recommend
@@ -62,12 +100,25 @@ export async function POST(request: NextRequest) {
       ? body.limit
       : 10;
 
-    const recommendations = recommendStyles(prefs, limit);
+    // If userAddress is provided, fetch attestation history and use
+    // the history-aware recommender for personalized adjustments
+    const userAddress = body.userAddress as string | undefined;
+    let history: AttestationEntry[] = [];
+
+    if (userAddress && userAddress.startsWith("0x")) {
+      history = getUserAttestations(userAddress);
+    }
+
+    const recommendations =
+      history.length > 0
+        ? recommendStylesWithHistory(prefs, history, limit)
+        : recommendStyles(prefs, limit);
 
     return NextResponse.json({
       recommendations,
       preferences: prefs,
       count: recommendations.length,
+      historyAdjusted: history.length > 0,
     });
   } catch (e) {
     console.error("Recommend API error:", e);

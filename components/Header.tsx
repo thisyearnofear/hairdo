@@ -31,6 +31,12 @@ export function Header() {
         >
           Barbers
         </Link>
+        <Link
+          href="/growth"
+          className="text-xs tracking-wide font-medium opacity-50 hover:opacity-80 transition-opacity"
+        >
+          Growth
+        </Link>
       </nav>
       <div className="flex-1" />
       <div className="flex items-center gap-2">

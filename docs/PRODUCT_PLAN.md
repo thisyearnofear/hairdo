@@ -313,11 +313,16 @@ industry, disproportionately Black and African diaspora.
     instead of legacy `isTokenUsed()`
 32. ✅ Upgrade `AttestationHandler` to call `selfAttest()` on the new
     protocol — mints real soulbound Style Credentials
-33. ⬜ Build barber registration flow (stake LSK, declare specialties)
-34. ⬜ Build growth dashboard — shows attested cut history, growth status,
-    rebook urgency, barber recommendations
-35. ⬜ Feed attestation history back into style matcher for recommendation
-    refinement (users who liked X also tried Y; you rebook late, try Z)
+33. ✅ Build barber registration flow (stake LSK, declare specialties)
+    — `/barbers/register` page with 4-step flow (shop details →
+    specialties → LSK approval → stake & register)
+34. ✅ Build growth dashboard — `/growth` page showing attested cut
+    history, growth status, rebook urgency, style loyalty, average
+    rebook interval, predicted overdue date, and barber finder CTA
+35. ✅ Feed attestation history back into style matcher —
+    `recommendStylesWithHistory()` adjusts scores based on style loyalty,
+    rebook-late patterns, category affinity, and co-occurrence heuristics;
+    `/api/recommend` accepts `userAddress` and applies history-aware ranking
 
 ### Phase 6: Barber Attestation Protocol (grant-funded, future)
 36. ⬜ Deploy barber attestation contract on Lisk mainnet

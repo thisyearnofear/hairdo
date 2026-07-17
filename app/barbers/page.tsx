@@ -15,6 +15,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { Reveal } from "@/components/ui/reveal"
+import { Button } from "@/components/ui/button"
 
 interface BarberSummary {
   barber: {
@@ -350,6 +351,16 @@ function BarbersContent() {
             <p>Click any barber to view their full trust profile</p>
           </div>
         )}
+
+        {/* Register CTA */}
+        <div className="mt-10 text-center">
+          <Button asChild variant="secondary" size="lg" className="h-12 text-sm tracking-wide">
+            <Link href="/barbers/register">
+              <Scissors className="w-4 h-4 mr-2" />
+              Register as a barber
+            </Link>
+          </Button>
+        </div>
       </main>
 
       <Footer />

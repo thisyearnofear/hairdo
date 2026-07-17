@@ -67,6 +67,12 @@ export interface UserPreferences {
   excludeCategories?: string[];
 }
 
+export interface AttestationEntry {
+  styleId: string;
+  styleName: string;
+  timestamp: number;
+}
+
 export interface StyleRecommendation {
   style: StyleEntry;
   score: number;            // 0-100
@@ -370,6 +376,135 @@ export function recommendStyles(
   });
 
   return scored.slice(0, limit);
+}
+
+/**
+ * Rank styles with attestation history feedback.
+ *
+ * Adjusts the base score using the user's onchain cut history:
+ * 1. Style loyalty — styles the user has attested before get a small boost
+ *    (familiarity is a strong predictor of satisfaction).
+ * 2. Rebook-late pattern — if the user consistently rebooks late (past the
+ *    maintenance window), boost low-maintenance styles.
+ * 3. Category affinity — categories the user has tried more get a small boost.
+ * 4. "Users who liked X also tried Y" — a simple co-occurrence heuristic:
+ *    if the user has attested style X, boost styles in the same category that
+ *    share hair-type compatibility.
+ */
+export function recommendStylesWithHistory(
+  prefs: UserPreferences,
+  history: AttestationEntry[],
+  limit = 10
+): StyleRecommendation[] {
+  if (history.length === 0) {
+    return recommendStyles(prefs, limit);
+  }
+
+  // Compute attestation-derived signals
+  const styleCounts = new Map<string, number>();
+  const categoryCounts = new Map<string, number>();
+  const styleIds = new Set<string>();
+
+  for (const entry of history) {
+    styleIds.add(entry.styleId);
+    styleCounts.set(entry.styleId, (styleCounts.get(entry.styleId) || 0) + 1);
+    const style = getStyleById(entry.styleId);
+    if (style) {
+      categoryCounts.set(
+        style.category,
+        (categoryCounts.get(style.category) || 0) + 1
+      );
+    }
+  }
+
+  // Check rebook-late pattern: compare actual intervals to maintenance windows
+  let rebookLateCount = 0;
+  let totalIntervals = 0;
+  for (let i = 0; i < history.length - 1; i++) {
+    const style = getStyleById(history[i].styleId);
+    const expectedDays = style?.maintenance?.barberFrequencyDays ?? 14;
+    const actualDays = Math.floor(
+      (history[i].timestamp - history[i + 1].timestamp) /
+        (1000 * 60 * 60 * 24)
+    );
+    if (actualDays > expectedDays + 3) rebookLateCount++;
+    totalIntervals++;
+  }
+  const rebookLateRatio = totalIntervals > 0 ? rebookLateCount / totalIntervals : 0;
+
+  // Get base recommendations
+  const base = recommendStyles(prefs, 34); // score all, then adjust
+
+  // Apply attestation-based adjustments
+  const adjusted = base.map((rec) => {
+    let scoreAdjustment = 0;
+    const additionalReasons: string[] = [];
+
+    // 1. Style loyalty — boost styles the user has attested before
+    const attestedCount = styleCounts.get(rec.style.id) || 0;
+    if (attestedCount > 0) {
+      scoreAdjustment += Math.min(attestedCount * 3, 8);
+      additionalReasons.push(
+        `You've attested this style ${attestedCount} time${attestedCount > 1 ? "s" : ""} before`
+      );
+    }
+
+    // 2. Rebook-late pattern — boost low-maintenance styles
+    if (rebookLateRatio > 0.5) {
+      const maintDays = rec.style.maintenance.barberFrequencyDays;
+      if (maintDays >= 21) {
+        scoreAdjustment += 5;
+        additionalReasons.push(
+          "Low maintenance — fits your rebook pattern"
+        );
+      } else if (maintDays <= 7) {
+        scoreAdjustment -= 3;
+      }
+    }
+
+    // 3. Category affinity
+    const catCount = categoryCounts.get(rec.style.category) || 0;
+    if (catCount > 0 && !styleIds.has(rec.style.id)) {
+      scoreAdjustment += Math.min(catCount * 2, 6);
+      additionalReasons.push(
+        `You've tried ${catCount} style${catCount > 1 ? "s" : ""} in this category`
+      );
+    }
+
+    // 4. Co-occurrence: if user has attested a style in the same category,
+    //    and this style shares hair-type compatibility, boost it
+    if (!styleIds.has(rec.style.id)) {
+      const sameCategoryAttested = history.some((h) => {
+        const attestedStyle = getStyleById(h.styleId);
+        return (
+          attestedStyle &&
+          attestedStyle.category === rec.style.category &&
+          attestedStyle.id !== rec.style.id
+        );
+      });
+      if (sameCategoryAttested && prefs.hairType && rec.style.hairTypes.includes(prefs.hairType)) {
+        scoreAdjustment += 3;
+        additionalReasons.push("Similar to styles you've enjoyed");
+      }
+    }
+
+    // Clamp score to 0-100
+    const adjustedScore = Math.max(0, Math.min(100, rec.score + scoreAdjustment));
+
+    return {
+      ...rec,
+      score: adjustedScore,
+      matchReasons: [...rec.matchReasons, ...additionalReasons],
+    };
+  });
+
+  // Re-sort by adjusted score
+  adjusted.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return b.style.popularity - a.style.popularity;
+  });
+
+  return adjusted.slice(0, limit);
 }
 
 /**
