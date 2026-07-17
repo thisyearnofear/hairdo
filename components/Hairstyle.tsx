@@ -14,7 +14,7 @@ import { Output } from "./Output"
 import { hairstyleItems, shadeItems, colorItems } from "@/lib/hair-config"
 import { useConnection, useSwitchChain, useChains } from "wagmi"
 import { PaymentHandler } from "./PaymentHandler"
-import { lisk } from "@/lib/chains"
+import { lisk, liskSepolia } from "@/lib/chains"
 import {
   processImageFile,
   validateImage,
@@ -64,9 +64,10 @@ export function Hairstyle() {
     });
   }, [isConnected, isConnecting, isReconnecting, chains, chainId, address]);
 
-  // Automatic network switching to Lisk
+  // Automatic network switching to Lisk (mainnet or testnet)
+  const supportedChainIds: number[] = [lisk.id, liskSepolia.id];
   useEffect(() => {
-    if (isConnected && chainId && chainId !== lisk.id) {
+    if (isConnected && chainId && !supportedChainIds.includes(chainId)) {
       const switchToLisk = async () => {
         try {
           console.log(`Switching from chain ${chainId} to Lisk (${lisk.id})`);
@@ -338,7 +339,7 @@ export function Hairstyle() {
     }
     
     // Check if user is on the wrong network
-    if (isConnected && chainId && chainId !== lisk.id) {
+    if (isConnected && chainId && !supportedChainIds.includes(chainId)) {
       setWeb3Error("Please switch to Lisk network")
       return
     }

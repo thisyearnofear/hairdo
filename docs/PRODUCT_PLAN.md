@@ -306,11 +306,13 @@ industry, disproportionately Black and African diaspora.
 27. ✅ Build `GrowthNudge` component — surfaces agent nudges in the UI
 28. ✅ Write deployment scripts (`script/Deploy.s.sol`,
     `script/RegisterStyles.s.sol`) + Foundry config (`foundry.toml`)
-29. ⬜ Deploy `HairdoProtocol.sol` on Lisk mainnet
-30. ⬜ Register all 34 styles onchain (maintenance windows)
-31. ⬜ Upgrade `api/attest` to call `selfAttest()` or `attestCut()` on the
-    new contract instead of verifying legacy payment
-32. ⬜ Upgrade `AttestationHandler` to mint SBTs through the new contract
+29. ✅ Deploy `HairdoProtocol.sol` on Lisk Sepolia testnet
+    (0x9C4434219661Cc1e4a5A7CFe79d9750e8BA79A07)
+30. ✅ Register all 34 styles onchain (verified styleCount() == 34)
+31. ✅ Upgrade `api/attest` to verify SBT ownership via `ownerOf()`
+    instead of legacy `isTokenUsed()`
+32. ✅ Upgrade `AttestationHandler` to call `selfAttest()` on the new
+    protocol — mints real soulbound Style Credentials
 33. ⬜ Build barber registration flow (stake LSK, declare specialties)
 34. ⬜ Build growth dashboard — shows attested cut history, growth status,
     rebook urgency, barber recommendations

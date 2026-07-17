@@ -14,7 +14,7 @@ import { Output } from "./Output"
 import Link from "next/link"
 import { AttestationHandler, type AttestationResult } from "./AttestationHandler"
 import { useConnection } from "wagmi"
-import { lisk } from "@/lib/chains"
+import { lisk, liskSepolia } from "@/lib/chains"
 import { RadarChart } from "@/components/ui/radar-chart"
 import { StatBar } from "@/components/ui/tradeoff-bars"
 import { ProgressSteps } from "@/components/ui/progress-steps"
@@ -958,7 +958,7 @@ export function StyleAdvisor() {
                     and only when wallet is connected on Lisk.
                     Self-attest is a personal timestamp; barber-attested cuts
                     carry more trust weight (stake-backed, two-sided). */}
-                {isConnected && chainId === lisk.id && (
+                {isConnected && (chainId === lisk.id || chainId === liskSepolia.id) && (
                   <div className="mt-3">
                     {list.some((p) => p.hairstyle === rec.style.name) ? (
                       <Button
@@ -1099,7 +1099,7 @@ export function StyleAdvisor() {
                 {attestationResult.tokenId.substring(58)}
               </p>
               <a
-                href={`https://blockscout.lisk.com/address/${attestationResult.userAddress}`}
+                href={`https://sepolia-blockscout.lisk.com/address/${attestationResult.userAddress}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs tracking-wide text-green-400/60 hover:text-green-400 underline mt-2 inline-block"
@@ -1132,6 +1132,7 @@ export function StyleAdvisor() {
               amount="1"
               styleId={attestingStyle.style.id}
               styleName={attestingStyle.style.name}
+              hairType={hairType}
               photoHash={undefined}
             />
           </div>

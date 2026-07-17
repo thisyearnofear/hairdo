@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createPublicClient, http, parseAbiItem, keccak256, toHex } from "viem";
+import { createPublicClient, http, keccak256, toHex, parseAbi } from "viem";
 import { Redis } from "@upstash/redis";
-import { lisk } from "@/lib/chains";
+import { lisk, liskSepolia } from "@/lib/chains";
 import { getStyleById } from "@/lib/style-matcher";
+import { PROTOCOL_CONTRACT_ADDRESS, PROTOCOL_ABI } from "@/lib/contract-config";
 
 export const runtime = "nodejs";
-
-const CONTRACT_ADDRESS = "0x055cA743f0fFB9258ea7f8484794C293f32f2d4C";
 
 // Upstash Redis for attestation storage.
 // Falls back to in-memory if env vars are not set (local dev only).
@@ -33,32 +32,37 @@ if (!global.attestations) {
   global.attestations = new Map();
 }
 
-// Lazily create the viem public client
-let client: ReturnType<typeof createPublicClient> | null = null;
-function getClient() {
-  if (!client) {
-    client = createPublicClient({
-      chain: lisk,
-      transport: http(),
-    });
-  }
-  return client;
+// Lazily create the viem public client for the appropriate chain
+function getClient(chainId: number) {
+  const chain = chainId === liskSepolia.id ? liskSepolia : lisk;
+  return createPublicClient({ chain, transport: http() });
 }
 
-// Verify on-chain that the token was used in a real payment transaction
-async function verifyPaymentOnChain(tokenId: string): Promise<boolean> {
-  if (!tokenId || !tokenId.startsWith("0x") || tokenId.length !== 66) {
+// Verify on-chain that the user owns the SBT token from the selfAttest tx
+async function verifyCredentialOnChain(
+  tokenId: string,
+  userAddress: string,
+  chainId: number
+): Promise<boolean> {
+  if (!tokenId || !tokenId.startsWith("0x")) {
     return false;
   }
 
   try {
-    const isUsed = await getClient().readContract({
-      address: CONTRACT_ADDRESS,
-      abi: [parseAbiItem("function isTokenUsed(bytes32 tokenId) view returns (bool)")],
-      functionName: "isTokenUsed",
-      args: [tokenId as `0x${string}`],
+    const client = getClient(chainId);
+
+    // The tokenId from the event is a 32-byte hex (uint256 as topic).
+    // Convert to a bigint for the ownerOf call.
+    const tokenIdBigInt = BigInt(tokenId);
+
+    const owner = await client.readContract({
+      address: PROTOCOL_CONTRACT_ADDRESS,
+      abi: PROTOCOL_ABI,
+      functionName: "ownerOf",
+      args: [tokenIdBigInt],
     });
-    return isUsed === true;
+
+    return owner.toLowerCase() === userAddress.toLowerCase();
   } catch (e) {
     console.error("On-chain verification failed:", e);
     return false;
@@ -97,16 +101,20 @@ async function storeAttestation(
  * POST /api/attest
  *
  * Records an onchain attestation of a style choice. The user must have
- * already paid the attestation fee on Lisk via the smart contract
- * (payForService), which creates an onchain record tied to a tokenId.
- * This endpoint verifies the payment and stores the attestation metadata.
+ * already called selfAttest() on HairdoProtocol, which mints a soulbound
+ * Style Credential NFT. This endpoint verifies the SBT ownership and
+ * stores the attestation metadata.
  *
  * Request body:
  * {
  *   styleId: string,       // style ID from data/styles.json
+ *   styleName: string,     // display name of the style
+ *   hairType: string,      // user's hair type (e.g. "4C")
  *   photoHash?: string,    // SHA-256 hash of the source photo (optional)
- *   paymentToken: string,  // tokenId used in the payForService call
- *   userAddress: string,   // wallet address that paid
+ *   tokenId: string,       // SBT tokenId from the CredentialMinted event
+ *   txHash: string,        // transaction hash of the selfAttest call
+ *   userAddress: string,   // wallet address that attested
+ *   chainId: number,       // chain ID (4202 for testnet, 1135 for mainnet)
  * }
  *
  * Response:
@@ -123,8 +131,16 @@ async function storeAttestation(
  */
 export async function POST(request: NextRequest) {
   try {
-    const { styleId, photoHash, paymentToken, userAddress } =
-      await request.json();
+    const {
+      styleId,
+      styleName,
+      hairType,
+      photoHash,
+      tokenId,
+      txHash,
+      userAddress,
+      chainId,
+    } = await request.json();
 
     // Validate required fields
     if (!styleId || typeof styleId !== "string") {
@@ -134,9 +150,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!paymentToken || typeof paymentToken !== "string") {
+    if (!tokenId || typeof tokenId !== "string") {
       return NextResponse.json(
-        { error: "paymentToken is required (the tokenId from payForService)" },
+        { error: "tokenId is required (the SBT tokenId from the CredentialMinted event)" },
         { status: 400 }
       );
     }
@@ -158,46 +174,59 @@ export async function POST(request: NextRequest) {
     }
 
     // Check replay protection — has this token already been attested?
-    const existing = await getExistingAttestation(paymentToken);
+    const existing = await getExistingAttestation(tokenId);
     if (existing) {
       return NextResponse.json(
-        { error: "This payment token has already been used for an attestation" },
+        { error: "This credential token has already been recorded" },
         { status: 409 }
       );
     }
 
-    // Verify the payment on-chain
-    const isPaymentValid = await verifyPaymentOnChain(paymentToken);
-    if (!isPaymentValid) {
+    // Verify the SBT ownership on-chain
+    const resolvedChainId = chainId || lisk.id;
+    const isVerified = await verifyCredentialOnChain(
+      tokenId,
+      userAddress,
+      resolvedChainId
+    );
+
+    if (!isVerified) {
       return NextResponse.json(
-        { error: "Payment not found on-chain. Please pay the attestation fee first." },
+        { error: "Style Credential not found on-chain. Please attest first via the contract." },
         { status: 402 }
       );
     }
 
     // Compute a deterministic attestation hash if photoHash is provided
     const attestationHash = photoHash
-      ? keccak256(toHex(`${paymentToken}:${styleId}:${photoHash}`))
+      ? keccak256(toHex(`${tokenId}:${styleId}:${photoHash}`))
       : null;
 
     const timestamp = Date.now();
+    const explorerBase =
+      resolvedChainId === liskSepolia.id
+        ? "https://sepolia-blockscout.lisk.com"
+        : "https://blockscout.lisk.com";
 
     const attestation = {
-      tokenId: paymentToken,
+      tokenId,
+      txHash: txHash || null,
       styleId,
       styleName: style.name,
       styleCategory: style.category,
+      hairType: hairType || null,
       userAddress,
       photoHash: photoHash || null,
       attestationHash,
       timestamp,
       txVerified: true,
-      explorerUrl: `https://blockscout.lisk.com/address/${userAddress}`,
-      contractAddress: CONTRACT_ADDRESS,
+      explorerUrl: `${explorerBase}/address/${userAddress}`,
+      contractAddress: PROTOCOL_CONTRACT_ADDRESS,
+      chainId: resolvedChainId,
     };
 
     // Store the attestation
-    await storeAttestation(paymentToken, attestation);
+    await storeAttestation(tokenId, attestation);
 
     return NextResponse.json(attestation);
   } catch (e) {

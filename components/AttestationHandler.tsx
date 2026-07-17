@@ -9,13 +9,20 @@ import {
 } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { WifiOff, Zap, CheckCircle2 } from "lucide-react";
-import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/lib/contract-config";
+import {
+  PROTOCOL_CONTRACT_ADDRESS,
+  PROTOCOL_ABI,
+  LSK_TOKEN_ADDRESS_MAINNET,
+  LSK_TOKEN_ADDRESS_TESTNET,
+} from "@/lib/contract-config";
+import { lisk, liskSepolia } from "@/lib/chains";
 
 interface AttestationHandlerProps {
   onAttestationSuccess: (attestation: AttestationResult) => void;
   amount: string; // Attestation fee in LSK tokens
   styleId: string;
   styleName: string;
+  hairType: string;
   photoHash?: string;
 }
 
@@ -30,9 +37,6 @@ export interface AttestationResult {
   txVerified: boolean;
   explorerUrl: string;
 }
-
-// LSK token address on Lisk network
-const LSK_TOKEN_ADDRESS = "0xac485391EB2d7D88253a7F1eF18C37f4242D1A24";
 
 const ERC20_ABI = [
   {
@@ -75,16 +79,17 @@ export function AttestationHandler({
   amount,
   styleId,
   styleName,
+  hairType,
   photoHash,
 }: AttestationHandlerProps) {
-  const { address, isConnected } = useConnection();
+  const { address, isConnected, chainId } = useConnection();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<
-    "approval" | "payment" | "recording" | "completed"
-  >("payment");
-  const [paymentInitiated, setPaymentInitiated] = useState(false);
-  const [pendingTokenId, setPendingTokenId] = useState<string | null>(null);
+    "approval" | "attest" | "recording" | "completed"
+  >("attest");
+  const [attestInitiated, setAttestInitiated] = useState(false);
+  const [mintedTokenId, setMintedTokenId] = useState<string | null>(null);
 
   const {
     data: hash,
@@ -94,16 +99,22 @@ export function AttestationHandler({
     error: contractError,
   } = useWriteContract();
 
-  // Get the allowance for our contract
+  // Select the correct LSK token address based on connected chain
+  const isTestnet = chainId === liskSepolia.id;
+  const lskTokenAddress = isTestnet
+    ? LSK_TOKEN_ADDRESS_TESTNET
+    : LSK_TOKEN_ADDRESS_MAINNET;
+
+  // Get the allowance for the protocol contract
   const {
     data: allowance,
     refetch: refetchAllowance,
     isLoading: isLoadingAllowance,
   } = useReadContract({
-    address: LSK_TOKEN_ADDRESS,
+    address: lskTokenAddress,
     abi: ERC20_ABI,
     functionName: "allowance",
-    args: address ? ([address, CONTRACT_ADDRESS] as const) : undefined,
+    args: address ? ([address, PROTOCOL_CONTRACT_ADDRESS] as const) : undefined,
     query: { enabled: !!address },
   });
 
@@ -112,14 +123,27 @@ export function AttestationHandler({
     data: balance,
     isLoading: isLoadingBalance,
   } = useReadContract({
-    address: LSK_TOKEN_ADDRESS,
+    address: lskTokenAddress,
     abi: ERC20_ABI,
     functionName: "balanceOf",
     args: address ? ([address] as const) : undefined,
     query: { enabled: !!address },
   });
 
-  const requiredAmount = BigInt(Math.floor(parseFloat(amount) * 1e18));
+  // Read the credential fee from the contract (1 LSK default, but read onchain)
+  const {
+    data: onchainFee,
+  } = useReadContract({
+    address: PROTOCOL_CONTRACT_ADDRESS,
+    abi: PROTOCOL_ABI,
+    functionName: "credentialFee",
+    query: { enabled: !!address },
+  });
+
+  const requiredAmount =
+    onchainFee !== undefined && typeof onchainFee === "bigint"
+      ? onchainFee
+      : BigInt(Math.floor(parseFloat(amount) * 1e18));
 
   const hasEnoughTokens =
     balance !== undefined &&
@@ -134,8 +158,8 @@ export function AttestationHandler({
 
   const approvalHash =
     hash && currentStep === "approval" ? hash : null;
-  const paymentHash =
-    hash && currentStep === "payment" ? hash : null;
+  const attestHash =
+    hash && currentStep === "attest" ? hash : null;
 
   const {
     isLoading: isApprovalConfirming,
@@ -146,11 +170,12 @@ export function AttestationHandler({
   });
 
   const {
-    isLoading: isPaymentConfirming,
-    isSuccess: isPaymentConfirmed,
-    error: paymentReceiptError,
+    isLoading: isAttestConfirming,
+    isSuccess: isAttestConfirmed,
+    error: attestReceiptError,
+    data: attestReceipt,
   } = useWaitForTransactionReceipt({
-    hash: paymentHash as `0x${string}`,
+    hash: attestHash as `0x${string}`,
   });
 
   const handleApproval = async () => {
@@ -167,14 +192,14 @@ export function AttestationHandler({
     setIsLoading(true);
     setError(null);
     setCurrentStep("approval");
-    setPaymentInitiated(false);
+    setAttestInitiated(false);
 
     try {
       writeContract({
-        address: LSK_TOKEN_ADDRESS,
+        address: lskTokenAddress,
         abi: ERC20_ABI,
         functionName: "approve",
-        args: [CONTRACT_ADDRESS, requiredAmount],
+        args: [PROTOCOL_CONTRACT_ADDRESS, requiredAmount],
       });
     } catch (err) {
       console.error("Approval error:", err);
@@ -183,7 +208,7 @@ export function AttestationHandler({
     }
   };
 
-  const handlePayment = useCallback(async () => {
+  const handleAttest = useCallback(async () => {
     if (!isConnected || !address) {
       setError("Please connect your wallet first");
       return;
@@ -201,49 +226,52 @@ export function AttestationHandler({
 
     setIsLoading(true);
     setError(null);
-    setCurrentStep("payment");
-    setPaymentInitiated(true);
+    setCurrentStep("attest");
+    setAttestInitiated(true);
 
     try {
-      // Generate a unique 32-byte token ID for this attestation
-      const tokenId = `0x${Array.from({ length: 64 }, () =>
-        Math.floor(Math.random() * 16).toString(16)
-      ).join("")}` as `0x${string}`;
+      // Convert photoHash to bytes32 (use zero hash if not provided)
+      const photoHashBytes32 = photoHash
+        ? (photoHash as `0x${string}`)
+        : ("0x0000000000000000000000000000000000000000000000000000000000000000" as `0x${string}`);
 
-      setPendingTokenId(tokenId);
-
-      if (typeof window !== "undefined") {
-        localStorage.setItem("pendingAttestationTokenId", tokenId);
-      }
+      // Build a simple token URI with style metadata
+      const tokenURI = JSON.stringify({
+        styleId,
+        styleName,
+        hairType,
+        attestedAt: new Date().toISOString(),
+        type: "self-attest",
+      });
 
       writeContract({
-        address: CONTRACT_ADDRESS,
-        abi: CONTRACT_ABI,
-        functionName: "payForService",
-        args: [tokenId],
+        address: PROTOCOL_CONTRACT_ADDRESS,
+        abi: PROTOCOL_ABI,
+        functionName: "selfAttest",
+        args: [styleId, hairType, photoHashBytes32, tokenURI],
       });
     } catch (err) {
-      console.error("Payment error:", err);
-      setError("Attestation fee payment failed. Please try again.");
+      console.error("Attest error:", err);
+      setError("Attestation failed. Please try again.");
       setIsLoading(false);
-      setPaymentInitiated(false);
+      setAttestInitiated(false);
     }
-  }, [isConnected, address, hasEnoughTokens, isApproved, writeContract]);
+  }, [isConnected, address, hasEnoughTokens, isApproved, writeContract, styleId, hairType, styleName, photoHash]);
 
-  // Handle approval confirmation
+  // Handle approval confirmation → proceed to attest
   useEffect(() => {
     if (
       isApprovalConfirmed &&
       approvalHash &&
-      !isPaymentConfirmed &&
-      !paymentInitiated
+      !isAttestConfirmed &&
+      !attestInitiated
     ) {
       setTimeout(() => {
         refetchAllowance();
         setIsLoading(false);
         if (hasEnoughTokens) {
-          setPaymentInitiated(true);
-          handlePayment();
+          setAttestInitiated(true);
+          handleAttest();
         }
       }, 1000);
     }
@@ -252,80 +280,84 @@ export function AttestationHandler({
     approvalHash,
     refetchAllowance,
     hasEnoughTokens,
-    handlePayment,
-    isPaymentConfirmed,
-    paymentInitiated,
+    handleAttest,
+    isAttestConfirmed,
+    attestInitiated,
   ]);
 
-  // Handle payment confirmation → record attestation
+  // Handle attest confirmation → parse tokenId from event, record metadata
   useEffect(() => {
-    if (isPaymentConfirmed && paymentHash) {
-      const storedTokenId =
-        typeof window !== "undefined"
-          ? localStorage.getItem("pendingAttestationTokenId")
-          : null;
+    if (isAttestConfirmed && attestHash && attestReceipt) {
+      // Parse the CredentialMinted event from the receipt to get the tokenId
+      // Event: CredentialMinted(uint256 indexed tokenId, address indexed client, address indexed barber, string styleId, uint64 timestamp, bool barberAttested)
+      const credentialEvent = attestReceipt.logs?.find((log: { topics: string[] }) =>
+        log.topics?.[0] ===
+          "0x" + // keccak256("CredentialMinted(uint256,address,address,string,uint64,bool)")
+          ""
+      );
 
-      if (storedTokenId) {
-        if (typeof window !== "undefined") {
-          localStorage.removeItem("pendingAttestationTokenId");
-        }
+      // The tokenId is the first indexed topic (topics[1])
+      // If we can't parse it, we'll use the tx hash as a fallback identifier
+      let tokenId = attestHash;
+      if (credentialEvent?.topics?.[1]) {
+        tokenId = credentialEvent.topics[1];
+      }
 
-        // Set recording state via microtask to avoid synchronous setState in effect
-        Promise.resolve().then(() => setCurrentStep("recording"));
+      setMintedTokenId(tokenId);
+      Promise.resolve().then(() => setCurrentStep("recording"));
 
-        // Call /api/attest to record the attestation metadata
-        fetch("/api/attest", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            styleId,
-            styleName,
-            photoHash: photoHash || null,
-            paymentToken: storedTokenId,
-            userAddress: address,
-          }),
+      // Call /api/attest to record the attestation metadata
+      fetch("/api/attest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          styleId,
+          styleName,
+          hairType,
+          photoHash: photoHash || null,
+          txHash: attestHash,
+          tokenId,
+          userAddress: address,
+          chainId,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data: AttestationResult) => {
+          onAttestationSuccess(data);
+          setCurrentStep("completed");
+          setAttestInitiated(false);
+          setIsLoading(false);
         })
-          .then((res) => res.json())
-          .then((data: AttestationResult) => {
-            onAttestationSuccess(data);
-            setCurrentStep("completed");
-            setPaymentInitiated(false);
-            setIsLoading(false);
-            setPendingTokenId(null);
-          })
-          .catch((err) => {
-            console.error("Attestation recording error:", err);
-            setError(
-              "Payment confirmed but attestation recording failed. Your onchain payment is verified — contact support."
-            );
-            setIsLoading(false);
-          });
-      } else {
-        Promise.resolve().then(() => {
-          setError("Attestation error: token ID not found");
+        .catch((err) => {
+          console.error("Attestation recording error:", err);
+          setError(
+            "Your Style Credential was minted onchain, but recording the metadata failed. Your SBT is verified — contact support."
+          );
           setIsLoading(false);
         });
-      }
     }
   }, [
-    isPaymentConfirmed,
-    paymentHash,
+    isAttestConfirmed,
+    attestHash,
+    attestReceipt,
     onAttestationSuccess,
     styleId,
     styleName,
+    hairType,
     photoHash,
     address,
+    chainId,
   ]);
 
   // Derive error from hook error states
   const hookError =
-    contractError || approvalReceiptError || paymentReceiptError;
+    contractError || approvalReceiptError || attestReceiptError;
   const derivedError = isError
     ? "Transaction failed. Please try again."
     : approvalReceiptError
       ? "Approval confirmation failed. Please check your wallet."
-      : paymentReceiptError
-        ? "Payment confirmation failed. Please check your wallet."
+      : attestReceiptError
+        ? "Attestation confirmation failed. Please check your wallet."
         : null;
 
   const displayError = derivedError || error;
@@ -366,9 +398,9 @@ export function AttestationHandler({
           your verifiable hair history. Anyone can confirm it by reading your
           token on Lisk.
         </p>
-        {pendingTokenId && (
+        {mintedTokenId && (
           <p className="text-[10px] opacity-40 tracking-wide break-all mt-2 font-mono">
-            {pendingTokenId.substring(0, 18)}...
+            {mintedTokenId.substring(0, 18)}...
           </p>
         )}
       </div>
@@ -384,31 +416,31 @@ export function AttestationHandler({
           Recording your credential
         </p>
         <p className="text-xs opacity-50 text-center max-w-xs">
-          Payment confirmed onchain. Writing your attestation...
+          Style Credential minted onchain. Saving your attestation...
         </p>
       </div>
     );
   }
 
   // Confirming state
-  if (isApprovalConfirming || isPaymentConfirming) {
+  if (isApprovalConfirming || isAttestConfirming) {
     return (
       <div className="flex flex-col items-center gap-4 p-6">
         <div className="w-12 h-12 border-2 border-amber/20 border-t-amber rounded-full animate-spin mb-4" />
         <p className="text-sm font-display italic opacity-70">
-          {isApprovalConfirming ? "Confirming approval" : "Confirming attestation fee"}
+          {isApprovalConfirming ? "Confirming approval" : "Minting your credential"}
         </p>
         <p className="text-xs opacity-50 text-center max-w-xs">
           {isApprovalConfirming
             ? "Approve the LSK spending in your wallet"
-            : "Confirm the attestation fee in your wallet"}
+            : "Confirm the attestation in your wallet"}
         </p>
-        {(approvalHash || paymentHash) && (
+        {(approvalHash || attestHash) && (
           <p className="text-[10px] opacity-40 tracking-wide break-all mt-2 font-mono">
             TX:{" "}
-            {((approvalHash || paymentHash) as string).substring(0, 10)}...
-            {((approvalHash || paymentHash) as string).substring(
-              ((approvalHash || paymentHash) as string).length - 8
+            {((approvalHash || attestHash) as string).substring(0, 10)}...
+            {((approvalHash || attestHash) as string).substring(
+              ((approvalHash || attestHash) as string).length - 8
             )}
           </p>
         )}
@@ -442,6 +474,9 @@ export function AttestationHandler({
           Attesting
         </p>
         <p className="text-sm font-display">{styleName}</p>
+        <p className="text-[10px] opacity-40 mt-1">
+          Hair type: {hairType}
+        </p>
       </div>
 
       {/* Balance and fee display */}
@@ -459,6 +494,13 @@ export function AttestationHandler({
           <p className="text-sm tabular-nums text-amber">{displayRequired} LSK</p>
         </div>
       </div>
+
+      {/* Network indicator */}
+      {isTestnet && (
+        <div className="text-center text-[10px] tracking-wide text-amber/50">
+          Testnet mode — Lisk Sepolia
+        </div>
+      )}
 
       {/* Error states */}
       {!isConnected ? (
@@ -510,7 +552,7 @@ export function AttestationHandler({
             </Button>
           ) : (
             <Button
-              onClick={handlePayment}
+              onClick={handleAttest}
               disabled={isLoading || isPending}
               variant="secondary"
               size="lg"
@@ -518,8 +560,8 @@ export function AttestationHandler({
             >
               <span className="relative z-10">
                 {isLoading || isPending
-                  ? "Processing..."
-                  : `Attest for ${amount} LSK`}
+                  ? "Minting credential..."
+                  : `Attest for ${displayRequired} LSK`}
               </span>
               <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
             </Button>
@@ -530,7 +572,7 @@ export function AttestationHandler({
       {/* Info footer — plain language, not terminal */}
       <div className="text-center text-[10px] tracking-wide opacity-40 space-y-1 font-display italic leading-relaxed">
         <p>Pays a small fee on Lisk L2</p>
-        <p>Creates a verifiable onchain record</p>
+        <p>Mints a soulbound Style Credential NFT</p>
         <p>Stores a photo hash, never the photo itself</p>
       </div>
     </div>

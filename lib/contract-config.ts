@@ -18,17 +18,24 @@
 // 6. Staking + Slashing — economic security
 // 7. Growth Tracking — isOverdue() view function for the agent
 
-// Contract address — will be set after deployment
+// Contract address — deployed on Lisk Sepolia testnet (Chain ID: 4202)
+// Mainnet deployment pending. The app auto-selects based on chain ID.
 export const PROTOCOL_CONTRACT_ADDRESS =
-  "0x0000000000000000000000000000000000000000" as `0x${string}`;
+  "0x9C4434219661Cc1e4a5A7CFe79d9750e8BA79A07" as `0x${string}`;
 
 // Legacy contract (proof-of-concept, being replaced)
 export const LEGACY_CONTRACT_ADDRESS =
   "0x055cA743f0fFB9258ea7f8484794C293f32f2d4C" as `0x${string}`;
 
-// LSK token address
-export const LSK_TOKEN_ADDRESS =
+// LSK token addresses — mainnet and testnet differ
+export const LSK_TOKEN_ADDRESS_MAINNET =
   "0xac485391EB2d7D88253a7F1eF18C37f4242D1A24" as `0x${string}`;
+export const LSK_TOKEN_ADDRESS_TESTNET =
+  "0x8a21CF9Ba08Ae709D64Cb25AfAA951183EC9FF6D" as `0x${string}`;
+
+// Default to mainnet LSK token (production). The AttestationHandler
+// selects the testnet address when the connected chain is Lisk Sepolia.
+export const LSK_TOKEN_ADDRESS = LSK_TOKEN_ADDRESS_MAINNET;
 
 // ─── ABI ────────────────────────────────────────────────────────────────
 
@@ -541,7 +548,7 @@ export const LSK_TOKEN_ABI = [
 
 // ─── Backward compatibility exports ─────────────────────────────────────
 // Existing code imports CONTRACT_ADDRESS and CONTRACT_ABI.
-// These point to the legacy contract until the new one is deployed.
+// Now pointing to the deployed HairdoProtocol on Lisk Sepolia.
 
-export const CONTRACT_ADDRESS = LEGACY_CONTRACT_ADDRESS;
-export const CONTRACT_ABI = LEGACY_ABI;
+export const CONTRACT_ADDRESS = PROTOCOL_CONTRACT_ADDRESS;
+export const CONTRACT_ABI = PROTOCOL_ABI;

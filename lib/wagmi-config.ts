@@ -2,12 +2,12 @@
 
 import { createConfig, http } from "wagmi"
 import { injected, walletConnect } from "wagmi/connectors"
-import { lisk } from "@/lib/chains"
+import { lisk, liskSepolia } from "@/lib/chains"
 
 const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || ""
 
 export const config = createConfig({
-  chains: [lisk],
+  chains: [lisk, liskSepolia],
   connectors: [
     injected(),
     ...(walletConnectProjectId
@@ -16,6 +16,7 @@ export const config = createConfig({
   ],
   transports: {
     [lisk.id]: http(),
+    [liskSepolia.id]: http(),
   },
   ssr: true,
 })

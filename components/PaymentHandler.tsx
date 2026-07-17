@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useConnection, useWriteContract, useWaitForTransactionReceipt, useReadContract } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { WifiOff } from "lucide-react";
-import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/lib/contract-config";
+import { LEGACY_CONTRACT_ADDRESS, LEGACY_ABI } from "@/lib/contract-config";
 
 interface PaymentHandlerProps {
   onPaymentSuccess: (tokenId: string) => void;
@@ -97,7 +97,7 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
     address: LSK_TOKEN_ADDRESS,
     abi: ERC20_ABI,
     functionName: 'allowance',
-    args: address ? [address, CONTRACT_ADDRESS] as const : undefined,
+    args: address ? [address, LEGACY_CONTRACT_ADDRESS] as const : undefined,
     query: {
       enabled: !!address,
     }
@@ -157,7 +157,7 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
         address: LSK_TOKEN_ADDRESS,
         abi: ERC20_ABI,
         functionName: 'approve',
-        args: [CONTRACT_ADDRESS, requiredAmount],
+        args: [LEGACY_CONTRACT_ADDRESS, requiredAmount],
       });
     } catch (err) {
       console.error("Approval error:", err);
@@ -197,14 +197,14 @@ export function PaymentHandler({ onPaymentSuccess, amount }: PaymentHandlerProps
       }
 
       console.log("Initiating payment with params:", {
-        address: CONTRACT_ADDRESS,
+        address: LEGACY_CONTRACT_ADDRESS,
         tokenId: tokenId,
       });
 
       // Call the smart contract to process payment via transferFrom
       writeContract({
-        address: CONTRACT_ADDRESS,
-        abi: CONTRACT_ABI,
+        address: LEGACY_CONTRACT_ADDRESS,
+        abi: LEGACY_ABI,
         functionName: 'payForService',
         args: [tokenId],
       });
