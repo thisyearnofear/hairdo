@@ -1,6 +1,6 @@
 # HAIRDO Differentiation Plan — Codrops Hub p.2 Steals + Ambitious Offchain-First UX
 
-> **Status:** `P2 SHIPPED (beta) — 2026-11-21 (tsc clean, lint 0 errors, next build ok; P2-1b face-mesh wiring open)`
+> **Status:** `P2 SHIPPED (beta) — 2026-11-21 (tsc clean, lint 0 errors, next build ok; P2-1b face-mesh shipped, MediaPipe dynamic-only)`
 > **Last updated:** 2026-11-21
 > **Owner:** HAIRDO team
 > **Goal:** Make HAIRDO more ambitious (editorial, tactile, chair-centric) while keeping **onchain entirely optional**. Offchain-first attest via `/api/attest` + `/api/attest/mint` onchain upgrade. Lazy-load wagmi via `LazyWeb3Provider`.
@@ -477,7 +477,8 @@ const [light, setLight] = useState({ x: 30, y: 25 });
 - [x] P1-2 Relight slider — `Output.tsx` shop-light overlay (CSS `mix-blend-overlay` only, download-identical; gsap one-time intro sweep; `three` normal-map reserved as P1-2b)
 
 ### P2 (beta)
-- [x] P2-1 Mirror beta behind `?mirror=beta` — `components/ui/mirror-beta.tsx` (dynamic, ssr:false; own stream, oval framing guide, capture→photo, denial falls back to upload copy). P2-1b OPEN: plug `kaltwrk/experiment-001`-style face-mesh landmarker into the panel seam (lazy import, no new first-paint cost)
+- [x] P2-1 Mirror beta behind `?mirror=beta` — `components/ui/mirror-beta.tsx` (dynamic, ssr:false; own stream, oval framing guide, capture→photo, denial falls back to upload copy)
+- [x] P2-1b Face mesh — lazily-imported MediaPipe FaceLandmarker (`@mediapipe/tasks-vision@1.2.3`, pinned wasm CDN) with RAF `detectForVideo` loop + sparse amber constellation canvas; model/wasm load only on panel mount, oval guide stays as fallback, torn down on unmount
 - [x] P2-2 Ambient trail behind `pointer:fine` + reduced-motion guard — `components/ui/ambient-trail.tsx` (canvas dots, fixed, pointer-events-none) via `ambient-trail-lazy.tsx` Client wrapper (layout is a Server Component)
 - [x] P2-3 Smear reveal on result only — `.smear-reveal` in `globals.css` + `Output.tsx` success `Card`, reduced-motion off
 
