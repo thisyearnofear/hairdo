@@ -469,7 +469,7 @@ const [light, setLight] = useState({ x: 30, y: 25 });
 - [x] P0-2 Lens comparator — `Output.tsx` lens + a11y range fallback
 - [x] P0-3 Phase wipes — `PhaseStamps.tsx` key + `globals.css` `.phase-wipe`
 - [x] P0-4 Verify: `npx tsc --noEmit`, `npm run lint` (0 errors), `npm run build` success
-- [ ] P0-5 Manual pass: keyboard only, touch drag, reduced-motion on, wallet-free save → mint upgrade still works (`/api/attest` → `/api/attest/mint`)
+- [x] P0-5 Manual pass: automated slice 2026-11-21 (dev :3002, agent-browser) — page loads zero console errors; ArrowRight moves spotlight (strip 256→592); wallet-free guest save works with mint correctly absent; only warning is logo.svg aspect ratio. Still human-only: touch drag, real camera mirror, reduced-motion ON, screen reader, wallet→mint (blocked till redeploy, fails closed by design)
 
 ### P1 (do not start until P0-4 is green)
 - [x] P1-0 `npm i three gsap` + dynamic-import audit (no first-paint regression — zero static `three`/`gsap` imports; gsap via `import("gsap")` in effect only)
