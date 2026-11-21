@@ -60,13 +60,13 @@ Current stack reference (`package.json`):
 - [x] **P0-3 Phase wipe transitions** for `PhaseStamps`
 
 ### P1 — needs `three` + `gsap`, lazy-loaded
-- [ ] **P1-1 Liquid lens hover** on style cards
-- [ ] **P1-2 Relight slider** on result photo
+- [x] **P1-1 Liquid lens hover** on style cards
+- [x] **P1-2 Relight slider** on result photo
 
 ### P2 — spikes / beta, behind flags
-- [ ] **P2-1 MediaPipe live mirror beta**
-- [ ] **P2-2 Cursor shader trail (ambient)**
-- [ ] **P2-3 Smear / fold reveal**
+- [x] **P2-1 MediaPipe live mirror beta** (+ P2-1b face mesh)
+- [x] **P2-2 Cursor shader trail (ambient)**
+- [x] **P2-3 Smear / fold reveal**
 
 ---
 
@@ -510,14 +510,14 @@ Manual checklist (each PR):
 
 | File | Change |
 |---|---|
-| `components/StyleAdvisor.tsx` | P0-1 lineup strip; P0-3 `key={phase}` wrappers; P2-1 mirror sidecar (later) |
+| `components/StyleAdvisor.tsx` | P0-1 lineup strip; P0-3 `key={phase}` wrappers; P2-1 mirror sidecar (shipped, `?mirror=beta`) |
 | `components/Output.tsx` | P0-2 lens; P1-2 relight overlay; P2-3 smear reveal |
 | `components/PhaseStamps.tsx` | P0-3 wipe key (API unchanged) |
 | `app/globals.css` | P0-3 `.phase-wipe` + P0-4 `.no-scrollbar` guards |
 | `components/ui/liquid-hover.tsx` | **SHIPPED** P1-1 (SVG goo, no deps) |
-| `components/ui/mirror-beta.tsx` | **SHIPPED** P2-1a (dynamic, ssr:false; P2-1b face-mesh open) |
+| `components/ui/mirror-beta.tsx` | **SHIPPED** P2-1a + P2-1b (dynamic, ssr:false; lazy FaceLandmarker, oval fallback) |
 | `components/ui/ambient-trail.tsx` + `ambient-trail-lazy.tsx` | **SHIPPED** P2-2 (Client wrapper — layout is a Server Component) |
-| `package.json` | **SHIPPED** P1-0: `three@^0.187.0`, `gsap@^3.15.1`, `@types/three` (dev); zero static imports — gsap dynamic-only, three unbundled |
+| `package.json` | **SHIPPED** P1-0: `three@^0.187.0`, `gsap@^3.15.1`, `@types/three` (dev); P2-1b: `@mediapipe/tasks-vision@1.2.3`. Zero static heavy imports — gsap + MediaPipe dynamic-only, three unbundled |
 | `lib/identity.ts`, `lib/redis.ts`, `app/api/attest/route.ts`, `app/api/attest/mint/route.ts` | **Untouched** — offchain-first flow already landed |
 
 ---
@@ -530,4 +530,4 @@ Manual checklist (each PR):
 
 ---
 
-*Next action: P2 spikes (mirror beta `?mirror=beta`, ambient trail, smear reveal) — all flagged, non-blocking.*
+*Next action: Prezenti Season 3 filing (closes Dec 29 2026) + protocol redeploy on the winning track (`NEXT_PUBLIC_CHAIN`). Remaining UX depth: P1-2b three.js normal-map relight (flagged), human-only P0-5 slice (touch, camera, reduced-motion ON, screen reader, wallet→mint).*

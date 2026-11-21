@@ -120,14 +120,14 @@ trust graph, not just a payment processor with an NFT bolted on.
 **Contract (in development):**
   - **Style Registry** — maintenance windows onchain, `isOverdue()` view
   - **Style Credentials** — soulbound NFTs for each attested cut
-  - **Barber Registry** — barbers stake LSK, declare specialties
+  - **Barber Registry** — barbers stake the fee token, declare specialties
   - **Cut Attestation** — barbers attest cuts for clients (two-sided trust)
   - **Trust Score** — computed onchain from real attestation events
   - **Staking + Slashing** — economic security for the trust graph
   - **Growth Tracking** — `isOverdue()`, `daysUntilOverdue()`, `daysSinceCut()`
 
 The attestation flow (new):
-1. User pays the credential fee in LSK (or barber pays for barber-attested cuts)
+1. User pays the credential fee in the track's fee token (or barber pays for barber-attested cuts)
 2. Contract mints a Style Credential SBT to the user's wallet
 3. Onchain metadata: styleId, barber, timestamp, hairType, photoHash
 4. The Hair Growth Agent reads `isOverdue(tokenId)` from the contract

@@ -285,7 +285,7 @@ programs fund the agent side.
 8. ✅ Build `api/attest` — verifies onchain payment, records attestation metadata
 9. ✅ Surface the onchain option as a subtle premium in the UI
 10. ✅ Build attestation verification page (`/attestations/[tokenId]`)
-11. ⚠️ `HairdoPayment.sol` is a proof-of-concept — replaced by StyleCredential.sol
+11. ✅ Retired `HairdoPayment.sol` PoC + its payment UI (Lisk shutdown, no users) — `HairdoProtocol.sol` is the trust-graph contract
 
 ### Phase 3: Barber Trust-Score ASP ✅ COMPLETE (data layer)
 12. ✅ Build barber trust database (`data/barbers.json`) — 5 sample barbers
