@@ -1,24 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Redis } from "@upstash/redis";
 import { getStyleById } from "@/lib/style-matcher";
+import { getRedis, attestationKey, userAttestationsKey } from "@/lib/redis";
+import { normalizeUserKey } from "@/lib/identity";
 
 export const runtime = "nodejs";
-
-// ─── Redis setup (shared with attest route) ───────────────────────────
-let redis: Redis | null = null;
-function getRedis() {
-  if (
-    !redis &&
-    process.env.KV_REST_API_URL &&
-    process.env.KV_REST_API_TOKEN
-  ) {
-    redis = new Redis({
-      url: process.env.KV_REST_API_URL,
-      token: process.env.KV_REST_API_TOKEN,
-    });
-  }
-  return redis;
-}
 
 // In-memory fallback
 declare global {
@@ -173,18 +158,28 @@ function computeStyleLoyalty(attestations: AttestationRecord[]): number | null {
 
 // ─── Fetch user's attestations from Redis ─────────────────────────────
 
-async function getUserAttestations(userAddress: string): Promise<AttestationRecord[]> {
+async function getUserAttestations(userKey: string): Promise<AttestationRecord[]> {
   const r = getRedis();
   if (r) {
-    // Scan for all attestations by this user.
-    // We store attestations as `attestation:${tokenId}` → JSON.
-    // To find a user's attestations, we scan keys and filter.
-    // In production, we'd also maintain an index: `user:${address}:attestations` → set of tokenIds.
-    const keys = await r.keys("attestation:*");
+    // Preferred: per-user index written by /api/attest (no KEYS scan).
+    const tokenIds = await r.smembers(userAttestationsKey(userKey));
     const results: AttestationRecord[] = [];
-    for (const key of keys) {
-      const data = await r.get<AttestationRecord>(key);
-      if (data && data.userAddress?.toLowerCase() === userAddress.toLowerCase()) {
+    if (tokenIds.length > 0) {
+      for (const tokenId of tokenIds) {
+        const raw = await r.get(attestationKey(tokenId as string));
+        const data =
+          typeof raw === "string" ? JSON.parse(raw) : (raw as AttestationRecord | null);
+        if (data) results.push(data);
+      }
+      return results.sort((a, b) => b.timestamp - a.timestamp);
+    }
+    // Back-compat: legacy attestations written before the index existed.
+    const keys = await r.keys("attestation:*");
+    for (const key of keys.slice(0, 200)) {
+      const data = await r.get<AttestationRecord & { userKey?: string }>(key);
+      if (!data) continue;
+      const key2 = data.userKey ?? data.userAddress?.toLowerCase();
+      if (key2 === userKey) {
         results.push(data);
       }
     }
@@ -192,11 +187,11 @@ async function getUserAttestations(userAddress: string): Promise<AttestationReco
   }
 
   // In-memory fallback
-  const results: AttestationRecord[] = [];
-  for (const [, data] of global.attestations!) {
-    const record = data as AttestationRecord;
-    if (record.userAddress?.toLowerCase() === userAddress.toLowerCase()) {
-      results.push(record);
+  const results: AttestationRecord[] = [];    for (const [, data] of global.attestations!) {
+    const record = data as AttestationRecord & { userKey?: string; userId?: string | null };
+    const key = record.userKey ?? record.userAddress?.toLowerCase();
+    if (key === userKey) {
+      results.push(record as AttestationRecord);
     }
   }
   return results.sort((a, b) => b.timestamp - a.timestamp);
@@ -231,16 +226,21 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const address = searchParams.get("address");
+    const userId = searchParams.get("userId");
     const hairType = searchParams.get("hairType") || undefined;
 
-    if (!address || !address.startsWith("0x")) {
+    const userKey = normalizeUserKey({
+      userAddress: address,
+      userId,
+    });
+    if (!userKey) {
       return NextResponse.json(
-        { error: "Valid wallet address is required" },
+        { error: "Provide ?address=0x… or ?userId=guest-id" },
         { status: 400 }
       );
     }
 
-    const attestations = await getUserAttestations(address);
+    const attestations = await getUserAttestations(userKey);
 
     if (attestations.length === 0) {
       return NextResponse.json<GrowthStatus>({

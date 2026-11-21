@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export const runtime = 'edge'
+export const runtime = 'nodejs'
+// Legacy prediction reader paired with /api/create (deprecated). Use /api/visualize.
 
 export async function POST(request: NextRequest) {
   try {

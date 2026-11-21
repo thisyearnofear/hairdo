@@ -1,22 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Redis } from "@upstash/redis";
+import { getRedis, attestationKey } from "@/lib/redis";
 
 export const runtime = "nodejs";
-
-let redis: Redis | null = null;
-function getRedis() {
-  if (
-    !redis &&
-    process.env.KV_REST_API_URL &&
-    process.env.KV_REST_API_TOKEN
-  ) {
-    redis = new Redis({
-      url: process.env.KV_REST_API_URL,
-      token: process.env.KV_REST_API_TOKEN,
-    });
-  }
-  return redis;
-}
 
 declare global {
   var attestations: Map<string, unknown> | undefined;
@@ -32,8 +17,8 @@ if (!global.attestations) {
  * user address, timestamp, and verification status.
  *
  * This endpoint is public — attestations are meant to be verifiable
- * by anyone. The onchain payment (isTokenUsed) can be independently
- * verified against the Lisk contract.
+ * by anyone. The onchain credential (ownerOf) can be independently
+ * verified against the contract.
  */
 export async function GET(
   _request: NextRequest,
@@ -42,9 +27,9 @@ export async function GET(
   try {
     const { tokenId } = await params;
 
-    if (!tokenId || !tokenId.startsWith("0x") || tokenId.length !== 66) {
+    if (!tokenId || !tokenId.startsWith("0x")) {
       return NextResponse.json(
-        { error: "Invalid tokenId format (expected 0x-prefixed 32-byte hex)" },
+        { error: "Invalid tokenId format (expected 0x-prefixed hex)" },
         { status: 400 }
       );
     }
@@ -53,7 +38,7 @@ export async function GET(
     let attestation: unknown = null;
 
     if (r) {
-      const result = await r.get(`attestation:${tokenId}`);
+      const result = await r.get(attestationKey(tokenId));
       attestation = result;
     } else {
       attestation = global.attestations!.get(tokenId);

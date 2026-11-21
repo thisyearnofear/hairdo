@@ -1,4 +1,11 @@
+import { base, baseSepolia } from 'viem/chains'
 import { defineChain } from 'viem'
+
+// ─── Migration target (Lisk L2 shut down 2 Nov 2026) ────────────────────
+// HairdoProtocol has not been redeployed yet. `base` / `baseSepolia` are
+// the current defaults for new deployments. Lisk definitions below are
+// kept for read-only verification of historical attestations.
+export { base, baseSepolia }
 
 export const lisk = defineChain({
   id: 1135,
@@ -24,6 +31,7 @@ export const lisk = defineChain({
     },
   },
   testnet: false,
+  // NOTE: Lisk L2 shut down 2 Nov 2026 — retained for historical reads only.
 })
 
 export const liskSepolia = defineChain({

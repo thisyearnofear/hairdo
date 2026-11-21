@@ -92,7 +92,7 @@ export function Hero() {
         <span className="w-1 h-1 bg-amber/60 rounded-full self-center" />
         <span>Powered by AI</span>
         <span className="w-1 h-1 bg-amber/60 rounded-full self-center" />
-        <span>Verified onchain</span>
+        <span>No wallet needed</span>
       </div>
 
       {/* Main Title — dramatic gradient typography, parallax */}
@@ -114,9 +114,9 @@ export function Hero() {
         <div className="flex items-center justify-center gap-4 text-sm tracking-wide opacity-70 animate-enter-up" style={{ animationDelay: "100ms" }}>
           <span>Discover</span>
           <span className="w-1 h-1 bg-gold/60 rounded-full" />
-          <span>Visualize</span>
+          <span>See it on you</span>
           <span className="w-1 h-1 bg-gold/60 rounded-full" />
-          <span>Attest</span>
+          <span>Track growth</span>
         </div>
       </div>
 
@@ -140,7 +140,7 @@ export function Hero() {
       {/* Soft CTA hint */}
       <Reveal direction="fade" delay={400} className="relative z-10 max-w-2xl mx-auto mb-12">
         <p className="text-xs tracking-wide opacity-40 leading-relaxed font-display italic">
-          34 styles · real tradeoffs · see them on your face
+          34 styles · real tradeoffs · see them on your face · onchain mint optional
         </p>
       </Reveal>
 

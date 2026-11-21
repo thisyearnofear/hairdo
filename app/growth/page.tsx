@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { useConnection } from "wagmi"
+import { useGuestId } from "@/lib/hooks/useGuestId"
+import { PhaseStamps } from "@/components/PhaseStamps"
 import { Header } from "@/components/Header"
 import { Footer } from "@/components/Footer"
 import { Button } from "@/components/ui/button"
@@ -83,19 +85,20 @@ export default function GrowthDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  const guestId = useGuestId()
+  const identityParam = address ? `address=${address}` : guestId ? `userId=${guestId}` : null
+
   useEffect(() => {
-    if (!isConnected || !address) {
-      setLoading(false)
+    if (!identityParam) {
       return
     }
+    setLoading(true)
 
     let cancelled = false
 
     const fetchGrowth = async () => {
       try {
-        const res = await fetch(
-          `/api/growth?address=${address}`
-        )
+        const res = await fetch(`/api/growth?${identityParam}`)
         if (!res.ok) throw new Error("Failed to fetch growth data")
         const data = await res.json()
         if (!cancelled) {
@@ -117,10 +120,10 @@ export default function GrowthDashboardPage() {
       cancelled = true
       clearInterval(interval)
     }
-  }, [isConnected, address])
+  }, [identityParam])
 
-  // Not connected
-  if (!isConnected) {
+  // No identity yet (guest id loading)
+  if (!identityParam) {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
@@ -130,12 +133,13 @@ export default function GrowthDashboardPage() {
               <div className="w-16 h-16 rounded-full bg-amber/10 border border-amber/30 flex items-center justify-center mx-auto">
                 <Activity className="w-8 h-8 text-amber" />
               </div>
+              <PhaseStamps phase="done" compact />
               <h1 className="text-2xl font-display text-gradient-warm">
-                Your hair growth dashboard
+                Your hair timeline
               </h1>
               <p className="text-sm opacity-60 max-w-md mx-auto leading-relaxed">
-                Connect your wallet to see your attested cut history, growth
-                status, and rebook nudges from the Hair Growth Agent.
+                Save your first cut — no wallet needed. We&apos;ll track growth,
+                predict your rebook window, and you can mint it onchain anytime.
               </p>
               <Button asChild variant="secondary" size="lg" className="mt-4">
                 <Link href="/">Back home</Link>
@@ -169,11 +173,15 @@ export default function GrowthDashboardPage() {
               </span>
             </div>
             <h1 className="text-3xl font-display text-gradient-warm mb-2">
-              Your hair history
+              Your hair timeline
             </h1>
-            {address && (
+            {address ? (
               <p className="text-[10px] opacity-40 font-mono break-all max-w-xs mx-auto">
                 {address}
+              </p>
+            ) : (
+              <p className="text-[10px] opacity-40 tracking-wide max-w-xs mx-auto">
+                Private history on this device — mint anytime to take it onchain
               </p>
             )}
           </div>
@@ -205,12 +213,12 @@ export default function GrowthDashboardPage() {
               </div>
               <div>
                 <h2 className="text-lg font-display mb-2">
-                  No attested cuts yet
+                  No saved cuts yet
                 </h2>
                 <p className="text-sm opacity-60 max-w-md mx-auto leading-relaxed">
-                  Attest your first cut onchain to start tracking your hair
-                  growth history. The growth agent will nudge you when it&apos;s
-                  time to rebook.
+                  Save your first cut — no wallet needed — to start your hair
+                  timeline. The growth agent will nudge you when it&apos;s
+                  time to rebook. Mint it onchain anytime.
                 </p>
               </div>
               <Button asChild variant="secondary" size="lg">

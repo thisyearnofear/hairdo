@@ -13,24 +13,57 @@ declare global {
   var attestations: Map<string, unknown> | undefined;
 }
 
-// Fetch a user's attestation history from the in-memory store.
-// In production with Redis, this would scan Redis keys.
-function getUserAttestations(userAddress: string): AttestationEntry[] {
-  if (!global.attestations) return [];
+// Fetch a user's attestation history — Redis index first, memory fallback.
+// Accepts a normalized userKey: wallet address (lowercased) or `guest:<id>`.
+async function getUserAttestations(userKey: string): Promise<AttestationEntry[]> {
+  const { getRedis, attestationKey, userAttestationsKey } = await import(
+    "@/lib/redis"
+  );
+  const { normalizeUserKey } = await import("@/lib/identity");
+  const key = normalizeUserKey({ userAddress: userKey, userId: userKey }) ?? userKey.toLowerCase();
+  const r = getRedis();
+  if (r) {
+    const tokenIds = await r.smembers(userAttestationsKey(key));
+    const entries: AttestationEntry[] = [];
+    for (const tokenId of tokenIds) {
+      const raw = await r.get(attestationKey(tokenId as string));
+      const att =
+        typeof raw === "string"
+          ? (JSON.parse(raw) as {
+              styleId: string;
+              styleName: string;
+              timestamp: number;
+            })
+          : (raw as {
+              styleId: string;
+              styleName: string;
+              timestamp: number;
+            } | null);
+      if (att) {
+        entries.push({
+          styleId: att.styleId,
+          styleName: att.styleName,
+          timestamp: att.timestamp,
+        });
+      }
+    }
+    entries.sort((a, b) => b.timestamp - a.timestamp);
+    // Fall back to memory for local-dev records written without Redis.
+    if (entries.length > 0 || !global.attestations) return entries;
+  }
 
+  if (!global.attestations) return [];
   const entries: AttestationEntry[] = [];
   for (const [, value] of global.attestations) {
     const att = value as {
       styleId: string;
       styleName: string;
-      userAddress: string;
+      userAddress?: string;
+      userKey?: string;
       timestamp: number;
     };
-    if (
-      att &&
-      att.userAddress &&
-      att.userAddress.toLowerCase() === userAddress.toLowerCase()
-    ) {
+    const attKey = att.userKey ?? att.userAddress?.toLowerCase();
+    if (att && attKey === key) {
       entries.push({
         styleId: att.styleId,
         styleName: att.styleName,
@@ -100,13 +133,15 @@ export async function POST(request: NextRequest) {
       ? body.limit
       : 10;
 
-    // If userAddress is provided, fetch attestation history and use
-    // the history-aware recommender for personalized adjustments
+    // Guest-first: userAddress (wallet) or userId (guest) feeds history-aware ranking.
     const userAddress = body.userAddress as string | undefined;
+    const userId = body.userId as string | undefined;
     let history: AttestationEntry[] = [];
 
-    if (userAddress && userAddress.startsWith("0x")) {
-      history = getUserAttestations(userAddress);
+    const { normalizeUserKey: normalizeKey } = await import("@/lib/identity");
+    const historyKey = normalizeKey({ userAddress, userId });
+    if (historyKey) {
+      history = await getUserAttestations(historyKey);
     }
 
     const recommendations =

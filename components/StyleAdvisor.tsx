@@ -14,13 +14,24 @@ import { Output } from "./Output"
 import Link from "next/link"
 import { AttestationHandler, type AttestationResult } from "./AttestationHandler"
 import { useConnection } from "wagmi"
-import { lisk, liskSepolia } from "@/lib/chains"
+import { baseSepolia } from "@/lib/chains"
+import { useGuestId } from "@/lib/hooks/useGuestId"
+import { SaveCutButton, type SavedCut } from "./SaveCutButton"
+import { PhaseStamps, phaseForFlow } from "./PhaseStamps"
 import { RadarChart } from "@/components/ui/radar-chart"
 import { StatBar } from "@/components/ui/tradeoff-bars"
 import { ProgressSteps } from "@/components/ui/progress-steps"
 import { HairTypeGuide } from "@/components/ui/hair-type-guide"
 import { StyleIllustration } from "@/components/ui/style-illustration"
 import { Reveal } from "@/components/ui/reveal"
+import { LiquidHover } from "@/components/ui/liquid-hover"
+import dynamic from "next/dynamic"
+
+// P2-1 mirror beta — never in first paint; only fetched when ?mirror=beta.
+const MirrorBeta = dynamic(
+  () => import("@/components/ui/mirror-beta").then((m) => m.MirrorBeta),
+  { ssr: false }
+)
 import { play } from "@/lib/sound"
 import {
   processImageFile,
@@ -143,6 +154,9 @@ export function StyleAdvisor() {
   const [recommendations, setRecommendations] = useState<Recommendation[]>([])
   const [loadingRecs, setLoadingRecs] = useState(false)
   const [selectedStyleId, setSelectedStyleId] = useState<string | null>(null)
+  // P0-1 seat-map lineup: hover/focus spotlight (CinemaSeatPreview steal).
+  // selectedStyleId = seated pick; spotlightId = hover preview.
+  const [spotlightId, setSpotlightId] = useState<string | null>(null)
 
   // Visualization
   const [shade, setShade] = useState("regular")
@@ -157,11 +171,24 @@ export function StyleAdvisor() {
   // Hair type guide
   const [showHairGuide, setShowHairGuide] = useState(false)
 
-  // Attestation modal
+  // P2-1 mirror beta flag (?mirror=beta) — client-only read, no Suspense needed.
+  const [mirrorBeta, setMirrorBeta] = useState(false)
+  const [showMirror, setShowMirror] = useState(false)
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    if (!/[?&]mirror=beta/.test(window.location.search)) return
+    // Defer past first paint so the flagged beta never disturbs hydration.
+    const id = requestAnimationFrame(() => setMirrorBeta(true))
+    return () => cancelAnimationFrame(id)
+  }, [])
+
+  // Guest-first identity + optional onchain upgrade
+  const guestId = useGuestId()
   const { isConnected, chainId, address } = useConnection()
   const [showAttestation, setShowAttestation] = useState(false)
   const [attestingStyle, setAttestingStyle] = useState<Recommendation | null>(null)
   const [attestationResult, setAttestationResult] = useState<AttestationResult | null>(null)
+  const [savedCuts, setSavedCuts] = useState<SavedCut[]>([])
 
   // Compute processing predictions
   const processing = useMemo(
@@ -174,12 +201,23 @@ export function StyleAdvisor() {
 
   // Flow progress: 0=upload, 1=prefs, 2=recs, 3=visualize, 4=attest
   const currentStep = useMemo(() => {
-    if (attestationResult) return 4
+    if (attestationResult || savedCuts.length > 0) return 4
     if (list.length > 0) return 3
     if (recommendations.length > 0) return 2
     if (image) return 1
     return 0
-  }, [image, recommendations, list, attestationResult])
+  }, [image, recommendations, list, attestationResult, savedCuts])
+
+  const consultPhase = useMemo(
+    () =>
+      phaseForFlow({
+        hasImage: Boolean(image),
+        hasRecs: recommendations.length > 0,
+        hasVisual: list.length > 0,
+        hasCut: savedCuts.length > 0 || Boolean(attestationResult),
+      }),
+    [image, recommendations, list, savedCuts, attestationResult]
+  )
 
   // Read prediction status from API
   const readPrediction = useCallback(async (id: string) => {
@@ -364,6 +402,7 @@ export function StyleAdvisor() {
       if (budgetPerVisit) prefs.budgetPerVisit = Number(budgetPerVisit)
       if (lifestyle) prefs.lifestyle = lifestyle
       if (address) prefs.userAddress = address
+      else if (guestId) prefs.userId = guestId
 
       const response = await fetch("/api/recommend", {
         method: "POST",
@@ -472,9 +511,10 @@ export function StyleAdvisor() {
         className="hidden"
       />
 
-      {/* Flow Progress Steps */}
-      <div className="mb-8">
+      {/* Flow Progress Steps + consult phase */}
+      <div className="mb-8 flex flex-col items-center gap-3">
         <ProgressSteps currentStep={currentStep} />
+        <PhaseStamps phase={consultPhase} />
       </div>
 
       {/* Onboarding explainer — how the flow works */}
@@ -493,11 +533,25 @@ export function StyleAdvisor() {
                 <br />
                 <strong className="opacity-90">3.</strong> Pick a style and we&apos;ll generate an AI visualization of it on <em>your</em> face.
                 <br />
-                <strong className="opacity-90">4.</strong> Attest your cut onchain to find and review verified barbers.
+                <strong className="opacity-90">4.</strong> Save your cut — no wallet needed. Mint it onchain anytime as a portable credential.
               </p>
             </div>
           </div>
         </Reveal>
+      )}
+
+      {/* P2-1 mirror beta sidecar — flagged, never blocks upload/selfie */}
+      {mirrorBeta && showMirror && (
+        <div className="mb-8 flex justify-center">
+          <MirrorBeta
+            onCapture={(dataUrl) => {
+              setImage(dataUrl)
+              setShowMirror(false)
+              setError(null)
+              play("chime")
+            }}
+          />
+        </div>
       )}
 
       {/* Camera Modal */}
@@ -597,6 +651,20 @@ export function StyleAdvisor() {
                     <p className="text-sm tracking-wide font-medium mb-1">Upload</p>
                     <p className="text-[10px] tracking-wide opacity-50">Select file</p>
                   </button>
+                  {mirrorBeta && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setShowMirror((v) => !v)
+                        play("toggle")
+                      }}
+                      className="flex flex-col items-center justify-center text-amber/70 hover:text-amber transition-colors"
+                    >
+                      <Sparkles className="w-12 h-12 mb-2 group-hover:scale-110 transition-transform" />
+                      <p className="text-sm tracking-wide font-medium mb-1">Mirror</p>
+                      <p className="text-[10px] tracking-wide opacity-50">Beta</p>
+                    </button>
+                  )}
                 </div>
               </div>
             )}
@@ -785,20 +853,50 @@ export function StyleAdvisor() {
         </Reveal>
       </div>
 
-      {/* Recommendations */}
+      {/* Recommendations — P0-1 chair lineup + P0-3 phase wipe */}
       {recommendations.length > 0 && (
-        <div ref={resultsRef} className="mt-16 max-w-6xl mx-auto scroll-mt-8">
-          <Reveal direction="up" className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl tracking-tight opacity-80 font-display text-gradient-gold">
-              Your recommendations
-            </h2>
-            <span className="text-xs tracking-wide opacity-40 tabular-nums">
+        <div key={`pick-${consultPhase}`} ref={resultsRef} className="phase-wipe mt-16 max-w-6xl mx-auto scroll-mt-8">
+          <Reveal direction="up" className="flex items-center justify-between mb-6">
+            <div>
+              <p className="text-[11px] tracking-[0.2em] uppercase opacity-40 mb-1">
+                In the chair
+              </p>
+              <h2 className="text-3xl md:text-4xl tracking-tight font-display text-gradient-gold leading-none">
+                {recommendations[0]?.style.name}
+              </h2>
+              <p className="text-xs opacity-60 mt-2 font-display italic">
+                Top match {recommendations[0]?.score}/100 — {recommendations.length - 1} more in the lineup below
+              </p>
+            </div>
+            <span className="text-xs tracking-wide opacity-40 tabular-nums hidden md:block">
               {recommendations.length} styles
             </span>
           </Reveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* P0-1 seat-map lineup: horizontal snap-strip. Hover/focus moves the
+              spotlight (amber glow); click seats the pick. Arrow keys fly along
+              the row. Inner Visualize / Save buttons keep working via
+              stopPropagation on their own handlers. */}
+          <div
+            role="list"
+            aria-label="Style lineup — pick a chair"
+            className="no-scrollbar flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory"
+            onKeyDown={(e) => {
+              if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return
+              const ids = recommendations.map((r) => r.style.id)
+              const activeId = selectedStyleId ?? spotlightId ?? ids[0]
+              const cur = ids.indexOf(activeId)
+              const next = e.key === "ArrowRight"
+                ? Math.min(ids.length - 1, cur + 1)
+                : Math.max(0, cur - 1)
+              setSpotlightId(ids[next])
+              document.getElementById(`chair-${ids[next]}`)?.scrollIntoView({
+                behavior: "smooth", inline: "nearest", block: "nearest",
+              })
+            }}
+          >
             {recommendations.map((rec, index) => {
+              const isActive = (selectedStyleId ?? spotlightId ?? recommendations[0]?.style.id) === rec.style.id
               // Compute radar data from style attributes — guard against undefined
               const climateScore = rec.style.climate[climate as keyof typeof rec.style.climate]
               const radarData = [
@@ -814,19 +912,38 @@ export function StyleAdvisor() {
               <Reveal
                 key={rec.style.id}
                 direction="up"
-                delay={index * 60}
-                className={`border p-5 rounded-lg transition-[border-color,background-color,box-shadow] duration-300 cursor-pointer press-scale border-gradient-warm glass-warm ${
-                  selectedStyleId === rec.style.id
-                    ? "border-amber/40 bg-amber/5 shadow-gold-glow"
-                    : "border-white/10 hover:border-amber/25 hover:shadow-warm"
+                delay={Math.min(index, 5) * 60}
+                className={`snap-center shrink-0 w-[280px] md:w-[320px] border p-5 rounded-lg transition-[border-color,background-color,box-shadow,transform] duration-300 cursor-pointer press-scale border-gradient-warm glass-warm ${
+                  isActive
+                    ? "border-amber/40 bg-amber/5 shadow-gold-glow -translate-y-1"
+                    : selectedStyleId === rec.style.id
+                      ? "border-amber/40 bg-amber/5 shadow-gold-glow"
+                      : "border-white/10 hover:border-amber/25 hover:shadow-warm hover:-translate-y-0.5"
                 }`}
               >
+              <div
+                id={`chair-${rec.style.id}`}
+                role="listitem"
+                aria-label={`Chair ${index + 1}: ${rec.style.name}`}
+                onMouseEnter={() => setSpotlightId(rec.style.id)}
+                onFocus={() => setSpotlightId(rec.style.id)}
+                onClick={() => {
+                  setSpotlightId(rec.style.id)
+                  setSelectedStyleId(rec.style.id)
+                  play("toggle")
+                }}
+              >
+                <p className="text-[10px] tracking-[0.2em] uppercase opacity-40 mb-3">
+                  Chair {String(index + 1).padStart(2, "0")} — {rec.style.category}
+                </p>
                 {/* Header with illustration + score + radar */}
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-amber/5 border border-amber/15 flex items-center justify-center">
-                        <StyleIllustration category={rec.style.category} size={48} className="text-amber/70" />
+                      <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-amber/5 border border-amber/15 flex items-center justify-center overflow-hidden">
+                        <LiquidHover>
+                          <StyleIllustration category={rec.style.category} size={48} className="text-amber/70" />
+                        </LiquidHover>
                       </div>
                       <div className="min-w-0">
                         <h3 className="text-lg font-medium font-display">{rec.style.name}</h3>
@@ -955,13 +1072,26 @@ export function StyleAdvisor() {
                   Find barbers for this style
                 </Link>
 
-                {/* Onchain attestation — only after you've seen it on your face,
-                    and only when wallet is connected on Lisk.
-                    Self-attest is a personal timestamp; barber-attested cuts
-                    carry more trust weight (stake-backed, two-sided). */}
-                {isConnected && (chainId === lisk.id || chainId === liskSepolia.id) && (
-                  <div className="mt-3">
-                    {list.some((p) => p.hairstyle === rec.style.name) ? (
+                {/* Save cut — offchain by default, onchain mint optional */}
+                <div className="mt-3 space-y-2">
+                  <SaveCutButton
+                    styleId={rec.style.id}
+                    styleName={rec.style.name}
+                    hairType={hairType}
+                    guestId={guestId}
+                    walletAddress={address}
+                    onSaved={(cut) => setSavedCuts((prev) => [cut, ...prev])}
+                  />
+                  {savedCuts.some((c) => c.styleId === rec.style.id) &&
+                    !isConnected && (
+                      <p className="text-[10px] tracking-wide opacity-40 text-center font-display italic">
+                        Saved. Connect a wallet to mint it as a portable credential.
+                      </p>
+                    )}
+                  {isConnected &&
+                    (chainId === baseSepolia.id || !chainId) &&
+                    (list.some((p) => p.hairstyle === rec.style.name) ||
+                      savedCuts.some((c) => c.styleId === rec.style.id)) && (
                       <Button
                         onClick={(e) => {
                           e.stopPropagation()
@@ -972,15 +1102,11 @@ export function StyleAdvisor() {
                         className="w-full text-xs tracking-wide border-amber/30 text-amber/80 hover:bg-amber/10"
                       >
                         <Link2 className="w-3 h-3 mr-1" />
-                        Attest this cut
+                        Mint onchain (optional)
                       </Button>
-                    ) : (
-                      <p className="text-[10px] tracking-wide opacity-30 text-center font-display italic">
-                        Visualize it first, then attest your cut onchain
-                      </p>
                     )}
-                  </div>
-                )}
+                </div>
+              </div>
               </Reveal>
               )
             })}
@@ -1175,8 +1301,8 @@ export function StyleAdvisor() {
         </div>
       )}
 
-      {/* Results */}
-      <div className="mt-8 space-y-4 max-w-6xl mx-auto">
+      {/* Results — P0-3 phase wipe on PLACE */}
+      <div key={`place-${list.length > 0 ? "on" : "off"}`} className="phase-wipe mt-8 space-y-4 max-w-6xl mx-auto">
         {list.map((item, index) => (
           <Reveal key={`item-${index}`} direction="scale" delay={index * 100}>
             <Output output={item} />

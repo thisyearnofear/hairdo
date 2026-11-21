@@ -1,8 +1,9 @@
 import type { Metadata } from "next"
 import { Inter, Fraunces } from "next/font/google"
 import Script from "next/script"
-import { Web3Provider } from "@/components/Web3Provider"
+import { LazyWeb3Provider } from "@/components/LazyWeb3Provider"
 import { Atmosphere } from "@/components/ui/atmosphere"
+import { AmbientTrailLazy } from "@/components/ui/ambient-trail-lazy"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
@@ -46,16 +47,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${fraunces.variable}`}>
-        <Web3Provider>
+        <LazyWeb3Provider>
           <div className="relative min-h-screen">
             {/* Atmosphere — living warm background world */}
             <Atmosphere />
+            <AmbientTrailLazy />
             {/* Content sits above atmosphere */}
             <div className="relative z-10">
               {children}
             </div>
           </div>
-        </Web3Provider>
+        </LazyWeb3Provider>
         
         {gtagId && (
           <>

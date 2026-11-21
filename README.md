@@ -161,6 +161,7 @@ Trust scores are computed from:
 
 ## Documentation
 
+- [Worn × Wardah PFA entry](docs/WORN_PFA.md) — **active priority**: hands-free beauty consultation on MicroLumin M6 glasses (Sat Nov 21, 2026)
 - [Product Plan](docs/PRODUCT_PLAN.md) — vision, architecture, build order, onchain strategy
 - [Design System](docs/DESIGN_SYSTEM.md) — UI principles and component patterns
 - [Web3 Integration](docs/WEB3_INTEGRATION.md) — wagmi/viem configuration, attestation flow

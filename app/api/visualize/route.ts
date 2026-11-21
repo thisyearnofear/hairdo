@@ -3,13 +3,18 @@ import { getStyleById } from "@/lib/style-matcher";
 
 export const runtime = "nodejs";
 
+// Model versions are pinned but override via env for rotation without redeploy.
 // HairCLIP — basic tier (free). Fixed enum of hairstyle descriptions.
+// NOTE: 2024-era research model. Evaluate FLUX/Kontext inpainting replacement.
 const HAIRCLIP_VERSION =
+  process.env.REPLICATE_HAIRCLIP_VERSION ||
   "b95cb2a16763bea87ed7ed851d5a3ab2f4655e94bcfb871edba029d4814fa587";
 
 // SDXL LoRA trained on Black male hairstyles — premium tier.
 // Supports img2img: uses the user's selfie as input with a text prompt.
+// NOTE: SDXL-era. Evaluate FLUX LoRA / Kontext replacement.
 const SDXL_BLACK_HAIRSTYLES_VERSION =
+  process.env.REPLICATE_SDXL_VERSION ||
   "1294c57ea49537c6805c42d29eb44d54c980ba4958afd8198b3ba4137d063e12";
 
 type ModelTier = "basic" | "refined";

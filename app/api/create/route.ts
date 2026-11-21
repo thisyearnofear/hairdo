@@ -1,24 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createPublicClient, http, parseAbiItem } from 'viem'
-import { Redis } from '@upstash/redis'
 import { lisk } from '@/lib/chains'
+import { getRedis } from '@/lib/redis'
 
 export const runtime = 'nodejs'
 
+// DEPRECATED legacy payment-gated try-on (HairdoPayment PoC).
+// Retained for reference — /api/visualize + /api/attest are the live flow.
 const CONTRACT_ADDRESS = '0x055cA743f0fFB9258ea7f8484794C293f32f2d4C'
-
-// Upstash Redis client for persistent replay protection.
-// Falls back to in-memory if env vars are not set (e.g. local dev).
-let redis: Redis | null = null
-function getRedis() {
-  if (!redis && process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
-    redis = new Redis({
-      url: process.env.KV_REST_API_URL,
-      token: process.env.KV_REST_API_TOKEN,
-    })
-  }
-  return redis
-}
 
 // In-memory fallback for local development
 declare global {

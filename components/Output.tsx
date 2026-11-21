@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
 import { Download } from "lucide-react"
@@ -26,6 +26,50 @@ export function Output({ output }: OutputProps) {
   const [sliderPosition, setSliderPosition] = useState(50)
   const [isDownloading, setIsDownloading] = useState(false)
   const [showComparison, setShowComparison] = useState(false)
+  // P0-2 square-lens comparator (Pointer Square Lens steal): drag a loupe to
+  // reveal Before inside a square; After stays outside. Falls back to the
+  // slider split until the lens is first moved.
+  const [lens, setLens] = useState<{ x: number; y: number } | null>(null)
+  const frameRef = useRef<HTMLDivElement>(null)
+  // P1-2 shop light (RelightingImages steal, CSS overlay only): sweeps a warm
+  // radial highlight across the After photo. Overlay is pointer-events-none +
+  // mix-blend-overlay, so downloads (downloadImage) are pixel-identical.
+  const [light, setLight] = useState({ x: 30, y: 25 })
+  const sweptRef = useRef(false)
+
+  // One-time gsap intro sweep to hint the slider exists. gsap is dynamically
+  // imported so it never lands in the first-paint chunk; three stays
+  // installed-but-unbundled for the future P1-2b normal-map pass.
+  useEffect(() => {
+    if (!isSuccess || !output.output || sweptRef.current) return
+    sweptRef.current = true
+    if (typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return
+    let cancelled = false
+    import("gsap").then(({ gsap }) => {
+      if (cancelled) return
+      const proxy = { x: 75 }
+      gsap.to(proxy, {
+        x: 30,
+        duration: 1.2,
+        ease: "power2.out",
+        delay: 0.4,
+        onUpdate: () => setLight((p) => ({ ...p, x: proxy.x })),
+      })
+    }).catch(() => {})
+    return () => { cancelled = true }
+  }, [isSuccess, output.output])
+
+  const moveLens = (clientX: number, clientY: number) => {
+    const el = frameRef.current
+    if (!el) return
+    const r = el.getBoundingClientRect()
+    const x = ((clientX - r.left) / r.width) * 100
+    const y = ((clientY - r.top) / r.height) * 100
+    setLens({
+      x: Math.max(0, Math.min(100, x)),
+      y: Math.max(0, Math.min(100, y)),
+    })
+  }
 
   const handleDownload = async () => {
     if (!output.output) return
@@ -46,7 +90,8 @@ export function Output({ output }: OutputProps) {
   }
 
   return (
-    <Card className="rounded-2xl border-gradient-warm glass-warm overflow-hidden">
+    <Card className={`rounded-2xl border-gradient-warm glass-warm overflow-hidden ${isSuccess ? "smear-reveal" : ""}`}>
+
       <CardContent className="p-6 text-center">
         {isSuccess && (
           <>
@@ -78,9 +123,63 @@ export function Output({ output }: OutputProps) {
 
                 {/* Before/After Comparison Slider */}
                 {showComparison && output.sourceImage ? (
-                  <div className="mt-2 relative w-full aspect-square overflow-hidden rounded-lg group cursor-col-resize border border-white/10">
-                    {/* Before image */}
+                  <div
+                    ref={frameRef}
+                    className="mt-2 relative w-full aspect-square overflow-hidden rounded-lg border border-white/10 cursor-crosshair touch-none select-none"
+                    onPointerDown={(e) => {
+                      e.currentTarget.setPointerCapture?.(e.pointerId)
+                      moveLens(e.clientX, e.clientY)
+                    }}
+                    onPointerMove={(e) => {
+                      if (e.buttons > 0) moveLens(e.clientX, e.clientY)
+                    }}
+                    role="slider"
+                    aria-label="Before / after lens — drag to reveal original photo"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={Math.round(lens?.x ?? sliderPosition)}
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      const step = 4
+                      setLens((prev) => {
+                        const cur = prev ?? { x: sliderPosition, y: 50 }
+                        if (e.key === "ArrowLeft") return { ...cur, x: Math.max(0, cur.x - step) }
+                        if (e.key === "ArrowRight") return { ...cur, x: Math.min(100, cur.x + step) }
+                        if (e.key === "ArrowUp") return { ...cur, y: Math.max(0, cur.y - step) }
+                        if (e.key === "ArrowDown") return { ...cur, y: Math.min(100, cur.y + step) }
+                        return cur
+                      })
+                      if (e.key.startsWith("Arrow")) e.preventDefault()
+                    }}
+                  >
+                    {/* After (base layer) + shared shop-light overlay */}
                     <div className="absolute inset-0">
+                      <Image
+                        src={output.output}
+                        alt="Generated"
+                        fill
+                        className="object-contain"
+                      />
+                      <div
+                        className="absolute inset-0 pointer-events-none mix-blend-overlay"
+                        style={{
+                          background: `radial-gradient(circle at ${light.x}% ${light.y}%, hsl(45 80% 65% / 0.55), transparent 55%)`,
+                        }}
+                      />
+                    </div>
+
+                    {/* Before (lens cutout) — square loupe once dragged,
+                        full-height split as fallback before first drag */}
+                    <div
+                      className="absolute inset-0"
+                      style={
+                        lens
+                          ? {
+                              clipPath: `inset(${Math.max(0, lens.y - 14)}% ${Math.max(0, 100 - lens.x - 14)}% ${Math.max(0, 100 - lens.y - 14)}% ${Math.max(0, lens.x - 14)}% round 12px)`,
+                            }
+                          : { clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }
+                      }
+                    >
                       <Image
                         src={output.sourceImage}
                         alt="Original"
@@ -89,46 +188,47 @@ export function Output({ output }: OutputProps) {
                       />
                     </div>
 
-                    {/* After image with slider mask */}
-                    <div
-                      className="absolute inset-0"
-                      style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
-                    >
-                      <Image
-                        src={output.output}
-                        alt="Generated"
-                        fill
-                        className="object-contain"
+                    {/* Square lens frame */}
+                    {lens ? (
+                      <div
+                        className="absolute w-[28%] aspect-square rounded-xl border border-amber/60 shadow-gold-glow pointer-events-none"
+                        style={{
+                          left: `calc(${lens.x}% - 14%)`,
+                          top: `calc(${lens.y}% - 14%)`,
+                        }}
+                      >
+                        <span className="absolute -top-6 left-0 text-[10px] tracking-wide bg-black/60 px-2 py-0.5 rounded opacity-80">
+                          Before
+                        </span>
+                      </div>
+                    ) : (
+                      <div
+                        className="absolute top-0 bottom-0 w-0.5 bg-amber/60 pointer-events-none"
+                        style={{ left: `${sliderPosition}%` }}
                       />
-                    </div>
+                    )}
 
-                    {/* Slider handle */}
+                    {/* A11y fallback — visually hidden, keeps old slider behavior */}
                     <input
                       type="range"
                       min="0"
                       max="100"
                       value={sliderPosition}
                       onChange={(e) => setSliderPosition(Number(e.target.value))}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-col-resize z-10"
-                      style={{ pointerEvents: 'auto' }}
+                      className="sr-only"
+                      tabIndex={-1}
+                      aria-label="Before / after split position"
                     />
 
-                    {/* Visual slider line */}
-                    <div
-                      className="absolute top-0 bottom-0 w-0.5 bg-amber/60 pointer-events-none transition-all duration-75"
-                      style={{ left: `${sliderPosition}%` }}
-                    />
-
-                    {/* Labels */}
-                    <div className="absolute top-3 left-3 text-[10px] tracking-wide bg-black/60 px-2 py-1 rounded opacity-70">
-                      Before
+                    <div className="absolute top-3 left-3 text-[10px] tracking-wide bg-black/60 px-2 py-1 rounded opacity-70 pointer-events-none">
+                      {lens ? "Drag the lens" : "Before"}
                     </div>
-                    <div className="absolute top-3 right-3 text-[10px] tracking-wide bg-amber/20 px-2 py-1 rounded text-amber/90">
+                    <div className="absolute top-3 right-3 text-[10px] tracking-wide bg-amber/20 px-2 py-1 rounded text-amber/90 pointer-events-none">
                       After
                     </div>
                   </div>
                 ) : (
-                  /* Result only view */
+                  /* Result only view + shop-light overlay */
                   <div className="mt-2 relative w-full aspect-square rounded-lg overflow-hidden border border-white/10">
                     <Image
                       src={output.output}
@@ -136,8 +236,31 @@ export function Output({ output }: OutputProps) {
                       fill
                       className="object-contain"
                     />
+                    <div
+                      className="absolute inset-0 pointer-events-none mix-blend-overlay"
+                      style={{
+                        background: `radial-gradient(circle at ${light.x}% ${light.y}%, hsl(45 80% 65% / 0.55), transparent 55%)`,
+                      }}
+                    />
                   </div>
                 )}
+
+                {/* P1-2 shop-light slider — CSS overlay only, never touches download */}
+                <div className="mt-3 flex items-center gap-3">
+                  <label htmlFor="shop-light" className="text-[10px] tracking-[0.15em] uppercase opacity-50 whitespace-nowrap">
+                    Shop light
+                  </label>
+                  <input
+                    id="shop-light"
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={Math.round(light.x)}
+                    onChange={(e) => setLight((p) => ({ ...p, x: Number(e.target.value) }))}
+                    className="w-full accent-amber"
+                    aria-label="Shop light position"
+                  />
+                </div>
 
                 {/* Download button */}
                 <Button

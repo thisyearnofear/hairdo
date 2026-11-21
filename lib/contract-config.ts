@@ -19,9 +19,13 @@
 // 7. Growth Tracking — isOverdue() view function for the agent
 
 // Contract address — deployed on Lisk Sepolia testnet (Chain ID: 4202)
+// Lisk L2 shut down 2 Nov 2026. Redeploy to Base (or chosen L2) and set
+// NEXT_PUBLIC_PROTOCOL_ADDRESS to the new address — this constant is the
+// historical fallback for verifying pre-shutdown attestations.
 // Mainnet deployment pending. The app auto-selects based on chain ID.
-export const PROTOCOL_CONTRACT_ADDRESS =
-  "0x9C4434219661Cc1e4a5A7CFe79d9750e8BA79A07" as `0x${string}`;
+export const PROTOCOL_CONTRACT_ADDRESS = (process.env
+  .NEXT_PUBLIC_PROTOCOL_ADDRESS ||
+  "0x9C4434219661Cc1e4a5A7CFe79d9750e8BA79A07") as `0x${string}`;
 
 // Legacy contract (proof-of-concept, being replaced)
 export const LEGACY_CONTRACT_ADDRESS =

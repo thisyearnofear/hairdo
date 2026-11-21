@@ -15,7 +15,8 @@ import {
   LSK_TOKEN_ADDRESS_MAINNET,
   LSK_TOKEN_ADDRESS_TESTNET,
 } from "@/lib/contract-config";
-import { lisk, liskSepolia } from "@/lib/chains";
+import { baseSepolia, liskSepolia } from "@/lib/chains";
+import { decodeEventLog, keccak256, toHex } from "viem";
 
 interface AttestationHandlerProps {
   onAttestationSuccess: (attestation: AttestationResult) => void;
@@ -100,7 +101,8 @@ export function AttestationHandler({
   } = useWriteContract();
 
   // Select the correct LSK token address based on connected chain
-  const isTestnet = chainId === liskSepolia.id;
+  // Base Sepolia uses the testnet LSK address until protocol redeploys without LSK fees.
+  const isTestnet = chainId === liskSepolia.id || chainId === baseSepolia.id;
   const lskTokenAddress = isTestnet
     ? LSK_TOKEN_ADDRESS_TESTNET
     : LSK_TOKEN_ADDRESS_MAINNET;
@@ -290,17 +292,39 @@ export function AttestationHandler({
     if (isAttestConfirmed && attestHash && attestReceipt) {
       // Parse the CredentialMinted event from the receipt to get the tokenId
       // Event: CredentialMinted(uint256 indexed tokenId, address indexed client, address indexed barber, string styleId, uint64 timestamp, bool barberAttested)
-      const credentialEvent = attestReceipt.logs?.find((log: { topics: string[] }) =>
-        log.topics?.[0] ===
-          "0x" + // keccak256("CredentialMinted(uint256,address,address,string,uint64,bool)")
-          ""
+      const CREDENTIAL_MINTED_TOPIC = keccak256(
+        toHex("CredentialMinted(uint256,address,address,string,uint64,bool)")
       );
-
-      // The tokenId is the first indexed topic (topics[1])
-      // If we can't parse it, we'll use the tx hash as a fallback identifier
       let tokenId = attestHash;
-      if (credentialEvent?.topics?.[1]) {
-        tokenId = credentialEvent.topics[1];
+      for (const log of attestReceipt.logs ?? []) {
+        try {
+          if (log.topics?.[0]?.toLowerCase() !== CREDENTIAL_MINTED_TOPIC.toLowerCase())
+            continue;
+          const decoded = decodeEventLog({
+            abi: PROTOCOL_ABI,
+            data: log.data,
+            topics: log.topics,
+          });
+          if (
+            decoded.eventName === "CredentialMinted" &&
+            decoded.args &&
+            typeof decoded.args === "object" &&
+            "tokenId" in (decoded.args as Record<string, unknown>)
+          ) {
+            const id = (decoded.args as { tokenId: bigint }).tokenId;
+            tokenId = `0x${id.toString(16).padStart(64, "0")}`;
+            break;
+          }
+        } catch {
+          // Non-protocol log — skip. Fall back to topics[1] below.
+        }
+      }
+      // Fallback: first indexed topic is the tokenId.
+      if (tokenId === attestHash) {
+        const raw = attestReceipt.logs?.find(
+          (l: { topics?: string[] }) => l.topics?.[0]?.toLowerCase() === CREDENTIAL_MINTED_TOPIC.toLowerCase()
+        )?.topics?.[1];
+        if (raw) tokenId = raw;
       }
 
       setMintedTokenId(tokenId);
@@ -463,7 +487,7 @@ export function AttestationHandler({
         </h3>
         <p className="text-xs opacity-60 max-w-xs mx-auto leading-relaxed">
           Mint a Style Credential — a portable, verifiable record of{" "}
-          <strong className="opacity-80">{styleName}</strong> on Lisk. It builds
+          <strong className="opacity-80">{styleName}</strong> onchain. It builds
           your hair history and unlocks the growth agent.
         </p>
       </div>
@@ -498,7 +522,7 @@ export function AttestationHandler({
       {/* Network indicator */}
       {isTestnet && (
         <div className="text-center text-[10px] tracking-wide text-amber/50">
-          Testnet mode — Lisk Sepolia
+          Testnet mode — Base Sepolia (Lisk retired Nov 2026)
         </div>
       )}
 
@@ -571,7 +595,7 @@ export function AttestationHandler({
 
       {/* Info footer — plain language, not terminal */}
       <div className="text-center text-[10px] tracking-wide opacity-40 space-y-1 font-display italic leading-relaxed">
-        <p>Pays a small fee on Lisk L2</p>
+        <p>Pays a small fee on Base L2 (migrating from retired Lisk)</p>
         <p>Mints a soulbound Style Credential NFT</p>
         <p>Stores a photo hash, never the photo itself</p>
       </div>
