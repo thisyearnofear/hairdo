@@ -23,15 +23,6 @@ export function Footer() {
         >
           Vercel
         </a>
-        <span className="w-px h-3 bg-white/20" />
-        <a 
-          href="https://lisk.com" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="hover:opacity-100 transition-opacity"
-        >
-          Lisk
-        </a>
       </div>
       
       <div className="flex-1" />

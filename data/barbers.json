@@ -1,5 +1,5 @@
 {
-  "schemaNote": "EAS-compatible barber attestation schema. When EAS is deployed on Lisk, this schema can be registered: 'address barber, address client, string styleId, string styleName, bytes32 beforePhotoHash, bytes32 afterPhotoHash, uint256 timestamp, uint8 rating, string notes'. Until then, attestations are recorded via the existing contract's payForService + offchain metadata in Redis.",
+  "schemaNote": "EAS-compatible barber attestation schema: 'address barber, address client, string styleId, string styleName, bytes32 beforePhotoHash, bytes32 afterPhotoHash, uint256 timestamp, uint8 rating, string notes'. Until the protocol redeploys on the active track, attestations are recorded offchain in Redis.",
   "barbers": [
     {
       "id": "barber-001",

@@ -6,8 +6,8 @@
 // It replaces the proof-of-concept HairdoPayment.sol.
 //
 // Contract: HairdoProtocol.sol
-// Chain: Lisk L2 (Chain ID: 1135)
-// Token: LSK (ERC-20, 0xac485391EB2d7D88253a7F1eF18C37f4242D1A24)
+// Chain: env-selected live L2 (see lib/chains.ts NEXT_PUBLIC_CHAIN).
+// Fee token: set at redeploy time (LSK below is the retired placeholder).
 //
 // The contract handles:
 // 1. Style Registry — maintenance windows onchain
@@ -18,27 +18,42 @@
 // 6. Staking + Slashing — economic security
 // 7. Growth Tracking — isOverdue() view function for the agent
 
-// Contract address — deployed on Lisk Sepolia testnet (Chain ID: 4202)
-// Lisk L2 shut down 2 Nov 2026. Redeploy to Base (or chosen L2) and set
-// NEXT_PUBLIC_PROTOCOL_ADDRESS to the new address — this constant is the
-// historical fallback for verifying pre-shutdown attestations.
-// Mainnet deployment pending. The app auto-selects based on chain ID.
-export const PROTOCOL_CONTRACT_ADDRESS = (process.env
-  .NEXT_PUBLIC_PROTOCOL_ADDRESS ||
-  "0x9C4434219661Cc1e4a5A7CFe79d9750e8BA79A07") as `0x${string}`;
+// Protocol address — env-driven per deployment track.
+// (Lisk shut down with no users and no history — there is no fallback
+// address. Until redeployed, the zero address fails every onchain
+// verification closed, which is the honest state.)
+//
+//   NEXT_PUBLIC_PROTOCOL_ADDRESS            applies to the active chain
+//   NEXT_PUBLIC_PROTOCOL_ADDRESS_<chainId>   per-chain override, e.g.
+//     _84532 (Base Sepolia), _8453 (Base), _11142220 (Celo Sepolia),
+//     _42220 (Celo), _421614 (Arbitrum Sepolia), _42161 (Arbitrum One)
+//
+// Set NEXT_PUBLIC_CHAIN (see lib/chains.ts) + the matching address entry
+// to move the deployment track. No code changes.
+import { activeChain } from "@/lib/chains";
 
-// Legacy contract (proof-of-concept, being replaced)
-export const LEGACY_CONTRACT_ADDRESS =
-  "0x055cA743f0fFB9258ea7f8484794C293f32f2d4C" as `0x${string}`;
+export const UNSET_PROTOCOL_ADDRESS =
+  "0x0000000000000000000000000000000000000000" as `0x${string}`;
 
-// LSK token addresses — mainnet and testnet differ
+function readProtocolAddress(): `0x${string}` {
+  const perChain =
+    process.env[`NEXT_PUBLIC_PROTOCOL_ADDRESS_${activeChain.id}`];
+  return ((perChain ||
+    process.env.NEXT_PUBLIC_PROTOCOL_ADDRESS ||
+    UNSET_PROTOCOL_ADDRESS) as `0x${string}`);
+}
+
+export const PROTOCOL_CONTRACT_ADDRESS = readProtocolAddress();
+
+// Fee-token addresses (retired LSK placeholder — replaced at redeploy).
+// Mainnet and testnet differ
 export const LSK_TOKEN_ADDRESS_MAINNET =
   "0xac485391EB2d7D88253a7F1eF18C37f4242D1A24" as `0x${string}`;
 export const LSK_TOKEN_ADDRESS_TESTNET =
   "0x8a21CF9Ba08Ae709D64Cb25AfAA951183EC9FF6D" as `0x${string}`;
 
-// Default to mainnet LSK token (production). The AttestationHandler
-// selects the testnet address when the connected chain is Lisk Sepolia.
+// Default to mainnet fee-token address (production). Testnet deployments
+// use the testnet address.
 export const LSK_TOKEN_ADDRESS = LSK_TOKEN_ADDRESS_MAINNET;
 
 // ─── ABI ────────────────────────────────────────────────────────────────
@@ -490,35 +505,7 @@ export const PROTOCOL_ABI = [
   },
 ] as const;
 
-// ─── Legacy ABI (HairdoPayment.sol — proof of concept) ──────────────────
-// Kept for backward compatibility with existing attestation flow.
-// Will be removed once the new protocol is deployed and wired up.
-
-export const LEGACY_ABI = [
-  {
-    inputs: [{ name: "tokenId", type: "bytes32" }],
-    name: "isTokenUsed",
-    outputs: [{ name: "", type: "bool" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [{ name: "tokenId", type: "bytes32" }],
-    name: "payForService",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "serviceFee",
-    outputs: [{ name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-] as const;
-
-// ─── LSK Token ABI (for approvals) ──────────────────────────────────────
+// ─── Fee-token ABI (for approvals) ──────────────────────────────────────
 
 export const LSK_TOKEN_ABI = [
   {
@@ -552,7 +539,7 @@ export const LSK_TOKEN_ABI = [
 
 // ─── Backward compatibility exports ─────────────────────────────────────
 // Existing code imports CONTRACT_ADDRESS and CONTRACT_ABI.
-// Now pointing to the deployed HairdoProtocol on Lisk Sepolia.
+// Now pointing to the env-selected HairdoProtocol deployment.
 
 export const CONTRACT_ADDRESS = PROTOCOL_CONTRACT_ADDRESS;
 export const CONTRACT_ABI = PROTOCOL_ABI;

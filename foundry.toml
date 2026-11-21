@@ -7,8 +7,20 @@ optimizer = true
 optimizer_runs = 200
 via_ir = true
 
-[rpc_endpoints.lisk]
-endpoint = "https://rpc.api.lisk.com"
+[rpc_endpoints.base_sepolia]
+endpoint = "https://sepolia.base.org"
 
-[rpc_endpoints.lisk_sepolia]
-endpoint = "https://rpc.sepolia-api.lisk.com"
+[rpc_endpoints.base]
+endpoint = "https://mainnet.base.org"
+
+[rpc_endpoints.celo_sepolia]
+endpoint = "https://forno.celo-sepolia.celo-testnet.org"
+
+[rpc_endpoints.celo]
+endpoint = "https://forno.celo.org"
+
+[rpc_endpoints.arbitrum_sepolia]
+endpoint = "https://sepolia-rollup.arbitrum.io/rpc"
+
+[rpc_endpoints.arbitrum_one]
+endpoint = "https://arb1.arbitrum.io/rpc"

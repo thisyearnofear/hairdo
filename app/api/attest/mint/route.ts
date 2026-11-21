@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createPublicClient, http } from "viem";
-import { base, baseSepolia, lisk, liskSepolia } from "@/lib/chains";
+import { activeChain, resolveChain } from "@/lib/chains";
 import { PROTOCOL_CONTRACT_ADDRESS, PROTOCOL_ABI } from "@/lib/contract-config";
 import { getRedis, attestationKey, userAttestationsKey } from "@/lib/redis";
 
@@ -14,15 +14,7 @@ if (!global.attestations) {
 }
 
 function getClient(chainId: number) {
-  const chain =
-    chainId === baseSepolia.id
-      ? baseSepolia
-      : chainId === base.id
-        ? base
-        : chainId === liskSepolia.id
-          ? liskSepolia
-          : lisk;
-  return createPublicClient({ chain, transport: http() });
+  return createPublicClient({ chain: resolveChain(chainId), transport: http() });
 }
 
 /**
@@ -42,7 +34,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const resolvedChainId = chainId || baseSepolia.id;
+    const resolvedChainId = chainId || activeChain.id;
     const client = getClient(resolvedChainId);
     let owner: string;
     try {

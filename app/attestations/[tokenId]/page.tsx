@@ -7,6 +7,7 @@ import { CheckCircle2, XCircle, ExternalLink, Loader2, ArrowLeft } from "lucide-
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Reveal } from "@/components/ui/reveal"
+import { explorerAddressUrl, resolveChain } from "@/lib/chains"
 
 interface Attestation {
   tokenId: string
@@ -18,8 +19,9 @@ interface Attestation {
   attestationHash: string | null
   timestamp: number
   txVerified: boolean
-  explorerUrl: string
+  explorerUrl: string | null
   contractAddress: string
+  chainId: number | null
 }
 
 export default function AttestationPage({
@@ -161,7 +163,7 @@ export default function AttestationPage({
                 </p>
                 <p className="text-[10px] opacity-50 mt-1">
                   {attestation.txVerified
-                    ? "Payment confirmed via Lisk smart contract"
+                    ? "Payment confirmed via smart contract"
                     : "Onchain verification pending"}
                 </p>
               </div>
@@ -243,7 +245,11 @@ export default function AttestationPage({
               </div>
               <div className="flex justify-between text-xs">
                 <span className="opacity-50">Network</span>
-                <span className="opacity-70">Lisk (chain 1135)</span>
+                <span className="opacity-70">
+                  {attestation.chainId
+                    ? `${resolveChain(attestation.chainId).name} (chain ${attestation.chainId})`
+                    : "Offchain record"}
+                </span>
               </div>
             </div>
             </Reveal>
@@ -257,19 +263,19 @@ export default function AttestationPage({
               className="w-full text-xs tracking-wide border-gradient-warm"
             >
               <a
-                href={`https://blockscout.lisk.com/address/${attestation.userAddress}`}
+                href={attestation.explorerUrl || explorerAddressUrl(attestation.chainId ?? undefined, attestation.userAddress)}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <ExternalLink className="w-3 h-3 mr-2" />
-                View on Blockscout
+                View on explorer
               </a>
             </Button>
 
             {/* Info */}
             <div className="text-center text-[11px] tracking-wide text-white/40 space-y-1 mt-4 font-display italic">
               <p>This attestation is public and verifiable by anyone</p>
-              <p>Verify independently on the Lisk blockchain explorer</p>
+              <p>Verify independently on the blockchain explorer</p>
             </div>
             </Reveal>
           </div>

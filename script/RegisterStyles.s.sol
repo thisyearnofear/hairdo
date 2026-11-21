@@ -8,7 +8,7 @@ import "../contracts/HairdoProtocol.sol";
 /// @dev    Run AFTER Deploy.s.sol, with the deployed protocol address:
 ///
 ///         forge script script/RegisterStyles.s.sol:RegisterStyles \
-///           --rpc-url lisk \
+///           --rpc-url base_sepolia \
 ///           --private-key $DEPLOYER_PRIVATE_KEY \
 ///           --broadcast \
 ///           --sig "run(address)" \

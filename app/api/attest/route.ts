@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createPublicClient, http, keccak256, toHex } from "viem";
-import { base, baseSepolia, lisk, liskSepolia } from "@/lib/chains";
+import { activeChain, explorerBaseUrl, resolveChain } from "@/lib/chains";
 import { getStyleById } from "@/lib/style-matcher";
 import { PROTOCOL_CONTRACT_ADDRESS, PROTOCOL_ABI } from "@/lib/contract-config";
 import { getRedis, attestationKey, userAttestationsKey } from "@/lib/redis";
@@ -18,15 +18,7 @@ if (!global.attestations) {
 
 // Lazily create the viem public client for the appropriate chain
 function getClient(chainId: number) {
-  const chain =
-    chainId === baseSepolia.id
-      ? baseSepolia
-      : chainId === base.id
-        ? base
-        : chainId === liskSepolia.id
-          ? liskSepolia
-          : lisk;
-  return createPublicClient({ chain, transport: http() });
+  return createPublicClient({ chain: resolveChain(chainId), transport: http() });
 }
 
 // Verify on-chain that the user owns the SBT token from the selfAttest tx
@@ -145,7 +137,7 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
-      const resolvedChainId = chainId || baseSepolia.id;
+      const resolvedChainId = chainId || activeChain.id;
       const isVerified = await verifyCredentialOnChain(tokenId, userAddress, resolvedChainId);
       if (!isVerified) {
         return NextResponse.json(
@@ -157,14 +149,7 @@ export async function POST(request: NextRequest) {
         ? keccak256(toHex(`${tokenId}:${styleId}:${photoHash}`))
         : null;
       const timestamp = Date.now();
-      const explorerBase =
-        resolvedChainId === base.id
-          ? "https://basescan.org"
-          : resolvedChainId === baseSepolia.id
-            ? "https://sepolia.basescan.org"
-            : resolvedChainId === liskSepolia.id
-              ? "https://sepolia-blockscout.lisk.com"
-              : "https://blockscout.lisk.com";
+      const explorerBase = explorerBaseUrl(resolvedChainId);
       const attestation = {
         tokenId,
         txHash: txHash || null,

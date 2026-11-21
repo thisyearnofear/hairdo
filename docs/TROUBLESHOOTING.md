@@ -14,11 +14,11 @@ NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_actual_project_id_here
 - Restart your development server
 
 ### 2. Wallet Not Connected
-**Problem**: The "Transform Hairstyle" button doesn't trigger the payment flow.
+**Problem**: The optional onchain mint is unavailable.
 **Solution**:
-- Make sure you've connected your wallet using the Connect Wallet button in the header
-- Look for wallet connection status in the configuration panel
-- Check that you're using a Lisk-compatible wallet (MetaMask, Coinbase Wallet, etc.)
+- The core flow (recommendations, try-on, saving) needs no wallet at all
+- For minting, connect your wallet using the Connect button in the header
+- Use any EVM wallet (MetaMask, Coinbase Wallet, MiniPay via WalletConnect, etc.)
 
 ### 3. No Image Selected
 **Problem**: The button is disabled or shows an error.
@@ -50,11 +50,10 @@ Common error messages and their meanings:
 
 ## Network Requirements
 
-Make sure you're on the correct network:
-- **Network**: Lisk (Chain ID: 1135)
-- **RPC URL**: https://rpc.api.lisk.com
-- **Currency**: ETH
-- **Block Explorer**: https://blockscout.lisk.com
+Onchain minting targets the env-selected track (`NEXT_PUBLIC_CHAIN`:
+`base-sepolia` by default, plus `base`, `celo-sepolia`, `celo`,
+`arbitrum-sepolia`, `arbitrum-one`). The app auto-targets the active
+chain — no manual network setup needed.
 
 ## Browser Compatibility
 

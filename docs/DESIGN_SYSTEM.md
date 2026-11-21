@@ -134,7 +134,7 @@ text-[clamp(4rem,16vw,11rem)] font-display text-gradient-warm  // hero
 - `glass-warm` cards for "Attesting" / "Your LSK" / "Attest fee"
 - Amber spinner (`border-amber/20 border-t-amber`) for all loading states
 - Completed state: amber check in amber-tinted circle, gradient headline
-- Footer in `font-display italic` — "Pays a small fee on Lisk L2" etc.
+- Footer in `font-display italic` — "Pays a small fee on {activeChain}" etc.
 
 ### Barber Directory
 - `text-gradient-gold` title, `barbershop-divider` + `cornrow-pattern` under

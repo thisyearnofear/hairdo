@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Reveal } from "@/components/ui/reveal"
+import { explorerAddressUrl } from "@/lib/chains"
 
 interface BarberAttestation {
   tokenId: string
@@ -218,7 +219,7 @@ export default function BarberProfilePage({
                   {shortenAddress(profile.barber.address)}
                 </span>
                 <a
-                  href={`https://blockscout.lisk.com/address/${profile.barber.address}`}
+                  href={explorerAddressUrl(undefined, profile.barber.address)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:opacity-80"
@@ -496,12 +497,12 @@ export default function BarberProfilePage({
               className="w-full text-xs tracking-wide border-gradient-warm"
             >
               <a
-                href={`https://blockscout.lisk.com/address/${profile.barber.address}`}
+                href={explorerAddressUrl(undefined, profile.barber.address)}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <ExternalLink className="w-3 h-3 mr-2" />
-                View on Blockscout
+                View on explorer
               </a>
             </Button>
 

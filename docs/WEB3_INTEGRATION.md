@@ -6,8 +6,9 @@ The onchain layer is an **opt-in premium**, not a payment gate. The core
 product (style recommendations + AI try-on) is frictionless and free. The
 onchain layer provides:
 
-1. **Style attestation** — users can attest their style choice on Lisk,
-   creating a verifiable onchain record (user-facing premium)
+1. **Style attestation** — users can mint their saved cut as a Style
+   Credential on the active L2, creating a verifiable onchain record
+   (user-facing premium, optional — saving works without a wallet)
 2. **Barber trust-score** — barbers build portable reputation via onchain
    attestation history (grant-funded, Phase 3)
 3. **Future: x402 payments** for the Style Intelligence ASP endpoints
@@ -18,59 +19,60 @@ onchain layer provides:
 - **Wagmi v3** — React hooks for Ethereum
 - **Viem** — TypeScript Ethereum library
 - **Custom ConnectButton** — Wallet connection UI (replaces ConnectKit)
-- **Lisk Mainnet** — Primary chain (Chain ID: 1135)
+- **Env-selected L2** — `NEXT_PUBLIC_CHAIN` picks the deployment track:
+  `base-sepolia` (default) | `base` | `celo-sepolia` | `celo` |
+  `arbitrum-sepolia` | `arbitrum-one`
 - **Upstash Redis** — Offchain attestation metadata storage (365-day TTL)
 
-## Lisk Mainnet Details
+## Chain Details (env-selected)
 
-- **Chain ID**: 1135
-- **RPC**: https://rpc.api.lisk.com
-- **Explorer**: https://blockscout.lisk.com
-- **Currency**: ETH
-- **LSK Token**: 0xac485391EB2d7D88253a7F1eF18C37f4242D1A24
+- **Selector**: `NEXT_PUBLIC_CHAIN` (see `lib/chains.ts` — `activeChain`,
+  `resolveChain`, explorer helpers)
+- **Protocol address**: `NEXT_PUBLIC_PROTOCOL_ADDRESS` (+ optional
+  `NEXT_PUBLIC_PROTOCOL_ADDRESS_<chainId>` per-track override)
+- Until redeployed the address is unset and onchain verification fails
+  closed; the offchain consult flow is unaffected.
 
 ## Configuration Files
 
-- `lib/chains.ts` — Lisk chain configuration
-- `lib/wagmi-config.ts` — Wagmi v3 config (chains, connectors, transports)
-- `lib/contract-config.ts` — Smart contract ABI and address
-- `components/Web3Provider.tsx` — Wagmi + React Query provider
-- `components/ConnectButton.tsx` — Custom wallet connect/disconnect button
-  with "ONCHAIN_PREMIUM" label
+- `lib/chains.ts` — chain definitions + `activeChain` / `resolveChain` /
+  explorer URL helpers
+- `lib/wagmi-config.ts` — Wagmi v3 config (live chains, connectors,
+  transports)
+- `lib/contract-config.ts` — `HairdoProtocol.sol` ABI + env-resolved address
+- `components/LazyWeb3Provider.tsx` — lazily-loaded Wagmi provider (no
+  wallet cost until connected) + `components/ConnectButton.tsx`
+- `components/SaveCutButton.tsx` — guest-first save (guestId + Redis),
+  optional onchain mint upgrade
 
 ## Smart Contract
 
-- **Address**: [0x055cA743f0fFB9258ea7f8484794C293f32f2d4C](https://blockscout.lisk.com/address/0x055cA743f0fFB9258ea7f8484794C293f32f2d4C)
-- **Verified on Sourcify**: [View](https://repo.sourcify.dev/1135/0x055cA743f0fFB9258ea7f8484794C293f32f2d4C/)
-
-The contract's `payForService(bytes32 tokenId)` and `isTokenUsed(bytes32
-tokenId)` functions provide the onchain attestation foundation. The tokenId
-mechanism maps to attestation IDs — each attestation has a unique, verifiable
-onchain record.
+`HairdoProtocol.sol` — `selfAttest` / `attestCut` mint soulbound Style
+Credentials; `ownerOf(tokenId)` is what `/api/attest` and
+`/api/attest/mint` verify before recording or linking an attestation.
 
 ## Attestation Flow
 
 ### User Flow (style attestation)
 
-1. **Connect wallet** — user connects to Lisk via the ConnectButton in the
-   header. The app auto-switches to Lisk if needed.
-2. **Browse recommendations** — the ATTEST button appears on each
-   recommendation card when the wallet is connected to Lisk.
-3. **Click ATTEST** — opens the AttestationHandler modal for the selected
-   style.
-4. **Approve LSK spending** — the user approves the contract to spend 1 LSK
-   (ERC-20 `approve` call). This is a one-time approval per attestation.
-5. **Pay attestation fee** — the user calls `payForService(tokenId)` on the
-   contract, which transfers 1 LSK and marks the tokenId as used onchain.
-6. **Record attestation** — after the onchain tx confirms, the frontend
-   calls `POST /api/attest` with the tokenId, styleId, styleName, and
-   userAddress. The API:
-   - Verifies the payment onchain via `isTokenUsed(tokenId)`
+1. **Save first, no wallet needed** — the user saves a cut via
+   `SaveCutButton` (guestId + Redis). This is the default path.
+2. **Connect wallet** — user connects via the ConnectButton in the
+   header. The app targets the active track (`activeChain`).
+3. **Mint onchain (optional)** — the mint button appears on saved cuts
+   when the wallet is on the active chain; it opens the AttestationHandler
+   for the selected style.
+4. **Mint credential** — the user calls `selfAttest` on HairdoProtocol,
+   minting a soulbound Style Credential NFT.
+5. **Link attestation** — after the mint confirms, the frontend calls
+   `POST /api/attest/mint`, which verifies `ownerOf(tokenId)` onchain and
+   links the credential to the offchain record. The API:
+   - Verifies ownership onchain via `ownerOf(tokenId)`
    - Checks replay protection (token not already attested)
    - Computes a deterministic attestation hash
    - Stores the attestation metadata in Upstash Redis (365-day TTL)
-7. **Success** — the UI shows the attestation details with a link to the
-   Lisk explorer.
+6. **Success** — the UI shows the attestation details with a link to the
+   active chain's explorer.
 
 ### Verification Flow
 
@@ -79,14 +81,16 @@ Anyone can verify an attestation without connecting a wallet:
 1. **Visit** `/attestations/[tokenId]` with any attestation tokenId
 2. **View** the attestation details: style name, category, wallet address,
    timestamp, photo hash, onchain verification status
-3. **Verify independently** — check `isTokenUsed(tokenId)` on the Lisk
-   contract via Blockscout
-4. **Explorer link** — the page links to the user's address on Blockscout
+3. **Verify independently** — check `ownerOf(tokenId)` on the protocol
+   contract via the active chain's explorer
+4. **Explorer link** — the page links to the user's address on the explorer
 
 ### API Endpoints
 
-- `POST /api/attest` — records an attestation (requires paymentToken,
-  styleId, userAddress; verifies onchain payment)
+- `POST /api/attest` — records an offchain attestation, or verifies +
+  records an onchain one (tokenId + userAddress verified via `ownerOf`)
+- `POST /api/attest/mint` — links a minted credential to an offchain
+  record (attestationId, tokenId, txHash, userAddress verified onchain)
 - `GET /api/attestations/[tokenId]` — public read endpoint for any
   attestation by tokenId
 
@@ -102,8 +106,8 @@ interface Attestation {
   photoHash: string | null; // SHA-256 hash of source photo (optional)
   attestationHash: string | null; // keccak256(tokenId:styleId:photoHash)
   timestamp: number;        // Unix timestamp (ms)
-  txVerified: boolean;      // always true (verified onchain before storage)
-  explorerUrl: string;      // Blockscout link to user address
+  txVerified: boolean;      // true once verified onchain before storage
+  explorerUrl: string;      // explorer link to user address (active chain)
   contractAddress: string;  // the attestation contract address
 }
 ```
@@ -148,13 +152,7 @@ The app uses the wagmi v3 hook API:
 ## Onchain Premium (Easter Egg)
 
 The onchain attestation feature is surfaced as a subtle premium in the UI:
-- The ConnectButton in the header has an "ONCHAIN_PREMIUM" label
-- The ATTEST button appears on recommendation cards only when the wallet
-  is connected to Lisk
-- A subtle hint appears after recommendations load if the wallet is NOT
-  connected: "WANT_TO_ATTEST_YOUR_STYLE_ONCHAIN? // LISK_L2"
+- Cuts save without a wallet (`SaveCutButton`); the mint upgrade appears
+  on saved cuts only when the wallet is on the active chain
 - Wallet connection is opt-in, never required for the core flow
 - The attestation is a verifiable, portable onchain record
-
-This keeps Lisk visible (honoring the funding relationship) while never adding
-friction to the core product experience.

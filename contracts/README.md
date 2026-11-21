@@ -1,67 +1,39 @@
-# Hairdo Payment Smart Contract
+# Hairdo Smart Contracts
 
-This directory contains the smart contract for processing payments on the Lisk blockchain for the Hairdo service.
+- `HairdoProtocol.sol` — the onchain trust graph: style registry, soulbound
+  Style Credentials, barber registry, cut attestation, trust score,
+  staking/slashing, growth tracking.
+- `HairdoPayment.sol` — retired proof-of-concept (kept for reference only;
+  its frontend flow was removed).
 
-## Contract Details
+## Deployment
 
-- **Address**: [0x055cA743f0fFB9258ea7f8484794C293f32f2d4C](https://blockscout.lisk.com/address/0x055cA743f0fFB9258ea7f8484794C293f32f2d4C)
-- **Network**: Lisk (Chain ID: 1135)
-- **Solidity Version**: ^0.8.27
-- **Verified on Sourcify**: [View on Sourcify](https://repo.sourcify.dev/1135/0x055cA743f0fFB9258ea7f8484794C293f32f2d4C/)
+Deploy with Foundry to the active track (endpoints in `foundry.toml`:
+`base_sepolia`, `celo_sepolia`, `arbitrum_sepolia`, or a mainnet endpoint):
 
-## Contract Features
-
-- **LSK Token Payment**: Uses LSK ERC-20 token (0xac485391EB2d7D88253a7F1eF18C37f4242D1A24) for payments
-- **Mutable serviceFee**: Owner can adjust the service fee using `setServiceFee()` function
-- **Pause mechanism**: Owner can pause/unpause the contract using `togglePause()`
-- **Secure withdrawals**: Owner can withdraw collected LSK tokens using `withdrawLSK()` function
-- **Events**: Emits events for fee changes, withdrawals, and pause toggles
-- **Security**: Each tokenId can only be used once
-
-## Contract Functions
-
-- `payForService(bytes32 tokenId)`: Pay the service fee in LSK tokens to generate a hairstyle
-- `isTokenUsed(bytes32 tokenId)`: Check if a token has been used
-- `getUserBalance(address user)`: Get the total amount paid by a user
-- `setServiceFee(uint256 newFee)`: Owner-only function to update the service fee
-- `togglePause()`: Owner-only function to pause/unpause the contract
-- `withdraw()`: Owner-only function to withdraw ETH from the contract
-- `withdrawLSK()`: Owner-only function to withdraw collected LSK tokens from the contract
-
-## Integration with Frontend
-
-The frontend uses wagmi hooks to interact with the smart contract:
-- `useWriteContract`: To initiate payment transactions
-- `useWaitForTransactionReceipt`: To wait for transaction confirmation
-
-## Payment Verification
-
-The backend (`/api/create`) verifies payments on-chain using viem:
-1. User calls `payForService(tokenId)` on the contract (marks token as used on-chain)
-2. Frontend passes the `tokenId` to `/api/create`
-3. The API calls `isTokenUsed(tokenId)` on the contract to verify the payment is real
-4. Upstash Redis provides persistent replay protection (one generation per token)
-5. If verification passes, the Replicate API is called to generate the hairstyle
-
-The previous in-memory-only verification was replaced because serverless cold starts
-could lose payment records, allowing users to bypass payment.
-
-### Environment Variables for Replay Protection
-
-Set these in your deployment (Vercel Project Settings → Environment Variables)
-to enable persistent replay protection via Upstash Redis:
-
-```
-KV_REST_API_URL=https://your-upstash-redis-url.upstash.io
-KV_REST_API_TOKEN=your-upstash-token
+```bash
+forge script script/Deploy.s.sol:Deploy \
+  --rpc-url base_sepolia \
+  --private-key $DEPLOYER_PRIVATE_KEY \
+  --broadcast \
+  --verify
 ```
 
-If these are not set, the app falls back to in-memory replay protection
-(not suitable for production — cold starts will reset the consumed token set).
+Then register the 34 styles and wire the app env:
 
-## Security Notes
+```bash
+forge script script/RegisterStyles.s.sol:RegisterStyles \
+  --rpc-url base_sepolia \
+  --private-key $DEPLOYER_PRIVATE_KEY \
+  --broadcast \
+  --sig "run(address)" \
+  -- <PROTOCOL_ADDRESS>
+```
 
-- Each tokenId can only be used once (enforced on-chain)
-- Only the contract owner can withdraw funds, update fees, or pause the contract
-- The default service fee is 0.001 ETH (very cheap)
-- The contract can be paused by the owner in case of emergencies
+```bash
+NEXT_PUBLIC_CHAIN=base-sepolia
+NEXT_PUBLIC_PROTOCOL_ADDRESS_84532=<PROTOCOL_ADDRESS>
+```
+
+(Lisk was the original deployment target; it shut down with no users and
+no history, so all Lisk references were removed.)

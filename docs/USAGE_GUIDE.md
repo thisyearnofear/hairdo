@@ -39,22 +39,17 @@ adjust the shade and color before visualizing.
 The result includes a before/after comparison slider so you can see the
 transformation side by side.
 
-### 5. (Optional) Attest Onchain
-If you connect your wallet to Lisk (Chain ID: 1135), an **ATTEST** button
-appears on each recommendation. Clicking it opens the attestation flow:
+### 5. Save Your Cut (no wallet needed)
+Saving is the default — pick a style and save it to your guest history.
+No wallet, no fees.
 
-1. **Approve** the contract to spend 1 LSK (one-time per attestation)
-2. **Pay** the attestation fee on Lisk via `payForService(tokenId)`
-3. **Record** — after the onchain tx confirms, the attestation metadata
-   (styleId, styleName, your address, timestamp) is recorded
-4. **Verify** — anyone can view the attestation at
-   `/attestations/[tokenId]`
+### 6. (Optional) Mint Onchain
+Connect a wallet on the active track and mint a saved cut as a soulbound
+Style Credential. After the mint confirms, the credential links to your
+saved record. Anyone can view it at `/attestations/[tokenId]`. Never
+required to use the core product.
 
-The attestation creates a verifiable onchain record of your style choice.
-It costs ~1 LSK (a small fee that prevents spam and creates a permanent
-record). Never required to use the core product.
-
-### 6. (Optional) Verify an Attestation
+### 7. (Optional) Verify an Attestation
 Visit `/attestations/[tokenId]` with any attestation tokenId to view its
 details:
 - Style name and category
@@ -62,7 +57,7 @@ details:
 - Timestamp
 - Photo hash (if provided)
 - Onchain verification status
-- Link to the Lisk explorer
+- Link to the chain explorer
 
 This is a public endpoint — anyone can verify any attestation without
 connecting a wallet.
@@ -96,6 +91,6 @@ To look up a barber's trust profile:
 - Style intelligence via a curated tradeoff metadata database (34 styles)
 - Barber trust-scores via onchain attestation history analysis
 - Built with Next.js 16, React 19, Tailwind CSS v4
-- Onchain attestations via Lisk L2 (Chain ID: 1135)
+- Optional onchain credentials via the env-selected L2 (`NEXT_PUBLIC_CHAIN`)
 - Attestation storage via Upstash Redis (365-day TTL)
 - Deployed on Vercel

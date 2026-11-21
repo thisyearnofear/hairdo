@@ -14,7 +14,7 @@ import { Output } from "./Output"
 import Link from "next/link"
 import { AttestationHandler, type AttestationResult } from "./AttestationHandler"
 import { useConnection } from "wagmi"
-import { baseSepolia } from "@/lib/chains"
+import { activeChain, explorerAddressUrl } from "@/lib/chains"
 import { useGuestId } from "@/lib/hooks/useGuestId"
 import { SaveCutButton, type SavedCut } from "./SaveCutButton"
 import { PhaseStamps, phaseForFlow } from "./PhaseStamps"
@@ -1089,7 +1089,7 @@ export function StyleAdvisor() {
                       </p>
                     )}
                   {isConnected &&
-                    (chainId === baseSepolia.id || !chainId) &&
+                    (chainId === activeChain.id || !chainId) &&
                     (list.some((p) => p.hairstyle === rec.style.name) ||
                       savedCuts.some((c) => c.styleId === rec.style.id)) && (
                       <Button
@@ -1226,7 +1226,7 @@ export function StyleAdvisor() {
                 {attestationResult.tokenId.substring(58)}
               </p>
               <a
-                href={`https://sepolia-blockscout.lisk.com/address/${attestationResult.userAddress}`}
+                href={explorerAddressUrl(chainId, attestationResult.userAddress)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs tracking-wide text-green-400/60 hover:text-green-400 underline mt-2 inline-block"

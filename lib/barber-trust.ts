@@ -8,9 +8,8 @@
  * 3. Consistency — regular attestation issuance vs sporadic (weight: 20)
  * 4. Recency — recent activity weighted higher (weight: 20)
  *
- * The system is designed to work with our existing contract's verification
- * mechanism (isTokenUsed) while using an EAS-compatible schema format.
- * When EAS is deployed on Lisk, the attestation data can be read directly
+ * The system uses an EAS-compatible schema format. Once the protocol
+ * redeploys on the active track, attestation data can be read directly
  * from onchain attestations instead of the local database.
  */
 

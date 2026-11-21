@@ -5,7 +5,7 @@
 An agentic style advisor for Black men. Upload a photo, describe your lifestyle
 and constraints, and get ranked style recommendations with real tradeoff
 metadata — maintenance, cost, comfort, climate fit. Try on any style with AI
-visualization. Attest your style choice onchain via Lisk as a Style Credential —
+visualization. Optionally mint your saved cut onchain as a Style Credential —
 a soulbound NFT that builds your verifiable hair history. A Hair Growth Agent
 monitors your attested cuts and proactively nudges you when it's time to rebook,
 creating a recurring engagement loop that compounds with every attestation.
@@ -29,7 +29,7 @@ Research confirms:
   maintenance, cost, comfort, climate, and skill-level metadata.
 - **No one has built onchain attestation infrastructure for barber reputation.**
   Fake portfolios and unverifiable reviews are a documented industry problem.
-  EAS-style attestations on Lisk solve this in a way Web2 platforms can't —
+  EAS-style attestations on an L2 solve this in a way Web2 platforms can't —
   portable, tamper-proof, platform-agnostic.
 - **No one has built a recurring engagement loop around hair care.** Style
   discovery is a one-shot experience on every competitor. The Hair Growth Agent
@@ -97,7 +97,7 @@ One repo, one deployment. Four layers:
 - `api/recommend` — ranked style recommendations with tradeoffs. Reads
   attestation history (when available) to refine recommendations.
 - `api/visualize` — AI try-on via Replicate (two tiers: basic + refined)
-- `api/attest` — mints a Style Credential SBT on Lisk and records metadata
+- `api/attest` — records offchain cuts; verifies + records Style Credential SBT mints on the active L2
 - `api/growth` — reads attestation history, estimates growth based on style
   maintenance data and hair type, returns rebook urgency and nudge content
 - `api/attestations/[tokenId]` — public read endpoint for any attestation
@@ -126,9 +126,11 @@ One repo, one deployment. Four layers:
   - **Growth Tracking** — `isOverdue(tokenId)`, `daysUntilOverdue(tokenId)`,
     `daysSinceCut(tokenId)` view functions that the agent reads instead of
     computing growth offchain
-- **Lisk L2 (Chain ID: 1135)** — all onchain operations on Lisk mainnet
-- **LSK token** — used for credential fees, barber staking, and slashing
-- Replaces the proof-of-concept `HairdoPayment.sol` (kept for reference)
+- **Env-selected L2** (`NEXT_PUBLIC_CHAIN`: Base / Celo / Arbitrum,
+  testnet or mainnet) — all onchain operations on the active track
+- **Fee token** — set at redeploy time (LSK was the retired placeholder)
+- Replaces the proof-of-concept `HairdoPayment.sol` (removed with the
+  unmounted legacy payment UI)
 
 ### 4. Data — Style Database + Trust Graph
 - `data/styles.json` — 34 Black men's styles with full tradeoff metadata
@@ -140,9 +142,14 @@ One repo, one deployment. Four layers:
 
 ## Onchain Strategy
 
-### Lisk Relationship
-Lisk provided initial funding. The onchain layer serves a real product purpose
+### Chain Relationship
+Lisk provided initial funding and was the original deployment target; it
+shut down (Nov 2026) with no users and no history, so all Lisk code and
+references were removed. The onchain layer serves a real product purpose
 — Style Credentials and the trust graph — not just payment recording.
+Current tracks: Celo/MiniPay (distribution + Prezenti grants) and Arbitrum
+(capital + AI-agent programs); Base stays the default continuity target.
+The track is a deploy-time choice (`NEXT_PUBLIC_CHAIN`), not a rewrite.
 
 ### HairdoProtocol — The Onchain Trust Graph
 
@@ -244,21 +251,24 @@ attestations from the client side, we build the barber side:
 2. The attestation links to the client's Style Credential, creating a
    two-sided trust relationship
 3. Barber's portfolio becomes portable — no platform lock-in
-4. Barbers stake LSK to list themselves; slashed stakes go to clients for
+4. Barbers stake to list themselves; slashed stakes go to clients for
    disputed cuts (economic security layer)
 
-**Why Lisk for this piece:** matches their funding mandate — digital identity
-infrastructure for informal/underserved economies. Their portfolio includes
-EduChain (tamper-proof credentials), lov.cash and Afrikabal (trust rails in
-informal trade). Barbers are independent contractors in a fragmented-license
-industry, disproportionately Black and African diaspora.
+**Why this fits the grant tracks:** verifiable credentials for informal/
+underserved economies — barbers are independent contractors in a
+fragmented-license industry, disproportionately Black and African diaspora.
+Celo/MiniPay reaches exactly that population (self-custodial wallet inside
+Opera, stablecoin POS via WalletConnect Pay); Arbitrum's consumer + AI-agent
+programs fund the agent side.
 
 **Grant path:**
-1. Lisk DAO Builder Grant — fund Style Credential contract deployment + small
-   pilot (one shop, real attestations via the growth agent loop)
-2. Lisk DAO Fund — once early traction is demonstrated through credential
-   minting volume and rebook rates
-3. EMpower Fund — if it scales toward Series A
+1. Prezenti Season 3 (Celo, closes Dec 29 2026) — Boost for proven
+   cross-ecosystem teams + Frontier for the AI/agent attestation graph +
+   MiniPay Mini App distribution
+2. Arbitrum Foundation grants ($20k–$150k ARB, rolling) — consumer +
+   AI-agent angles, reusing the Celo materials
+3. Optimism Retro Funding (Superchain-eligible) — the attestation graph as
+   retro public goods, once impact exists
 
 ## Build Order
 
@@ -266,7 +276,7 @@ industry, disproportionately Black and African diaspora.
 1. ✅ Build the style database (`data/styles.json`) — 34 styles with tradeoffs
 2. ✅ Build the style matcher (`lib/style-matcher.ts`) — reasoning logic
 3. ✅ Strip the web3 payment gate from the main flow (keep the infrastructure)
-4. ✅ Build `api/recommend` — free during development, x402-paid on Lisk for production
+4. ✅ Build `api/recommend` — free during development, x402-paid on the active L2 for production
 5. ✅ Build `api/visualize` — Replicate integration (two tiers: basic + refined)
 6. ✅ Transform the frontend — landing page + interactive demo
 
@@ -306,16 +316,16 @@ industry, disproportionately Black and African diaspora.
 27. ✅ Build `GrowthNudge` component — surfaces agent nudges in the UI
 28. ✅ Write deployment scripts (`script/Deploy.s.sol`,
     `script/RegisterStyles.s.sol`) + Foundry config (`foundry.toml`)
-29. ✅ Deploy `HairdoProtocol.sol` on Lisk Sepolia testnet
-    (0x9C4434219661Cc1e4a5A7CFe79d9750e8BA79A07)
-30. ✅ Register all 34 styles onchain (verified styleCount() == 34)
+29. ✅ Deploy `HairdoProtocol.sol` on Lisk Sepolia testnet (retired with
+    Lisk — no users, no history; deployment scripts kept for the redeploy)
+30. ✅ Register all 34 styles onchain (verified styleCount() == 34, pre-shutdown)
 31. ✅ Upgrade `api/attest` to verify SBT ownership via `ownerOf()`
     instead of legacy `isTokenUsed()`
 32. ✅ Upgrade `AttestationHandler` to call `selfAttest()` on the new
     protocol — mints real soulbound Style Credentials
-33. ✅ Build barber registration flow (stake LSK, declare specialties)
+33. ✅ Build barber registration flow (stake, declare specialties)
     — `/barbers/register` page with 4-step flow (shop details →
-    specialties → LSK approval → stake & register)
+    specialties → fee-token approval → stake & register)
 34. ✅ Build growth dashboard — `/growth` page showing attested cut
     history, growth status, rebook urgency, style loyalty, average
     rebook interval, predicted overdue date, and barber finder CTA
@@ -325,12 +335,12 @@ industry, disproportionately Black and African diaspora.
     `/api/recommend` accepts `userAddress` and applies history-aware ranking
 
 ### Phase 6: Barber Attestation Protocol (grant-funded, future)
-36. ⬜ Deploy barber attestation contract on Lisk mainnet
+36. ⬜ Redeploy HairdoProtocol on the winning track (Celo-first, Arbitrum-second)
 37. ⬜ Build barber-facing flow: issue attestation after a cut
 38. ⬜ Link barber attestations to client Style Credentials (two-sided trust)
 39. ⬜ Barber staking + slashing (economic security layer)
 40. ⬜ Pilot with one barbershop — real attestations happening
-41. ⬜ Apply for Lisk DAO Builder Grant with pilot data
+41. ⬜ File Prezenti Season 3 (closes Dec 29 2026) with pilot data; reuse for Arbitrum rolling grants
 
 ### Phase 7: Agentic Booking + Escrow (future)
 42. ⬜ Agent finds verified barbers who specialize in recommended style
@@ -344,7 +354,7 @@ industry, disproportionately Black and African diaspora.
 - Replicate integration (two-tier: HairCLIP basic + SDXL LoRA refined)
 - Camera capture and image upload UI
 - ESLint, husky precommit hooks, GitHub Actions CI
-- wagmi/viem infrastructure and Lisk chain config
+- wagmi/viem infrastructure and env-selected chain config
 - Style database (`data/styles.json`) — 34 styles with tradeoffs
 - Barber trust scoring engine (`lib/barber-trust.ts`)
 - All API routes (recommend, visualize, attest, barber-score, barbers)
@@ -381,7 +391,7 @@ industry, disproportionately Black and African diaspora.
 
 - **Refined visualization tier**: premium AI try-on (SDXL LoRA), monetizable
   per generation
-- **Style Credential minting**: small fee per SBT (LSK on Lisk)
+- **Style Credential minting**: small fee per SBT (fee token set at redeploy)
 - **Future**: barber attestation issuance fees, marketplace escrow fees,
   barber staking/slashing protocol fees
 - **Future**: premium growth agent features (autonomous booking, style

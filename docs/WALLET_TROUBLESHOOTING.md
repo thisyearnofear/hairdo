@@ -29,9 +29,10 @@
 ### 4. Network Issues
 **Symptoms**: Transactions fail or hang indefinitely
 **Solution**:
-- Ensure you're on the correct Lisk network (Chain ID: 1135)
-- Check that your wallet is connected to the Lisk network
-- Make sure you have sufficient Lisk ETH for gas fees
+- Ensure your wallet is on the active track (`NEXT_PUBLIC_CHAIN`)
+- The app targets the active chain automatically — check the mint UI
+  for the expected network name
+- Make sure you have sufficient native tokens for gas fees
 
 ## Debugging Steps
 
@@ -50,12 +51,9 @@
 
 ## Network Configuration
 
-Make sure your wallet is configured for the Lisk network:
-- **Network Name**: Lisk
-- **RPC URL**: https://rpc.api.lisk.com
-- **Chain ID**: 1135
-- **Currency Symbol**: ETH
-- **Block Explorer**: https://blockscout.lisk.com
+No manual setup needed — the app targets the env-selected track
+(`NEXT_PUBLIC_CHAIN`) automatically. If your wallet prompts for a network
+switch, approve it.
 
 ## Still Having Issues?
 

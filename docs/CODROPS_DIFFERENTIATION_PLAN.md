@@ -11,7 +11,7 @@
 
 ## 1. Design principles (locked)
 
-1. **Offchain-first, onchain optional.** No wallet wall. `SaveCutButton` (guestId + Redis) is the default save. `Mint onchain` only appears when `isConnected && chainId === baseSepolia.id`.
+1. **Offchain-first, onchain optional.** No wallet wall. `SaveCutButton` (guestId + Redis) is the default save. `Mint onchain` only appears when `isConnected && chainId === activeChain.id` (env-selected track).
 2. **Chair spotlight language.** Warm editorial theme in `app/globals.css` (`text-gradient-warm`, `border-gradient-warm`, `glass-warm`, `barbershop-divider`, `cornrow-pattern`). Preserve it — new effects must use amber/terracotta tokens, not Codrops neon.
 3. **Consult phases, not funnels.** `PFA → PICK → PLACE → DONE` via `PhaseStamps` + `phaseForFlow({hasImage, hasRecs, hasVisual, hasCut})`. Every new UI must know which phase it belongs to.
 4. **Growth as timeline.** `app/growth/page.tsx` stays a timeline of saved cuts, not a dashboard.

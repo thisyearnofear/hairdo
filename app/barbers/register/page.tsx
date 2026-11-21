@@ -22,7 +22,7 @@ import {
   LSK_TOKEN_ADDRESS_MAINNET,
   LSK_TOKEN_ADDRESS_TESTNET,
 } from "@/lib/contract-config"
-import { lisk, liskSepolia } from "@/lib/chains"
+import { activeChain, explorerTxUrl, resolveChain } from "@/lib/chains"
 import { getAllStyles, getCategories } from "@/lib/style-matcher"
 
 const ERC20_ABI = [
@@ -80,7 +80,9 @@ export default function RegisterBarberPage() {
     error: contractError,
   } = useWriteContract()
 
-  const isTestnet = chainId === liskSepolia.id
+  const isTestnet = chainId
+    ? (resolveChain(chainId).testnet ?? true)
+    : activeChain.testnet === true
   const lskTokenAddress = isTestnet
     ? LSK_TOKEN_ADDRESS_TESTNET
     : LSK_TOKEN_ADDRESS_MAINNET
@@ -497,7 +499,7 @@ export default function RegisterBarberPage() {
               </p>
               {approvalHash && (
                 <a
-                  href={`${isTestnet ? "https://sepolia-blockscout.lisk.com" : "https://blockscout.lisk.com"}/tx/${approvalHash}`}
+                  href={explorerTxUrl(chainId, approvalHash as string)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[10px] opacity-40 hover:opacity-60 underline font-mono break-all"
@@ -562,7 +564,7 @@ export default function RegisterBarberPage() {
               )}
               {registerHash && (
                 <a
-                  href={`${isTestnet ? "https://sepolia-blockscout.lisk.com" : "https://blockscout.lisk.com"}/tx/${registerHash}`}
+                  href={explorerTxUrl(chainId, registerHash as string)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[10px] opacity-40 hover:opacity-60 underline font-mono break-all"
@@ -594,7 +596,7 @@ export default function RegisterBarberPage() {
 
           {isTestnet && (
             <div className="text-center text-[10px] tracking-wide text-amber/50 mt-6">
-              Testnet mode — Lisk Sepolia
+              Testnet mode — {activeChain.name}
             </div>
           )}
 

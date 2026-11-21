@@ -30,7 +30,7 @@ proactively nudges you when it's time to rebook.
 - **Backend**: Style Intelligence + Growth Agent — API endpoints
   - `api/recommend` — ranked style recommendations with tradeoffs (POST + GET)
   - `api/visualize` — AI try-on via Replicate, two tiers (POST)
-  - `api/attest` — mints Style Credential SBT on Lisk (POST)
+  - `api/attest` — mints Style Credential SBT on the active L2 (POST)
   - `api/growth` — growth estimation + rebook nudges from attestation history (GET)
   - `api/attestations/[tokenId]` — public read endpoint for any attestation (GET)
   - `api/barber-score` — barber trust-score from verified onchain history (POST + GET)
@@ -39,8 +39,8 @@ proactively nudges you when it's time to rebook.
   men's styles across 8 categories (the knowledge base)
 - **Data**: `data/barbers.json` — barber trust database with onchain attestation
   history, specialty styles, and computed trust scores
-- **Onchain**: Lisk mainnet — Style Credential protocol (soulbound NFTs)
-  + barber trust graph
+- **Onchain**: env-selected L2 (`NEXT_PUBLIC_CHAIN`) — Style Credential
+  protocol (soulbound NFTs) + barber trust graph
 
 ## Tech Stack
 
@@ -49,7 +49,7 @@ proactively nudges you when it's time to rebook.
 - Tailwind CSS v4 + shadcn/ui
 - Replicate (HairCLIP basic + SDXL LoRA refined for AI try-on)
 - Wagmi v3 + Viem (Web3)
-- Lisk L2 (Chain ID: 1135) — Style Credentials + trust graph
+- Env-selected L2 (Base / Celo / Arbitrum via `NEXT_PUBLIC_CHAIN`) — Style Credentials + trust graph
 - Upstash Redis (attestation storage + replay protection)
 - Vercel (deployment)
 
@@ -104,25 +104,20 @@ deployment environment variables.
 
 ## Onchain Integration
 
-### Lisk Mainnet
-- **Chain ID**: 1135
-- **RPC**: https://rpc.api.lisk.com
-- **Explorer**: https://blockscout.lisk.com
-- **Currency**: ETH
-- **Payment Token**: LSK ERC-20 [0xac48...1A24](https://blockscout.lisk.com/token/0xac485391EB2d7D88253a7F1eF18C37f4242D1A24)
+### Deployment track (env-selected)
+- **Selector**: `NEXT_PUBLIC_CHAIN` — `base-sepolia` (default) | `base` |
+  `celo-sepolia` | `celo` | `arbitrum-sepolia` | `arbitrum-one`
+- **Protocol address**: `NEXT_PUBLIC_PROTOCOL_ADDRESS` (or the
+  `NEXT_PUBLIC_PROTOCOL_ADDRESS_<chainId>` override matching the track)
+- Until redeployed, the protocol address is unset and onchain verification
+  fails closed — the offchain consult flow is unaffected.
 
 ### HairdoProtocol (building)
 
-The old `HairdoPayment.sol` was a proof-of-concept payment recorder. It's being
-replaced by `HairdoProtocol.sol` — a unified protocol contract that IS the
+`HairdoProtocol.sol` — a unified protocol contract that IS the
 trust graph, not just a payment processor with an NFT bolted on.
 
-**Old contract (legacy, being replaced):**
-- **Address**: [0x055cA743f0fFB9258ea7f8484794C293f32f2d4C](https://blockscout.lisk.com/address/0x055cA743f0fFB9258ea7f8484794C293f32f2d4C)
-- **Verified on Sourcify**: [View on Sourcify](https://repo.sourcify.dev/1135/0x055cA743f0fFB9258ea7f8484794C293f32f2d4C/)
-
-**New contract (in development):**
-- `HairdoProtocol.sol` — a unified protocol handling:
+**Contract (in development):**
   - **Style Registry** — maintenance windows onchain, `isOverdue()` view
   - **Style Credentials** — soulbound NFTs for each attested cut
   - **Barber Registry** — barbers stake LSK, declare specialties

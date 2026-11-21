@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createPublicClient, http, parseAbiItem } from 'viem'
-import { lisk } from '@/lib/chains'
+import { activeChain } from '@/lib/chains'
 import { getRedis } from '@/lib/redis'
 
 export const runtime = 'nodejs'
@@ -17,17 +17,12 @@ if (!global.consumedTokens) {
   global.consumedTokens = new Set()
 }
 
-// Lazily create the viem public client (reused across invocations)
-let client: ReturnType<typeof createPublicClient> | null = null
-
+// Fresh viem public client per call (serverless-safe; client creation is cheap)
 function getClient() {
-  if (!client) {
-    client = createPublicClient({
-      chain: lisk,
-      transport: http(),
-    })
-  }
-  return client
+  return createPublicClient({
+    chain: activeChain,
+    transport: http(),
+  })
 }
 
 // Verify on-chain that the token was used in a real payment transaction

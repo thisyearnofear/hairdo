@@ -1,61 +1,85 @@
-import { base, baseSepolia } from 'viem/chains'
-import { defineChain } from 'viem'
+import {
+  arbitrum,
+  arbitrumSepolia,
+  base,
+  baseSepolia,
+  celo,
+  celoSepolia,
+} from "viem/chains";
+import type { Chain } from "viem";
 
-// ─── Migration target (Lisk L2 shut down 2 Nov 2026) ────────────────────
-// HairdoProtocol has not been redeployed yet. `base` / `baseSepolia` are
-// the current defaults for new deployments. Lisk definitions below are
-// kept for read-only verification of historical attestations.
-export { base, baseSepolia }
+// ─── Live L2 targets ────────────────────────────────────────────────────
+// HairdoProtocol redeploys per grant track (Celo/MiniPay, Arbitrum).
+// (Lisk L2 shut down 2 Nov 2026 with no users and no history worth
+// preserving — all Lisk definitions were removed outright.)
+export { arbitrum, arbitrumSepolia, base, baseSepolia, celo, celoSepolia };
 
-export const lisk = defineChain({
-  id: 1135,
-  name: 'Lisk',
-  network: 'lisk',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'Ether',
-    symbol: 'ETH',
-  },
-  rpcUrls: {
-    default: {
-      http: ['https://rpc.api.lisk.com'],
-    },
-    public: {
-      http: ['https://rpc.api.lisk.com'],
-    },
-  },
-  blockExplorers: {
-    default: {
-      name: 'Blockscout',
-      url: 'https://blockscout.lisk.com',
-    },
-  },
-  testnet: false,
-  // NOTE: Lisk L2 shut down 2 Nov 2026 — retained for historical reads only.
-})
+// ─── Env-driven chain selection ──────────────────────────────────────────
+// NEXT_PUBLIC_CHAIN selects the active deployment target. Values:
+//   "base-sepolia" (default) | "base" | "celo-sepolia" | "celo" |
+//   "arbitrum-sepolia" | "arbitrum-one"
+// Switching grant/deployment track = changing one env var + the matching
+// NEXT_PUBLIC_PROTOCOL_ADDRESS(_<chainId>) entry. No code changes.
+const CHAIN_ALIASES = {
+  "base-sepolia": baseSepolia,
+  base: base,
+  "celo-sepolia": celoSepolia,
+  celo: celo,
+  "arbitrum-sepolia": arbitrumSepolia,
+  "arbitrum-one": arbitrum,
+} as const;
 
-export const liskSepolia = defineChain({
-  id: 4202,
-  name: 'Lisk Sepolia',
-  network: 'lisk-sepolia',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'Ether',
-    symbol: 'ETH',
-  },
-  rpcUrls: {
-    default: {
-      http: ['https://rpc.sepolia-api.lisk.com'],
-    },
-    public: {
-      http: ['https://rpc.sepolia-api.lisk.com'],
-    },
-  },
-  blockExplorers: {
-    default: {
-      name: 'Blockscout',
-      url: 'https://sepolia-blockscout.lisk.com',
-    },
-  },
-  testnet: true,
-})
+export type ChainAlias = keyof typeof CHAIN_ALIASES;
+
+function readChainAlias(): ChainAlias {
+  const raw = (
+    process.env.NEXT_PUBLIC_CHAIN || "base-sepolia"
+  ).toLowerCase() as ChainAlias;
+  return raw in CHAIN_ALIASES ? raw : "base-sepolia";
+}
+
+export const ACTIVE_CHAIN_ALIAS = readChainAlias();
+
+/** The chain HairdoProtocol is currently deployed to (env-selected). */
+export const activeChain = CHAIN_ALIASES[ACTIVE_CHAIN_ALIAS];
+
+/** All live chains the wallet may connect to (dead Lisk excluded). */
+export const liveChains: [Chain, ...Chain[]] = [
+  baseSepolia,
+  base,
+  celoSepolia,
+  celo,
+  arbitrumSepolia,
+  arbitrum,
+];
+
+/** Resolve a chain id to its definition; unknown ids fall back to active. */
+export function resolveChain(chainId: number | undefined) {
+  if (!chainId) return activeChain;
+  return liveChains.find((c) => c.id === chainId) ?? activeChain;
+}
+
+/** Explorer base URL for a chain id. */
+export function explorerBaseUrl(chainId: number | undefined): string {
+  const chain = resolveChain(chainId);
+  return (
+    chain.blockExplorers?.default.url ??
+    activeChain.blockExplorers!.default.url
+  );
+}
+
+/** Explorer URL for an address on a chain id. */
+export function explorerAddressUrl(
+  chainId: number | undefined,
+  address: string
+): string {
+  return `${explorerBaseUrl(chainId)}/address/${address}`;
+}
+
+/** Explorer URL for a tx hash on a chain id. */
+export function explorerTxUrl(
+  chainId: number | undefined,
+  txHash: string
+): string {
+  return `${explorerBaseUrl(chainId)}/tx/${txHash}`;
+}

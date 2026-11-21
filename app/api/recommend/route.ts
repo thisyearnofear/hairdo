@@ -107,7 +107,7 @@ async function getUserAttestations(userKey: string): Promise<AttestationEntry[]>
  * }
  *
  * During development this endpoint is free. In production it will be
- * gated by x402 payment on Lisk mainnet.
+ * gated by x402 payment on the active L2.
  */
 export async function POST(request: NextRequest) {
   try {

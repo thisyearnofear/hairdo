@@ -15,7 +15,7 @@ import {
   LSK_TOKEN_ADDRESS_MAINNET,
   LSK_TOKEN_ADDRESS_TESTNET,
 } from "@/lib/contract-config";
-import { baseSepolia, liskSepolia } from "@/lib/chains";
+import { activeChain, resolveChain } from "@/lib/chains";
 import { decodeEventLog, keccak256, toHex } from "viem";
 
 interface AttestationHandlerProps {
@@ -100,9 +100,12 @@ export function AttestationHandler({
     error: contractError,
   } = useWriteContract();
 
-  // Select the correct LSK token address based on connected chain
-  // Base Sepolia uses the testnet LSK address until protocol redeploys without LSK fees.
-  const isTestnet = chainId === liskSepolia.id || chainId === baseSepolia.id;
+  // Select the correct LSK token address based on connected chain.
+  // Testnet deployments use the testnet LSK address until the protocol
+  // redeploys without LSK fees (Celo/Arbitrum track).
+  const isTestnet = chainId
+    ? (resolveChain(chainId).testnet ?? true)
+    : activeChain.testnet === true;
   const lskTokenAddress = isTestnet
     ? LSK_TOKEN_ADDRESS_TESTNET
     : LSK_TOKEN_ADDRESS_MAINNET;
@@ -420,7 +423,7 @@ export function AttestationHandler({
         <p className="text-xs opacity-60 max-w-xs leading-relaxed">
           <strong className="opacity-80">{styleName}</strong> is now part of
           your verifiable hair history. Anyone can confirm it by reading your
-          token on Lisk.
+          token on {activeChain.name}.
         </p>
         {mintedTokenId && (
           <p className="text-[10px] opacity-40 tracking-wide break-all mt-2 font-mono">
@@ -522,7 +525,7 @@ export function AttestationHandler({
       {/* Network indicator */}
       {isTestnet && (
         <div className="text-center text-[10px] tracking-wide text-amber/50">
-          Testnet mode — Base Sepolia (Lisk retired Nov 2026)
+          Testnet mode — {activeChain.name}
         </div>
       )}
 
@@ -595,7 +598,7 @@ export function AttestationHandler({
 
       {/* Info footer — plain language, not terminal */}
       <div className="text-center text-[10px] tracking-wide opacity-40 space-y-1 font-display italic leading-relaxed">
-        <p>Pays a small fee on Base L2 (migrating from retired Lisk)</p>
+        <p>Pays a small fee on {activeChain.name}</p>
         <p>Mints a soulbound Style Credential NFT</p>
         <p>Stores a photo hash, never the photo itself</p>
       </div>
