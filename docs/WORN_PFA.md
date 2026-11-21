@@ -79,12 +79,23 @@ CONSULT ────────────────────────
 ## Pinned contract (consult card payload)
 
 ```
-ConsultCard = {
+ConsultCard v1 (see lib/consult-cards.ts — makeCard factory, isConsultCard
+boundary guard, isCardLive) = {
+  id: string,               # stable identity (React keys + dismissal)
+  version: 1,
   phase: "pfa" | "pick" | "place" | "done",
   headline: string,        # ≤ 60 chars — product + shade, or cue summary
   lines: string[],         # ≤ 3 lines, ≤ 60 chars each
-  sticky: boolean          # placement cues stick; recs auto-clear ~8s
+  sticky: boolean,         # placement cues stick; recs auto-clear ~8s
+  expiresAt: number | null # epoch ms; null = lives till phase advances
 }
+
+Phase A shipped (post-hackathon durability): lib/consult-session.ts
+(advance/back/goTo/syncTo + useConsultSession w/ localStorage, Redis
+helpers in lib/redis.ts) — /glasses runs on it, reload-safe, verified in
+browser. lib/growth-cards.ts maps GrowthStatus → done-card;
+useGrowthAgent.activeCard; GrowthNudge renders the card headline. Next:
+StyleAdvisor's phaseForFlow drives the shared machine via syncSessionToPhase.
 
 PFA fixture (sample result, committed as `fixtures/pfa-sample.json`):
 ```json

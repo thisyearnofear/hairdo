@@ -23,7 +23,8 @@ import Link from "next/link";
  */
 export function GrowthNudge() {
   const { address } = useAccount();
-  const { status, activeNudge, dismissNudge, isTracking } = useGrowthAgent({
+  const { status, activeNudge, activeCard, dismissNudge, isTracking } =
+    useGrowthAgent({
     address,
     pollInterval: 60_000,
   });
@@ -73,7 +74,7 @@ export function GrowthNudge() {
               </span>
             </div>
             <p className="text-sm font-display leading-relaxed">
-              {activeNudge}
+              {activeCard?.headline ?? activeNudge}
             </p>
           </div>
         </div>

@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   PHASE_LABEL,
   PHASE_ORDER,
   getSampleCards,
 } from "@/lib/consult-cards";
+import { useConsultSession } from "@/lib/consult-session";
 
 /**
  * Rung-2 glasses preview — what the Beauty Advisor sees on the M6.
@@ -18,23 +19,24 @@ import {
 const CARDS = getSampleCards();
 
 export default function GlassesPage() {
-  const [idx, setIdx] = useState(0);
-  const card = CARDS[idx];
-
-  const next = useCallback(
-    () => setIdx((i) => Math.min(CARDS.length - 1, i + 1)),
-    []
+  // Session persists across reload under consult:glasses:aura-sample —
+  // the advisor picks up exactly where the consult left off.
+  const { phase, advance, back } = useConsultSession(
+    PHASE_ORDER,
+    "glasses",
+    "aura-sample"
   );
-  const back = useCallback(() => setIdx((i) => Math.max(0, i - 1)), []);
+  const idx = PHASE_ORDER.indexOf(phase);
+  const card = CARDS[idx];
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowRight") advance();
       if (e.key === "ArrowLeft") back();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [next, back]);
+  }, [advance, back]);
 
   return (
     <main className="min-h-screen bg-black text-[#4dff6a] font-mono flex flex-col items-center px-4 py-8">
@@ -108,7 +110,7 @@ export default function GlassesPage() {
             {idx + 1} / {CARDS.length}
           </span>
           <button
-            onClick={next}
+            onClick={advance}
             disabled={idx === CARDS.length - 1}
             className="px-4 py-2 border border-[#4dff6a] bg-[#4dff6a]/10 rounded-sm text-sm tracking-widest uppercase disabled:opacity-30"
           >

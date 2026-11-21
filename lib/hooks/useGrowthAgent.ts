@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { growthToConsultCard } from "@/lib/growth-cards";
+import type { ConsultCard } from "@/lib/consult-cards";
 
 // ─── Types (mirror of api/growth/route.ts response) ───────────────────
 
@@ -48,6 +50,8 @@ interface UseGrowthAgentResult {
   error: string | null;
   // The current nudge to show (null if no nudge or dismissed)
   activeNudge: string | null;
+  // Same nudge as a ConsultCard — the cross-surface voice (glasses, push, …)
+  activeCard: ConsultCard | null;
   // Dismiss the current nudge
   dismissNudge: () => void;
   // Manually refresh
@@ -159,6 +163,12 @@ export function useGrowthAgent({
       ? status.nudgeMessage
       : null;
 
+  // Card form of the same nudge (null when dismissed or unavailable)
+  const activeCard = useMemo(
+    () => (activeNudge && status ? growthToConsultCard(status) : null),
+    [activeNudge, status]
+  );
+
   const isTracking = Boolean(address && status?.hasHistory);
 
   return {
@@ -166,6 +176,7 @@ export function useGrowthAgent({
     loading,
     error,
     activeNudge,
+    activeCard,
     dismissNudge,
     refresh,
     isTracking,
