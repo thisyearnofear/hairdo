@@ -4,6 +4,7 @@ import { useGrowthAgent } from "@/lib/hooks/useGrowthAgent";
 import { useAccount } from "wagmi";
 import { Scissors, X, Clock, TrendingUp } from "lucide-react";
 import { Reveal } from "@/components/ui/reveal";
+import { ConsultCardView } from "@/components/consult-card-view";
 import { StyleIllustration } from "@/components/ui/style-illustration";
 import { getStyleById } from "@/lib/style-matcher";
 import Link from "next/link";
@@ -73,9 +74,11 @@ export function GrowthNudge() {
                 Growth Agent
               </span>
             </div>
-            <p className="text-sm font-display leading-relaxed">
-              {activeCard?.headline ?? activeNudge}
-            </p>
+            <ConsultCardView
+              card={activeCard}
+              fallback={activeNudge}
+              variant="inline"
+            />
           </div>
         </div>
 

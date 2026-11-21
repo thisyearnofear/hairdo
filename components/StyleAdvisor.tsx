@@ -18,6 +18,11 @@ import { activeChain, explorerAddressUrl } from "@/lib/chains"
 import { useGuestId } from "@/lib/hooks/useGuestId"
 import { SaveCutButton, type SavedCut } from "./SaveCutButton"
 import { PhaseStamps, phaseForFlow } from "./PhaseStamps"
+import {
+  useConsultSession,
+  currentPhase,
+} from "@/lib/consult-session"
+import { PHASE_ORDER } from "@/lib/consult-cards"
 import { RadarChart } from "@/components/ui/radar-chart"
 import { StatBar } from "@/components/ui/tradeoff-bars"
 import { ProgressSteps } from "@/components/ui/progress-steps"
@@ -208,16 +213,20 @@ export function StyleAdvisor() {
     return 0
   }, [image, recommendations, list, attestationResult, savedCuts])
 
-  const consultPhase = useMemo(
-    () =>
-      phaseForFlow({
-        hasImage: Boolean(image),
-        hasRecs: recommendations.length > 0,
-        hasVisual: list.length > 0,
-        hasCut: savedCuts.length > 0 || Boolean(attestationResult),
-      }),
-    [image, recommendations, list, savedCuts, attestationResult]
-  )
+  // Consult phase lives in the shared session machine (same state the
+  // glasses surface reads) — the flow derives it, the machine keeps it.
+  const { session: consultSession, syncTo: syncConsultPhase } =
+    useConsultSession(PHASE_ORDER, "consult", guestId ?? "anonymous")
+  const derivedPhase = phaseForFlow({
+    hasImage: Boolean(image),
+    hasRecs: recommendations.length > 0,
+    hasVisual: list.length > 0,
+    hasCut: savedCuts.length > 0 || Boolean(attestationResult),
+  })
+  useEffect(() => {
+    syncConsultPhase(derivedPhase)
+  }, [derivedPhase, syncConsultPhase])
+  const consultPhase = currentPhase(consultSession)
 
   // Read prediction status from API
   const readPrediction = useCallback(async (id: string) => {

@@ -7,6 +7,7 @@ import {
   getSampleCards,
 } from "@/lib/consult-cards";
 import { useConsultSession } from "@/lib/consult-session";
+import { ConsultCardView } from "@/components/consult-card-view";
 
 /**
  * Rung-2 glasses preview — what the Beauty Advisor sees on the M6.
@@ -78,23 +79,8 @@ export default function GlassesPage() {
         </div>
 
         {/* Consult card */}
-        <div
-          key={card.phase}
-          className="mt-6 border border-[#4dff6a]/50 rounded-sm p-5 min-h-44"
-        >
-          <p className="text-lg leading-snug font-bold">{card.headline}</p>
-          <div className="mt-3 space-y-1.5">
-            {card.lines.map((line) => (
-              <p key={line} className="text-sm leading-snug opacity-90">
-                {line}
-              </p>
-            ))}
-          </div>
-          {card.sticky && (
-            <p className="mt-4 text-[10px] tracking-[0.2em] uppercase border border-[#4dff6a]/60 inline-block px-2 py-0.5">
-              Sticky until dismissed
-            </p>
-          )}
+        <div key={card.phase}>
+          <ConsultCardView card={card} variant="waveguide" />
         </div>
 
         {/* Controls */}

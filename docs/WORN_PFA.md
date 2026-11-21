@@ -94,8 +94,12 @@ Phase A shipped (post-hackathon durability): lib/consult-session.ts
 (advance/back/goTo/syncTo + useConsultSession w/ localStorage, Redis
 helpers in lib/redis.ts) — /glasses runs on it, reload-safe, verified in
 browser. lib/growth-cards.ts maps GrowthStatus → done-card;
-useGrowthAgent.activeCard; GrowthNudge renders the card headline. Next:
-StyleAdvisor's phaseForFlow drives the shared machine via syncSessionToPhase.
+useGrowthAgent.activeCard; GrowthNudge renders the card headline via the
+shared components/consult-card-view.tsx (inline | waveguide variants).
+StyleAdvisor's phaseForFlow now drives the shared machine via
+syncSessionToPhase. POST /api/cards is the single mapping endpoint
+(pfa.completed → 4 cards, retouch.due → 0-1 card; every card re-validated
+with isConsultCard; verified live with curl).
 
 PFA fixture (sample result, committed as `fixtures/pfa-sample.json`):
 ```json
