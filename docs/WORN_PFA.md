@@ -162,7 +162,14 @@ is still current in the catalog.
 5. M6 live — real `api/recommend` output → card contract → glasses, advisor
    voice-drives the phase transitions.
 
-Aim for rung 5. Ship whatever the top working rung is at 1:30 PM.
+Aim for rung 5. **Lock the rung at 1:00–1:15 PM for filming; wheels-up on
+the form at 1:30.** Rung selection happens at the filming lock, not after.
+
+1.5 Static-asset safety net — pre-generate before filming, carry offline:
+try-on render as a plain image, the PFA fixture values, a screenshot of
+`/glasses`. If the network dies mid-film, the two-person arc still plays
+with static assets — nothing in the filmed arc should require a live
+network call (especially `api/visualize` inference over venue wifi).
 
 ## Demo arc (three minutes, two people, filmed)
 
@@ -180,6 +187,11 @@ phone."
    never leaving her.
 4. **The close.** Try-on render lands on the client's phone; follow-up cue
    hits the glasses — *"shade holds ~8 weeks — book the retouch."*
+
+**Solo fallback (60 seconds, rehearse once):** if the second person is
+unavailable, one presenter plays the advisor — phone propped showing the
+client view to camera, glasses/preview page on face, same four beats
+compressed. Insurance against the most mundane failure mode there is.
 
 ## Persona and copy notes
 
@@ -200,11 +212,36 @@ phone."
 | Ergonomics       | 2    | Advisor's hands and eyes stay on the client — the scene is the   |
 |                  |      | theme name                                                        |
 | Works on glasses | 2    | Mono-green text cards are the display's native medium             |
-| Adaptability     | 1–2  | Two-surface consult: cue on glasses, visual on phone              |
+| Adaptability     | 2    | Same consult state, two renderers: one card type, `inline` (web)  |
+|                  |      | + `waveguide` (glasses) — new channels add a variant, not a map   |
 | Impact & pitch   | 2    | Sponsor track, filmed, named-partner visibility                   |
 
 Ceiling ~9–10 — the PFA brief and the glasses constraints line up unusually
 well here.
+
+**Two cases, priced honestly:**
+
+- **With M6 (rung 3+):** ceiling holds, ~9–10. Ergonomics and Works-on-
+  glasses are shown, not told.
+- **Without hardware (rung 2):** realistic ceiling ~7–8. Pitch shifts to
+  constraint-driven design: *"we designed to the waveguide budget —
+  mono-green, 3 lines max, sticky cues — so the cards are push-ready the
+  moment the SDK lands."* Constraint fluency still earns points from
+  hardware judges even un-deployed. Write down which case you're in at the
+  filming lock and pitch that case — don't pitch rung 5 while demoing
+  rung 2.
+
+## Day schedule (backwards from 2:00 PM ET)
+
+- **On arrival:** open the Airtable form read-only — let its field list
+  drive what you capture (video link format? repo URL? screenshots?). Then
+  the 5-min venue verification (PFA run on a consented face, catalog
+  re-confirm) — it determines card copy.
+- **1:00–1:15:** lock the rung, film the arc (budget 3–4 takes for a
+  two-person scene; get the teammate's explicit filming consent first — a
+  text message counts — since footage may be shared with Wardah).
+- **1:30:** wheels-up on the form. Assume the form fights you; the buffer
+  is the deliverable.
 
 ## Risks
 
