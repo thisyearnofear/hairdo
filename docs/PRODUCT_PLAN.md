@@ -396,3 +396,42 @@ programs fund the agent side.
   barber staking/slashing protocol fees
 - **Future**: premium growth agent features (autonomous booking, style
   journals, seasonal recommendations)
+
+## Post-hackathon direction (set Nov 21, 2026)
+
+The Worn × Wardah hackathon reframed the product: consults are two-human,
+and the professional's side is unserved. Long-term HAIRDO is the
+consultation engine between the professional and the client, on whatever
+screen each of them has — not a consumer selfie app.
+
+### The pro wedge
+
+1. **Sell to the chair, not the mirror.** One shop running consults +
+   attested cuts + automatic rebook nudges beats a hundred consumer
+   downloads. The growth agent is the revenue argument: "we bring your
+   clients back." Price per chair, not per transaction.
+2. **Onchain stays optional infrastructure.** Attested history as portable
+   reputation (stylist's verified portfolio, client's record that survives
+   moving cities) is a year-two moat. No token, no chain expansion, no
+   wallet-first flows until the history is worth porting.
+3. **One card protocol, many endpoints.** `/api/cards` feeds web, glasses,
+   and next SMS/WhatsApp, shop tablet, MiniPay receipts. New channels are
+   renderers, never re-mappings.
+4. **MiniPay over App Store** for emerging-market reach: no install,
+   phone-number identity, stablecoin payments when ready.
+
+### Explicitly not doing
+
+- Chasing M6/hardware without an inside champion.
+- A booking marketplace (fights incumbents on their turf).
+- New chains, tokens, or social features before users in chairs.
+
+### Sequence
+
+1. Retro + Wardah/Paragon follow-up (the sponsor relationship is the top
+   hackathon artifact).
+2. Validation sprint — see `docs/VALIDATION_SPRINT.md`. No new infra until
+   the rebook metric answers.
+3. Then build, in order: barbershop phases on real events (unfinished
+   Phase B) → SMS/WhatsApp card renderer → shop dashboard (history +
+   upcoming retouches per chair) → MiniPay pilot.
