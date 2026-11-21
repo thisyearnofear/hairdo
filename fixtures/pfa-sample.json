@@ -1,0 +1,39 @@
+{
+  "_note": "SAMPLE for the Worn hackathon demo (Track 01, Wardah PFA challenge). Schema sourced live from personalfaceanalysis.wardahbeauty.com (Nov 21 2026). Values are a disclosed stand-in — replace with a consented team-face run at the venue (name, measurements, match code).",
+  "client_name": "AURA",
+  "face_shape": {
+    "label": "Curved Thick",
+    "description": "Fuller, rounded facial features with soft curves, creating a bold yet graceful impression."
+  },
+  "measurements": {
+    "eye_width": 34.2,
+    "eye_height": 12.1,
+    "nose_length": 45.0,
+    "nose_width": 36.8,
+    "mouth_width": 52.4,
+    "lips_thickness": 14.6
+  },
+  "complexion": {
+    "match": "#34W Warm Ivory",
+    "one_tone_up": "#21W Pink Fair"
+  },
+  "placement": {
+    "face_shape": "Oval",
+    "highlight": "bridge of nose, center forehead",
+    "contour": "soft under cheekbones",
+    "blush": "apples, swept toward temples"
+  },
+  "season": {
+    "tone": "COOL",
+    "season": "SUMMER"
+  },
+  "product": {
+    "line": "Colorfit Velvet Matte Lip Mousse",
+    "shade": "10 Lively Coral",
+    "reason": "neutral coral, office look"
+  },
+  "follow_up": {
+    "cue": "mousse sets ~6 hrs — blot, don't layer",
+    "retouch_weeks": 8
+  }
+}

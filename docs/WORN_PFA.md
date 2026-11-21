@@ -86,14 +86,35 @@ ConsultCard = {
   sticky: boolean          # placement cues stick; recs auto-clear ~8s
 }
 
-PFA fixture (sample result, committed):
-  { undertone, skin_tone, face_shape, concerns: string[], desired_look }
+PFA fixture (sample result, committed as `fixtures/pfa-sample.json`):
+```json
+{
+  "face_shape": { "label": "Curved Thick", "description": "Fuller, rounded facial features with soft curves…" },
+  "measurements": { "eye_width": 34.2, "eye_height": 12.1, "nose_length": 45.0, "nose_width": 36.8, "mouth_width": 52.4, "lips_thickness": 14.6 },
+  "complexion": { "match": "#34W Warm Ivory", "one_tone_up": "#21W Pink Fair" },
+  "placement": { "face_shape": "Oval", "highlight": "…", "contour": "…", "blush": "…" },
+  "season": { "tone": "COOL", "season": "SUMMER" },
+  "product": { "line": "Colorfit Velvet Matte Lip Mousse", "shade": "10 Lively Coral", "reason": "neutral coral, office look" }
+}
 ```
 
-The seed is a **sample PFA result captured by running
-`personalfaceanalysis.wardahbeauty.com` on our own face** — consented, real,
-and exactly what the brief asks for. Commit it as
-`fixtures/pfa-sample.json` the way other fixtures are committed.
+Schema source: fetched live from `personalfaceanalysis.wardahbeauty.com`
+(Sat Nov 21, Tavily research) — face-shape verdict + explanation, six
+facial measurements, YOUR MATCH / ONE TONE UP shade codes, HIGHLIGHT /
+CONTOUR / BLUSH placement zones, personal-color season, and a
+"Wardah Colour Precision Intelligence · powered by PixieLab 2026"
+product beat. No invented fields.
+
+Verified product/shade names (judge-safe, same research pass):
+- Complexion codes `#34W Warm Ivory` / `#21W Pink Fair` (number + undertone letter)
+- *Colorfit Velvet Matte Lip Mousse* · **10 Lively Coral** (neutral coral) — do NOT use "03 Coral" (shade 03 verifies as mauve plum)
+- Backup lip: *Colorfit Last All Day Lip Paint* 01–12 (mauvey/pink/tangerine/plum/berry-red)
+- Base: *Instaperfect* 11 Fair Pink / 22 Light Ivory / 33 Warm Olive / 52 Almond
+- Concern line: *Acnederm* (Spot Treatment Gel, Pure Foaming Cleanser, Pore Blackhead Balm)
+
+Venue verification (5 min): run the PFA tool on the team's consented face,
+replace the fixture's name/measurements/match code; confirm "10 Lively Coral"
+is still current in the catalog.
 
 ## Hardware notes (confirmed Nov 21)
 
@@ -114,8 +135,11 @@ and exactly what the brief asks for. Commit it as
 
 1. Web recommend + visualize flow on the phone — works today (prior work,
    disclosed)
-2. "Glasses preview" page — consult cards at waveguide size, mono green on
-   black, driven from the committed PFA fixture
+2. "Glasses preview" page (`/glasses`) — consult cards at waveguide size,
+   mono green on black, driven from the committed PFA fixture via
+   `lib/consult-cards.ts` (fixture → `ConsultCard[]` per the pinned
+   contract). Phase stamps `PFA → PICK → PLACE → DONE` track the consult.
+   Pure presentational rung: no camera, no SDK, no network past page load
 3. M6 zero-build — scripted consult sequence via Secret Vision text push or
    iOS notification mirroring. No code, no SDK.
 4. M6 scripted via SDK/APK — canned PFA→PICK→PLACE sequence pushed through
@@ -147,8 +171,8 @@ phone."
 - Wardah is a **halal beauty brand** and this track is **filmed** — voice is
   a professional Beauty Advisor: warm, precise, no snark. Do not port any
   existing persona voices.
-- Product names in fixtures should be real Wardah lines (Colorfit, Instaperfect,
-  Acnederm) — check the current catalog before locking fixture copy.
+- Product names in fixtures are real Wardah lines (Colorfit, Instaperfect,
+  Acnederm) with verified shades — re-confirm the catalog at the venue before locking.
 - Desired-look fixture should match what the PFA tool actually outputs —
   capture the real schema, don't invent one.
 
@@ -169,11 +193,12 @@ well here.
 
 ## Risks
 
-- **Fixture authenticity** — the demo hinges on a real PFA result. Run the
-  tool on a consented team face first thing; if the site is down, capture
-  whatever schema it shows and build the fixture to match.
-- **Product catalog accuracy** — recommendations must name real Wardah SKUs
-  or judges from Paragon will notice. Verify against the live catalog.
+- **Fixture authenticity** — schema is sourced from the live tool, but the
+  *values* must come from a consented team face run at the venue. If the
+  site is down, the committed sample stands as the disclosed sample.
+- **Product catalog accuracy** — card copy uses verified lines/shades only
+  (10 Lively Coral, #34W codes, Instaperfect numbers above). Re-confirm at
+  the venue; judges from Paragon will notice fakes.
 - **Camera unknowns** — this demo needs no camera at all (fixture-driven),
   which is why it's lower-risk than a capture pipeline. Don't add one.
 - **Scope** — attestation, barbers, commerce are all out of the demo. The
